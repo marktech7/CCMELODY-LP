@@ -21,7 +21,7 @@
 """ Patch the QFileDialog so it accepts and returns Path objects"""
 from pathlib import Path
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.path import path_to_str, replace_params, str_to_path
 from openlp.core.common.i18n import UiStrings, translate

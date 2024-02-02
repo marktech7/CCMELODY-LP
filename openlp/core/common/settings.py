@@ -29,7 +29,7 @@ from enum import IntEnum
 from pathlib import Path
 from tempfile import gettempdir
 
-from PyQt6 import QtCore, QtGui
+from PySide6 import QtCore, QtGui
 
 from openlp.core.common import SlideLimits, ThemeLevel
 from openlp.core.common.enum import AlertLocation, BibleSearch, CustomSearch, HiDPIMode, ImageThemeMode, LayoutStyle, \

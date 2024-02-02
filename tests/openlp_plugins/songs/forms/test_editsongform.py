@@ -24,7 +24,7 @@ Package to test the openlp.plugins.songs.forms.editsongform package.
 import pytest
 from unittest.mock import MagicMock, patch
 
-from PyQt6 import QtWidgets, QtTest, QtCore
+from PySide6 import QtWidgets, QtTest, QtCore
 
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.registry import Registry

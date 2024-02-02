@@ -24,7 +24,7 @@ database.
 """
 import logging
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common import verify_ip_address, Singleton
 from openlp.core.common.i18n import translate
@@ -223,7 +223,7 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
         location = Column(String(30))
         notes = Column(String(200))
     """
-    updateProjectors = QtCore.pyqtSignal()
+    updateProjectors = QtCore.Signal()
 
     def __init__(self, parent=None, projectordb=None):
         self.parent = parent
@@ -265,7 +265,7 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
         reply = QtWidgets.QDialog.exec(self)
         return reply
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def accept_me(self):
         """
         Validate inputs before accepting.
@@ -343,14 +343,14 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
         self.projector = None
         self.close()
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def help_me(self):
         """
         Show a help message about the input fields.
         """
         log.debug('help_me() signal received')
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def cancel_me(self):
         """
         Cancel button clicked - just close.

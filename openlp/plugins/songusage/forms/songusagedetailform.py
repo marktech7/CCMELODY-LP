@@ -20,7 +20,7 @@
 ##########################################################################
 import logging
 
-from PyQt6 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets, QtGui
 from sqlalchemy.sql import and_
 
 from openlp.core.common.i18n import translate

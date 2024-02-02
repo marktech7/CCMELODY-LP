@@ -28,7 +28,7 @@ from pathlib import Path
 from tempfile import mkdtemp
 from unittest.mock import ANY, Mock, MagicMock, patch, call, sentinel
 
-from PyQt6 import QtWidgets
+from PySide6 import QtWidgets
 
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings

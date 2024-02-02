@@ -22,7 +22,7 @@
 The splash screen
 """
 
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 
 class SplashScreen(QtWidgets.QSplashScreen):

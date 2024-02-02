@@ -26,7 +26,7 @@ import logging
 import re
 from datetime import date, datetime
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry

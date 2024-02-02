@@ -24,7 +24,7 @@ The :mod:`~openlp.plugins.songs.forms.songselectform` module contains the GUI fo
 import logging
 import re
 
-from PyQt6 import QtCore, QtWidgets, QtWebEngineCore
+from PySide6 import QtCore, QtWidgets, QtWebEngineCore
 from sqlalchemy.sql import and_
 from tempfile import TemporaryDirectory
 
@@ -150,7 +150,7 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
             self.url_bar.setVisible(True)
             self.webview.setEnabled(True)
 
-    @QtCore.pyqtSlot(QtWebEngineCore.QWebEngineDownloadRequest)
+    @QtCore.Slot(QtWebEngineCore.QWebEngineDownloadRequest)
     def on_download_requested(self, download_item):
         """
         Called when download is started

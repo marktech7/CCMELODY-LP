@@ -33,7 +33,7 @@ import time
 from datetime import datetime
 from threading import Timer
 
-from PyQt6 import QtWidgets  # noqa
+from PySide6 import QtWidgets  # noqa
 
 from openlp.core.common.i18n import translate
 

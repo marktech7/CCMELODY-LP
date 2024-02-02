@@ -49,7 +49,7 @@ import logging
 from codecs import decode
 from copy import copy
 
-from PyQt6 import QtCore, QtNetwork
+from PySide6 import QtCore, QtNetwork
 
 from openlp.core.common import qmd5_hash
 from openlp.core.common.i18n import translate
@@ -81,7 +81,7 @@ class PJLinkUDP(QtNetwork.QUdpSocket):
     Socket service for PJLink UDP socket.
     """
 
-    data_received = QtCore.pyqtSignal(QtNetwork.QHostAddress, int, str, name='udp_data')  # host, port, data
+    data_received = QtCore.Signal(QtNetwork.QHostAddress, int, str, name='udp_data')  # host, port, data
 
     def __init__(self, port=PJLINK_PORT):
         """
@@ -121,7 +121,7 @@ class PJLinkUDP(QtNetwork.QUdpSocket):
         self.close()
         self.readyRead.disconnect(self.get_datagram)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def get_datagram(self):
         """
         Retrieve packet and basic checks
@@ -153,7 +153,7 @@ class PJLinkUDP(QtNetwork.QUdpSocket):
         # TODO: Send SRCH packet here
         self.search_timer.singleShot(self.search_time, self.search_stop)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def search_stop(self):
         """
         Stop search
@@ -186,12 +186,12 @@ class PJLink(QtNetwork.QTcpSocket):
     Socket services for PJLink TCP packets.
     """
     # Signals sent by this module
-    projectorChangeStatus = QtCore.pyqtSignal(str, int, str)
-    projectorStatus = QtCore.pyqtSignal(int)  # Status update
-    projectorAuthentication = QtCore.pyqtSignal(str)  # Authentication error
-    projectorNoAuthentication = QtCore.pyqtSignal(str)  # PIN set and no authentication needed
-    projectorReceivedData = QtCore.pyqtSignal()  # Notify when received data finished processing
-    projectorUpdateIcons = QtCore.pyqtSignal()  # Update the status icons on toolbar
+    projectorChangeStatus = QtCore.Signal(str, int, str)
+    projectorStatus = QtCore.Signal(int)  # Status update
+    projectorAuthentication = QtCore.Signal(str)  # Authentication error
+    projectorNoAuthentication = QtCore.Signal(str)  # PIN set and no authentication needed
+    projectorReceivedData = QtCore.Signal()  # Notify when received data finished processing
+    projectorUpdateIcons = QtCore.Signal()  # Update the status icons on toolbar
     # Deprecated
     changeStatus = projectorChangeStatus  # Use projectorChangeStatus
 
@@ -421,7 +421,7 @@ class PJLink(QtNetwork.QTcpSocket):
         self.changeStatus.emit(self.ip, status, message)
         self.projectorUpdateIcons.emit()
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def check_login(self, data=None):
         """
         Processes the initial connection and convert to a PJLink packet if valid initial connection
@@ -481,7 +481,7 @@ class PJLink(QtNetwork.QTcpSocket):
         log.debug(f'({self.entry.name}) Finished cleaning buffer - {trash_count} bytes dropped')
         return
 
-    @QtCore.pyqtSlot(QtNetwork.QHostAddress, int, str, name='udp_data')  # host, port, data
+    @QtCore.Slot(QtNetwork.QHostAddress, int, str, name='udp_data')  # host, port, data
     def get_buffer(self, host, port, data):
         """
         Get data from somewhere other than TCP socket
@@ -497,7 +497,7 @@ class PJLink(QtNetwork.QTcpSocket):
         else:
             log.debug(f'({self.entry.name}) Ignoring data for {host.toString()} - not me')
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def get_socket(self):
         """
         Get data from TCP socket.
@@ -614,7 +614,7 @@ class PJLink(QtNetwork.QTcpSocket):
 
         return
 
-    @QtCore.pyqtSlot(QtNetwork.QAbstractSocket.SocketError)
+    @QtCore.Slot(QtNetwork.QAbstractSocket.SocketError)
     def get_error(self, err):
         """
         Process error from SocketError signal.
@@ -681,7 +681,7 @@ class PJLink(QtNetwork.QTcpSocket):
             # May be some initial connection setup so make sure we send data
             self._send_command()
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def _send_command(self, data=None, utf8=False):
         """
         Socket interface to send data. If data=None, then check queue.
@@ -748,7 +748,7 @@ class PJLink(QtNetwork.QTcpSocket):
         self.change_status(S_CONNECTING)
         self.connectToHost(self.ip, self.port)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def disconnect_from_host(self, abort=False):
         """
         Close socket and cleanup.

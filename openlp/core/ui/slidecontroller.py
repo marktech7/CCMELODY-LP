@@ -27,7 +27,7 @@ from collections import deque
 from pathlib import Path
 from threading import Lock
 
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import SlideLimits
 from openlp.core.common.actions import ActionList, CategoryOrder
@@ -104,7 +104,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
     user uses to control the displaying of verses/slides/etc on the screen.
     """
 
-    slidecontroller_changed = QtCore.pyqtSignal()
+    slidecontroller_changed = QtCore.Signal()
 
     def __init__(self, *args, **kwargs):
         """
@@ -1333,7 +1333,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         slide_ready_time = self.slide_changed_time + datetime.timedelta(seconds=slide_delay_time)
         return datetime.datetime.now() > slide_ready_time
 
-    @QtCore.pyqtSlot(result=str)
+    @QtCore.Slot(result=str)
     def grab_maindisplay(self) -> str:
         """
         Gets the last taken screenshot
@@ -1627,10 +1627,10 @@ class PreviewController(RegistryBase, SlideController):
     """
     Set up the Preview Controller.
     """
-    slidecontroller_preview_set = QtCore.pyqtSignal(list)
-    slidecontroller_preview_next = QtCore.pyqtSignal()
-    slidecontroller_preview_previous = QtCore.pyqtSignal()
-    slidecontroller_preview_clear = QtCore.pyqtSignal()
+    slidecontroller_preview_set = QtCore.Signal(list)
+    slidecontroller_preview_next = QtCore.Signal()
+    slidecontroller_preview_previous = QtCore.Signal()
+    slidecontroller_preview_clear = QtCore.Signal()
 
     def __init__(self, *args, **kwargs):
         """
@@ -1659,14 +1659,14 @@ class LiveController(RegistryBase, SlideController):
     """
     Set up the Live Controller.
     """
-    slidecontroller_live_set = QtCore.pyqtSignal(list)
-    slidecontroller_live_next = QtCore.pyqtSignal()
-    slidecontroller_live_previous = QtCore.pyqtSignal()
-    slidecontroller_toggle_display = QtCore.pyqtSignal(str)
-    slidecontroller_live_clear = QtCore.pyqtSignal()
-    mediacontroller_live_play = QtCore.pyqtSignal()
-    mediacontroller_live_pause = QtCore.pyqtSignal()
-    mediacontroller_live_stop = QtCore.pyqtSignal()
+    slidecontroller_live_set = QtCore.Signal(list)
+    slidecontroller_live_next = QtCore.Signal()
+    slidecontroller_live_previous = QtCore.Signal()
+    slidecontroller_toggle_display = QtCore.Signal(str)
+    slidecontroller_live_clear = QtCore.Signal()
+    mediacontroller_live_play = QtCore.Signal()
+    mediacontroller_live_pause = QtCore.Signal()
+    mediacontroller_live_stop = QtCore.Signal()
 
     def __init__(self, *args, **kwargs):
         """

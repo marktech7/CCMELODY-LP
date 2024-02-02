@@ -27,7 +27,7 @@ import zipfile
 from pathlib import Path
 from xml.etree.ElementTree import XML, ElementTree
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.state import State
 from openlp.core.common import delete_file
@@ -143,8 +143,8 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
     Manages the orders of Theme.
     """
     # These signals are used by the web api to update the theme on the ui thread
-    theme_update_global = QtCore.pyqtSignal()
-    theme_level_updated = QtCore.pyqtSignal()
+    theme_update_global = QtCore.Signal()
+    theme_level_updated = QtCore.Signal()
 
     def __init__(self, parent=None):
         """

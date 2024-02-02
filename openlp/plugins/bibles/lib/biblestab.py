@@ -21,7 +21,7 @@
 
 import logging
 
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.enum import DisplayStyle, LanguageSelection, LayoutStyle
 from openlp.core.common.i18n import UiStrings, translate

@@ -25,7 +25,7 @@ import os
 from pathlib import Path
 from typing import Any, List, Optional, Union
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common import sha256_file_hash
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
@@ -368,7 +368,7 @@ class FolderLibraryItem(MediaManagerItem):
         """
         return [item.file_path, item.file_path]
 
-    @QtCore.pyqtSlot(str, bool, result=list)
+    @QtCore.Slot(str, bool, result=list)
     def search(self, string: str, show_error: bool = True) -> list[list[Any]]:
         """
         Performs a search for items containing ``string``

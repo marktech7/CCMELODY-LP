@@ -26,7 +26,7 @@ import os
 
 from unittest.mock import MagicMock, call, create_autospec, patch, ANY
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.registry import Registry

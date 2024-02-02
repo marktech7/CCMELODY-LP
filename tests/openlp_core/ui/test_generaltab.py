@@ -24,7 +24,7 @@ Package to test the openlp.core.ui.generaltab package.
 from openlp.core.ui.generaltab import GeneralTab
 from openlp.core.ui.settingsform import SettingsForm
 
-from PyQt6 import QtCore, QtTest
+from PySide6 import QtCore, QtTest
 
 
 def test_creation(settings):

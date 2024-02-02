@@ -23,7 +23,7 @@ Package to test the openlp.core.lib.screenlist package.
 """
 from unittest.mock import MagicMock, patch
 
-from PyQt6 import QtCore
+from PySide6 import QtCore
 
 from openlp.core.display.screens import Screen, ScreenList
 

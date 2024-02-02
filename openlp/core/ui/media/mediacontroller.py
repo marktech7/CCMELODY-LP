@@ -32,7 +32,7 @@ except ImportError:
     pymediainfo_available = False
     pymediainfo_version = '0.0'
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
@@ -62,10 +62,10 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
     The implementation of the Media Controller which manages how media is played.
     """
 
-    vlc_live_media_tick = QtCore.pyqtSignal()
-    vlc_preview_media_tick = QtCore.pyqtSignal()
-    vlc_live_media_stop = QtCore.pyqtSignal()
-    vlc_preview_media_stop = QtCore.pyqtSignal()
+    vlc_live_media_tick = QtCore.Signal()
+    vlc_preview_media_tick = QtCore.Signal()
+    vlc_live_media_stop = QtCore.Signal()
+    vlc_preview_media_stop = QtCore.Signal()
 
     def __init__(self, parent=None):
         """

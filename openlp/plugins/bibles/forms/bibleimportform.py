@@ -25,7 +25,7 @@ import logging
 import urllib.error
 
 from lxml import etree
-from PyQt6 import QtWidgets, QtGui, QtCore
+from PySide6 import QtWidgets, QtGui, QtCore
 
 try:
     from pysword import modules

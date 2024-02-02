@@ -23,7 +23,7 @@ Package to test the openlp.plugins.songusage.forms.songusagedetailform package.
 """
 from unittest.mock import MagicMock, patch
 
-from PyQt6 import QtWidgets, QtTest, QtCore
+from PySide6 import QtWidgets, QtTest, QtCore
 
 from openlp.plugins.songusage.forms.songusagedetailform import SongUsageDetailForm
 

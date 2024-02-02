@@ -24,7 +24,7 @@ The services tab of the configuration dialog.
 import logging
 from datetime import datetime, timedelta
 
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import SlideLimits
 from openlp.core.common.i18n import UiStrings, format_time, translate

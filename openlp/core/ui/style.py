@@ -23,7 +23,7 @@ The :mod:`~openlp.core.ui.dark` module looks for and loads a dark theme
 """
 from subprocess import Popen, PIPE
 from enum import Enum
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.platform import is_macosx, is_win
 from openlp.core.common.registry import Registry

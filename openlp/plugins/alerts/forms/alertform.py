@@ -19,7 +19,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 
-from PyQt6 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets, QtGui
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry

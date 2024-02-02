@@ -30,7 +30,7 @@ from contextlib import suppress
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import ThemeLevel, delete_file, sha256_file_hash
 from openlp.core.common.actions import ActionList, CategoryOrder
@@ -307,13 +307,13 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
     can then be zipped up with all the resources used into one OSZ or OSZL file for use on any OpenLP installation.
     Also handles the UI tasks of moving things up and down etc.
     """
-    servicemanager_set_item = QtCore.pyqtSignal(int)
-    servicemanager_set_item_by_uuid = QtCore.pyqtSignal(str)
-    servicemanager_next_item = QtCore.pyqtSignal()
-    servicemanager_previous_item = QtCore.pyqtSignal()
-    servicemanager_new_file = QtCore.pyqtSignal()
-    servicemanager_changed = QtCore.pyqtSignal()
-    theme_update_service = QtCore.pyqtSignal()
+    servicemanager_set_item = QtCore.Signal(int)
+    servicemanager_set_item_by_uuid = QtCore.Signal(str)
+    servicemanager_next_item = QtCore.Signal()
+    servicemanager_previous_item = QtCore.Signal()
+    servicemanager_new_file = QtCore.Signal()
+    servicemanager_changed = QtCore.Signal()
+    theme_update_service = QtCore.Signal()
 
     def __init__(self, parent=None):
         """

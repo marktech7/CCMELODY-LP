@@ -26,7 +26,7 @@ import logging
 import re
 from shutil import copyfile
 
-from PyQt6 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets, QtGui
 
 from openlp.core.common import sha256_file_hash
 from openlp.core.common.applocation import AppLocation

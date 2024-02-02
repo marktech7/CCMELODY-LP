@@ -27,7 +27,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, patch, call
 from typing import Any
 
-from PyQt6 import QtCore, QtGui, QtTest, QtWidgets
+from PySide6 import QtCore, QtGui, QtTest, QtWidgets
 
 from openlp.core.common.registry import Registry
 from openlp.core.widgets.dialogs import FileDialog

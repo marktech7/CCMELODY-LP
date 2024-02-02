@@ -21,7 +21,7 @@
 """
 The UI widgets for the rename dialog
 """
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import create_button_box

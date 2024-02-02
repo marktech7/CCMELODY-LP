@@ -22,7 +22,7 @@
 Package to test the openlp.core.ui package.
 """
 from unittest.mock import MagicMock
-from PyQt6 import QtCore
+from PySide6 import QtCore
 
 from openlp.core.ui.splashscreen import SplashScreen
 

@@ -27,7 +27,7 @@ import os
 import copy
 import re
 
-from PyQt6 import QtCore, QtWebChannel, QtWidgets
+from PySide6 import QtCore, QtWebChannel, QtWidgets
 
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
@@ -49,7 +49,7 @@ class DisplayWatcher(QtCore.QObject):
     """
     This facilitates communication from the Display object in the browser back to the Python
     """
-    initialised = QtCore.pyqtSignal(bool)
+    initialised = QtCore.Signal(bool)
 
     def __init__(self, parent, window_title=None):
         super().__init__()
@@ -59,11 +59,11 @@ class DisplayWatcher(QtCore.QObject):
         self._event_counter = 0
         self._window_title = window_title
 
-    @QtCore.pyqtSlot(result=str)
+    @QtCore.Slot(result=str)
     def getWindowTitle(self):
         return self._window_title
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     def setInitialised(self, is_initialised):
         """
         This method is called from the JS in the browser to set the _is_initialised attribute
@@ -71,14 +71,14 @@ class DisplayWatcher(QtCore.QObject):
         log.info('Display is initialised: {init}'.format(init=is_initialised))
         self.initialised.emit(is_initialised)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def pleaseRepaint(self):
         """
         Called from the js in the webengine view when it's requesting a repaint by Qt
         """
         self._display_window.webview.update()
 
-    @QtCore.pyqtSlot(str, 'QJsonObject')
+    @QtCore.Slot(str, 'QJsonObject')
     def dispatchEvent(self, event_name, event_data):
         """
         Called from the js in the webengine view for event dispatches
@@ -562,13 +562,13 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         """
         self._run_javascript('Display.alert("{text}", {settings});'.format(text=text, settings=settings))
 
-    @QtCore.pyqtSlot(result='QPixmap')
+    @QtCore.Slot(result='QPixmap')
     def _grab_screenshot_safe_signal(self):
         return self.save_screenshot()
 
     def grab_screenshot_safe(self):
         # Using internal Qt's messaging/event system to invoke the function.
-        # Usually we would need to use PyQt's signals, but they aren't blocking. So we had to resort to this solution,
+        # Usually we would need to use PySide's signals, but they aren't blocking. So we had to resort to this solution,
         # which use a less-documented Qt mechanism to invoke the signal in a blocking way.
         return QtCore.QMetaObject.invokeMethod(self, '_grab_screenshot_safe_signal',
                                                QtCore.Qt.ConnectionType.BlockingQueuedConnection,

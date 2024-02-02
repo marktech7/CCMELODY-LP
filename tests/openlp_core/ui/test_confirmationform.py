@@ -22,7 +22,7 @@
 Test the Confirmation Form
 """
 from unittest.mock import patch
-from PyQt6 import QtWidgets, QtTest, QtCore
+from PySide6 import QtWidgets, QtTest, QtCore
 
 from openlp.core.ui.confirmationform import ConfirmationForm
 

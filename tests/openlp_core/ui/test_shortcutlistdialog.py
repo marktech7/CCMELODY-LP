@@ -23,7 +23,7 @@ Package to test the openlp.core.ui.shortcutlistdialog package.
 """
 from unittest.mock import MagicMock
 
-from PyQt6 import QtCore
+from PySide6 import QtCore
 
 from openlp.core.ui.shortcutlistdialog import CaptureShortcutButton, ShortcutTreeWidget
 

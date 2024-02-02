@@ -24,7 +24,7 @@ The :mod:`~openlp.core.ui.shortcutlistform` module contains the form class
 import logging
 import re
 
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.actions import ActionList
 from openlp.core.common.i18n import translate

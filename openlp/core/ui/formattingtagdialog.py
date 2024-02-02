@@ -21,7 +21,7 @@
 """
 The UI widgets for the formatting tags window.
 """
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.ui import create_button_box

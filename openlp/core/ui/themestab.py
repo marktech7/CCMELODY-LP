@@ -21,7 +21,7 @@
 """
 The Themes configuration tab
 """
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import ThemeLevel
 from openlp.core.common.i18n import UiStrings, translate

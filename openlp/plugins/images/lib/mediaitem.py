@@ -22,7 +22,7 @@
 import logging
 from pathlib import Path
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common import delete_file, get_images_filter
 from openlp.core.common.applocation import AppLocation
@@ -46,8 +46,8 @@ class ImageMediaItem(FolderLibraryItem):
     """
     This is the custom media manager item for images.
     """
-    images_go_live = QtCore.pyqtSignal(list)
-    images_add_to_service = QtCore.pyqtSignal(list)
+    images_go_live = QtCore.Signal(list)
+    images_add_to_service = QtCore.Signal(list)
     log.info('Image Media Item loaded')
 
     def __init__(self, parent, plugin):

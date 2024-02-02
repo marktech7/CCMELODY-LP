@@ -22,7 +22,7 @@ import logging
 import os
 import shutil
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 from pathlib import Path
 
 from openlp.core.common import sha256_file_hash
@@ -47,8 +47,8 @@ class PresentationMediaItem(FolderLibraryItem):
     This is the Presentation media manager item for Presentation Items. It can present files using Openoffice and
     Powerpoint
     """
-    presentations_go_live = QtCore.pyqtSignal(list)
-    presentations_add_to_service = QtCore.pyqtSignal(list)
+    presentations_go_live = QtCore.Signal(list)
+    presentations_add_to_service = QtCore.Signal(list)
     log.info('Presentations Media Item loaded')
 
     def __init__(self, parent, plugin, controllers):

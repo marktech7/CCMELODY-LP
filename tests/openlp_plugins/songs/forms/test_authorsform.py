@@ -24,7 +24,7 @@ Package to test the openlp.plugins.songs.forms.authorsform package.
 import pytest
 from unittest.mock import patch
 
-from PyQt6 import QtWidgets
+from PySide6 import QtWidgets
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.songs.forms.authorsform import AuthorsForm

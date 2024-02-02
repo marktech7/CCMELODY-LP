@@ -21,7 +21,7 @@
 import pytest
 from unittest.mock import MagicMock, patch
 
-from PyQt6 import QtCore
+from PySide6 import QtCore
 
 from openlp.core.api import app as flask_app
 from openlp.core.state import State

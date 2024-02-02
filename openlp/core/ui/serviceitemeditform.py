@@ -21,7 +21,7 @@
 """
 The service item edit dialog
 """
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry

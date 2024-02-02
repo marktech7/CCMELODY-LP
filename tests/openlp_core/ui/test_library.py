@@ -22,7 +22,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.platform import is_win
 from openlp.core.ui.library import FolderLibraryItem

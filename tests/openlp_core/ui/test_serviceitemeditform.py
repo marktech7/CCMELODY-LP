@@ -24,7 +24,7 @@ Package to test the :mod:`~openlp.core.ui.serviceitemeditform` package.
 import pytest
 from unittest.mock import MagicMock, call, patch
 
-from PyQt6 import QtCore, QtTest
+from PySide6 import QtCore, QtTest
 
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings

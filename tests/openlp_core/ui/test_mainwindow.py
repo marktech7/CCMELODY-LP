@@ -28,7 +28,7 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 import pytest
-from PyQt6 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets, QtGui
 
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.platform import is_macosx

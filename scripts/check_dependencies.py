@@ -40,7 +40,7 @@ IS_MAC = sys.platform.startswith('dar')
 
 VERS = {
     'Python': '3.6',
-    'PyQt6': '6.2',
+    'PySide6': '6.2',
     'Qt6': '6.2',
     'pymediainfo': '2.2',
     'sqlalchemy': '0.5',
@@ -69,16 +69,16 @@ MACOSX_MODULES = [
 
 
 MODULES = [
-    'PyQt6',
-    'PyQt6.QtCore',
-    'PyQt6.QtGui',
-    'PyQt6.QtWidgets',
-    'PyQt6.QtNetwork',
-    'PyQt6.QtOpenGL',
-    'PyQt6.QtSvg',
-    'PyQt6.QtTest',
-    ('PyQt6.QtWebEngineCore', '(PyQtWebEngine on PyPI)'),
-    'PyQt6.QtMultimedia',
+    'PySide6',
+    'PySide6.QtCore',
+    'PySide6.QtGui',
+    'PySide6.QtWidgets',
+    'PySide6.QtNetwork',
+    'PySide6.QtOpenGL',
+    'PySide6.QtSvg',
+    'PySide6.QtTest',
+    ('PySide6.QtWebEngineCore', '(PySideWebEngine on PyPI)'),
+    'PySide6.QtMultimedia',
     'appdirs',
     'sqlalchemy',
     'alembic',
@@ -109,7 +109,7 @@ OPTIONAL_MODULES = [
     ('uno', '(LibreOffice/OpenOffice support)'),
     # development/testing modules
     ('pytest', '(testing framework)'),
-    ('pytestqt', '(PyQt testing framework - pytest-qt on PyPI)'),
+    ('pytestqt', '(PySide testing framework - pytest-qt on PyPI)'),
     ('flake8', '(linter)')
 ]
 
@@ -180,11 +180,11 @@ def verify_python():
 def verify_versions():
     print('Verifying version of modules...')
     try:
-        from PyQt6 import QtCore
-        check_vers(QtCore.PYQT_VERSION_STR, VERS['PyQt6'], 'PyQt6')
+        from PySide6 import QtCore
+        check_vers(QtCore.PYQT_VERSION_STR, VERS['PySide6'], 'PySide6')
         check_vers(QtCore.qVersion(), VERS['Qt6'], 'Qt6')
     except ImportError:
-        print_vers_fail(VERS['PyQt6'], 'PyQt6')
+        print_vers_fail(VERS['PySide6'], 'PySide6')
         print_vers_fail(VERS['Qt6'], 'Qt6')
     try:
         import sqlalchemy
@@ -220,7 +220,7 @@ def print_qt_image_formats():
     """
     w('Qt6 image formats... ')
     try:
-        from PyQt6 import QtGui
+        from PySide6 import QtGui
         read_f = ', '.join([bytes(fmt).decode().lower() for fmt in QtGui.QImageReader.supportedImageFormats()])
         write_f = ', '.join([bytes(fmt).decode().lower() for fmt in QtGui.QImageWriter.supportedImageFormats()])
         w(os.linesep)

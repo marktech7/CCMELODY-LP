@@ -27,7 +27,7 @@ from unittest import skipUnless
 from unittest.mock import MagicMock, patch
 
 import pytest
-from PyQt6 import QtCore
+from PySide6 import QtCore
 
 from openlp.core.state import State
 from openlp.core.common.platform import is_linux, is_macosx

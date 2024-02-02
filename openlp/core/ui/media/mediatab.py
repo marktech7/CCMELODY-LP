@@ -23,7 +23,7 @@ The :mod:`~openlp.core.ui.media.mediatab` module holds the configuration tab for
 """
 import logging
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.lib.settingstab import SettingsTab

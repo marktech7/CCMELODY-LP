@@ -23,7 +23,7 @@ Provides the generic functions for interfacing plugins with the Media Manager.
 """
 import re
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties

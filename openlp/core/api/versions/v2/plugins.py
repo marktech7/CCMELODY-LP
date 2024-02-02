@@ -24,7 +24,7 @@ import json
 import re
 
 from flask import abort, request, Blueprint, jsonify, Response
-from PyQt6 import QtCore
+from PySide6 import QtCore
 
 from openlp.core.api.lib import login_required, extract_request, old_success_response, old_auth
 from openlp.core.lib.plugin import PluginStatus

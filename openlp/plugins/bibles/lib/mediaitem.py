@@ -24,7 +24,7 @@ import re
 from enum import IntEnum, unique
 from typing import Any
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.enum import BibleSearch, DisplayStyle, LayoutStyle
 from openlp.core.common.i18n import UiStrings, get_locale_key, translate
@@ -86,8 +86,8 @@ class BibleMediaItem(MediaManagerItem):
     """
     This is the custom media manager item for Bibles.
     """
-    bibles_go_live = QtCore.pyqtSignal(list)
-    bibles_add_to_service = QtCore.pyqtSignal(list)
+    bibles_go_live = QtCore.Signal(list)
+    bibles_add_to_service = QtCore.Signal(list)
     log.info('Bible Media Item loaded')
 
     def __init__(self, *args, **kwargs):
@@ -1074,7 +1074,7 @@ class BibleMediaItem(MediaManagerItem):
         else:
             return False
 
-    @QtCore.pyqtSlot(str, bool, result=list)
+    @QtCore.Slot(str, bool, result=list)
     def search(self, string: str, show_error: bool = True) -> list[list[Any]]:
         """
         Search for some Bible verses (by reference).

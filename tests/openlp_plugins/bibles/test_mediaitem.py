@@ -24,7 +24,7 @@ This module contains tests for the lib submodule of the Presentations plugin.
 import pytest
 from unittest.mock import MagicMock, call, patch
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.registry import Registry
 from openlp.core.lib.mediamanageritem import MediaManagerItem
@@ -129,11 +129,11 @@ def test_bible_media_item_signals():
     Test that the :class:`BibleMediaItem` class has the expected signals
     """
     # GIVEN: The :class:`BibleMediaItem`
-    # THEN:  The :class:`BibleMediaItem` should contain the following pyqtSignal's
+    # THEN:  The :class:`BibleMediaItem` should contain the following Signal's
     assert hasattr(BibleMediaItem, 'bibles_go_live')
     assert hasattr(BibleMediaItem, 'bibles_add_to_service')
-    assert isinstance(BibleMediaItem.bibles_go_live, QtCore.pyqtSignal)
-    assert isinstance(BibleMediaItem.bibles_add_to_service, QtCore.pyqtSignal)
+    assert isinstance(BibleMediaItem.bibles_go_live, QtCore.Signal)
+    assert isinstance(BibleMediaItem.bibles_add_to_service, QtCore.Signal)
 
 
 def test_media_item_instance(media_item: BibleMediaItem):

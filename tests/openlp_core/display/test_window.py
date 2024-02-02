@@ -28,10 +28,10 @@ from pathlib import Path
 
 from unittest.mock import MagicMock, patch
 
-from PyQt6 import QtCore
+from PySide6 import QtCore
 
 # Mock QtWebEngineCore
-sys.modules['PyQt6.QtWebEngineCore'] = MagicMock()
+sys.modules['PySide6.QtWebEngineCore'] = MagicMock()
 
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.platform import is_win

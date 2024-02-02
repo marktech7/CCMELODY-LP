@@ -25,7 +25,7 @@ Heavily inspired by https://stackoverflow.com/questions/33467776/qt-qwebengine-r
 import logging
 import os.path
 
-from PyQt6 import QtCore, QtWebEngineCore, QtWebEngineWidgets, QtWidgets
+from PySide6 import QtCore, QtWebEngineCore, QtWebEngineWidgets, QtWidgets
 from typing import Tuple
 
 from openlp.core.common import Singleton
@@ -68,7 +68,7 @@ class WebEngineView(QtWebEngineWidgets.QWebEngineView):
     and set some attributtes.
     """
     _child = None  # QtWidgets.QOpenGLWidget or QWidget?
-    delegatePaint = QtCore.pyqtSignal()
+    delegatePaint = QtCore.Signal()
 
     def __init__(self, parent=None):
         """

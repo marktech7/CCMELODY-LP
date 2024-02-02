@@ -110,7 +110,7 @@ def is_xorg_platform():
 
     :return: True if the Qt is running on X.org/XWayland display server (Linux/*nix), otherwise False.
     """
-    from PyQt6 import QtGui
+    from PySide6 import QtGui
     return QtGui.QGuiApplication.platformName() == 'xcb'
 
 
@@ -120,5 +120,5 @@ def is_wayland_platform():
 
     :return: True if the OpenLP/Qt instance is running in a Wayland compositor, otherwise False
     """
-    from PyQt6 import QtGui
+    from PySide6 import QtGui
     return QtGui.QGuiApplication.platformName() == 'wayland'

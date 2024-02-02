@@ -25,7 +25,7 @@ import os
 from shutil import copyfile
 from typing import Any
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 from sqlalchemy.sql import and_, or_
 
 from openlp.core.state import State
@@ -58,8 +58,8 @@ class SongMediaItem(MediaManagerItem):
     """
     This is the custom media manager item for Songs.
     """
-    songs_go_live = QtCore.pyqtSignal(list)
-    songs_add_to_service = QtCore.pyqtSignal(list)
+    songs_go_live = QtCore.Signal(list)
+    songs_add_to_service = QtCore.Signal(list)
     log.info('Song Media Item loaded')
 
     def __init__(self, parent, plugin):
@@ -846,7 +846,7 @@ class SongMediaItem(MediaManagerItem):
         # List must be empty at the end
         return not author_list
 
-    @QtCore.pyqtSlot(str, bool, result=list)
+    @QtCore.Slot(str, bool, result=list)
     def search(self, string: str, show_error: bool = True) -> list[list[Any]]:
         """
         Search for some songs

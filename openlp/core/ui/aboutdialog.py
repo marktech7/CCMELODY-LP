@@ -20,7 +20,7 @@
 ##########################################################################
 import datetime
 
-from PyQt6 import QtGui, QtWidgets
+from PySide6 import QtGui, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.ui import create_button, create_button_box

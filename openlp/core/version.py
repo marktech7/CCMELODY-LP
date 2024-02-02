@@ -27,7 +27,7 @@ import sys
 from collections import OrderedDict
 from datetime import date
 
-from PyQt6 import QtCore
+from PySide6 import QtCore
 
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.httputils import get_web_page
@@ -42,7 +42,7 @@ CONNECTION_TIMEOUT = 30
 CONNECTION_RETRIES = 2
 LIBRARIES = OrderedDict([
     ('Python', ('platform', 'python_version')),
-    ('PyQt6', ('PyQt6.Qt', 'PYQT_VERSION_STR')),
+    ('PySide6', ('PySide6.Qt', 'PYQT_VERSION_STR')),
     ('SQLAlchemy', ('sqlalchemy',)),
     ('Alembic', ('alembic',)),
     ('BeautifulSoup', ('bs4',)),
@@ -63,8 +63,8 @@ class VersionWorker(ThreadWorker):
     A worker class to fetch the version of OpenLP from the website. This is run from within a thread so that it
     doesn't affect the loading time of OpenLP.
     """
-    new_version = QtCore.pyqtSignal(str)
-    no_internet = QtCore.pyqtSignal()
+    new_version = QtCore.Signal(str)
+    no_internet = QtCore.Signal()
 
     def __init__(self, last_check_date, current_version):
         """

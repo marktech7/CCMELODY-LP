@@ -25,7 +25,7 @@ import pytest
 
 from unittest.mock import MagicMock, patch
 
-from PyQt6 import QtCore, QtTest, QtWidgets
+from PySide6 import QtCore, QtTest, QtWidgets
 
 from openlp.plugins.media.forms.streamselectorform import StreamSelectorForm
 from openlp.plugins.media.forms.streamselectordialog import CaptureVideoDirectShowWidget, CaptureDigitalTVWidget, \

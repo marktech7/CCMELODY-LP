@@ -26,7 +26,7 @@ import os
 import platform
 import re
 
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties

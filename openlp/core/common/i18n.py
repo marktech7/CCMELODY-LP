@@ -27,7 +27,7 @@ import logging
 import re
 from collections import namedtuple
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common import Singleton
 from openlp.core.common.applocation import AppLocation

@@ -23,7 +23,7 @@ Package to test the openlp.core.ui.settingsform package.
 """
 from unittest.mock import MagicMock, patch
 
-from PyQt6 import QtCore, QtWidgets, QtTest
+from PySide6 import QtCore, QtWidgets, QtTest
 
 from openlp.core.ui.settingsform import SettingsForm
 

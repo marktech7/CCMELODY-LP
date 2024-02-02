@@ -24,7 +24,7 @@ This module contains tests for the lib submodule of the Presentations plugin.
 from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, call, patch
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.lib import ServiceItemContext
 from openlp.core.lib.serviceitem import ItemCapabilities

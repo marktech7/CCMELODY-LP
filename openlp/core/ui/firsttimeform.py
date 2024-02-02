@@ -30,7 +30,7 @@ import urllib.request
 from pathlib import Path
 from tempfile import gettempdir
 
-from PyQt6 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets, QtGui
 
 from openlp.core.api.deploy import get_latest_size, download_and_install
 from openlp.core.common import trace_error_handler

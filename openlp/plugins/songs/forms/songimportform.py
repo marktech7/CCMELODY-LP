@@ -23,7 +23,7 @@ The song import functions for OpenLP.
 """
 import logging
 
-from PyQt6 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets, QtGui
 
 from openlp.core.common.handlers import handle_permission_error
 from openlp.core.common.i18n import UiStrings, translate
@@ -44,7 +44,7 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
     This is the Song Import Wizard, which allows easy importing of Songs
     into OpenLP from other formats like OpenLyrics, OpenSong and CCLI.
     """
-    completeChanged = QtCore.pyqtSignal()
+    completeChanged = QtCore.Signal()
     log.info('SongImportForm loaded')
 
     def __init__(self, parent, plugin):

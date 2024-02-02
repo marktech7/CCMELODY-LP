@@ -25,7 +25,7 @@ from datetime import datetime
 from pathlib import Path
 from time import sleep
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
@@ -179,7 +179,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
 
         return True
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     def on_load_disc_button_clicked(self, clicked):
         """
         Load the media when the load-button has been clicked
@@ -271,7 +271,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         log.debug('load_disc_button end - '
                   'vlc_media_player state: {state}'.format(state=self.vlc_media_player.get_state()))
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     def on_play_button_clicked(self, clicked):
         """
         Toggle the playback
@@ -287,7 +287,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
             self.media_state_wait(vlc.State.Playing)
             self.play_button.setIcon(self.pause_icon)
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     def on_set_start_button_clicked(self, clicked):
         """
         Copy the current player position to start_position_edit
@@ -303,7 +303,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         if end_time < new_pos_time:
             self.end_timeedit.setTime(new_pos_time)
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     def on_set_end_button_clicked(self, clicked):
         """
         Copy the current player position to end_timeedit
@@ -319,7 +319,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         if start_time > new_pos_time:
             self.start_position_edit.setTime(new_pos_time)
 
-    @QtCore.pyqtSlot(QtCore.QTime)
+    @QtCore.Slot(QtCore.QTime)
     def on_start_timeedit_timeChanged(self, new_time):
         """
         Called when start_position_edit is changed manually
@@ -331,7 +331,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         if end_time < new_time:
             self.end_timeedit.setTime(new_time)
 
-    @QtCore.pyqtSlot(QtCore.QTime)
+    @QtCore.Slot(QtCore.QTime)
     def on_end_timeedit_timeChanged(self, new_time):
         """
         Called when end_timeedit is changed manually
@@ -343,7 +343,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         if start_time > new_time:
             self.start_position_edit.setTime(new_time)
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     def on_jump_end_button_clicked(self, clicked):
         """
         Set the player position to the position stored in end_timeedit
@@ -357,7 +357,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
             end_time.msec()
         self.vlc_media_player.set_time(end_time_ms)
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     def on_jump_start_button_clicked(self, clicked):
         """
         Set the player position to the position stored in start_position_edit
@@ -371,7 +371,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
             start_time.msec()
         self.vlc_media_player.set_time(start_time_ms)
 
-    @QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_titles_combo_box_currentIndexChanged(self, index):
         """
         When a new title is chosen, it is loaded by VLC and info about audio and subtitle tracks is reloaded
@@ -463,7 +463,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
                   'vlc_media_player state: {state}'.format(state=self.vlc_media_player.get_state()))
         self.application.set_normal_cursor()
 
-    @QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_audio_tracks_combobox_currentIndexChanged(self, index):
         """
         When a new audio track is chosen update audio track bing played by VLC
@@ -478,7 +478,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         if audio_track and int(audio_track) > 0:
             self.vlc_media_player.audio_set_track(int(audio_track))
 
-    @QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_subtitle_tracks_combobox_currentIndexChanged(self, index):
         """
         When a new subtitle track is chosen update subtitle track bing played by VLC

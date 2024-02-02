@@ -21,7 +21,7 @@
 import logging
 from typing import Any
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 from sqlalchemy.sql import and_, func, or_
 
 from openlp.core.common.enum import CustomSearch
@@ -45,8 +45,8 @@ class CustomMediaItem(MediaManagerItem):
     """
     This is the custom media manager item for Custom Slides.
     """
-    custom_go_live = QtCore.pyqtSignal(list)
-    custom_add_to_service = QtCore.pyqtSignal(list)
+    custom_go_live = QtCore.Signal(list)
+    custom_add_to_service = QtCore.Signal(list)
     log.info('Custom Media Item loaded')
 
     def __init__(self, parent, plugin):
@@ -348,7 +348,7 @@ class CustomMediaItem(MediaManagerItem):
         self.search_text_edit.clear()
         self.on_search_text_button_clicked()
 
-    @QtCore.pyqtSlot(str, bool, result=list)
+    @QtCore.Slot(str, bool, result=list)
     def search(self, string: str, show_error: bool = True) -> list[list[Any]]:
         """
         Search the database for a given item.

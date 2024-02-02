@@ -31,9 +31,9 @@ import traceback
 from ipaddress import IPv4Address, IPv6Address, AddressValueError
 from shutil import which
 
-from PyQt6 import QtGui
-from PyQt6.QtCore import QCryptographicHash as QHash
-from PyQt6.QtNetwork import QAbstractSocket, QHostAddress, QNetworkInterface
+from PySide6 import QtGui
+from PySide6.QtCore import QCryptographicHash as QHash
+from PySide6.QtNetwork import QAbstractSocket, QHostAddress, QNetworkInterface
 from chardet.universaldetector import UniversalDetector
 
 log = logging.getLogger(__name__ + '.__init__')
@@ -284,7 +284,7 @@ def sha256_file_hash(filename):
 def qmd5_hash(salt=None, data=None):
     """
     Returns the hashed output of MD5Sum on salt, data
-    using PyQt6.QCryptographicHash. Function returns a
+    using PySide6.QCryptographicHash. Function returns a
     QByteArray instead of a text string.
     If you need a string instead, call with
 

@@ -23,7 +23,7 @@ This module contains tests for the settings tab for the Presentations plugin.
 """
 from unittest.mock import MagicMock
 
-from PyQt6 import QtCore, QtTest
+from PySide6 import QtCore, QtTest
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.presentations.lib.presentationtab import PresentationTab

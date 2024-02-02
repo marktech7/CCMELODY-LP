@@ -24,7 +24,7 @@ The general tab of the configuration dialog.
 import logging
 from pathlib import Path
 
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import get_images_filter
 from openlp.core.common.i18n import UiStrings, translate

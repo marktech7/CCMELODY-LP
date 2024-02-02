@@ -21,7 +21,7 @@
 """
 The :mod:`~openlp.core.widgets.widgets` module contains custom widgets used in OpenLP
 """
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
@@ -403,7 +403,7 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
         self.use_screen_check_box.setVisible(True)
         self.display_group_box.setVisible(False)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def _on_identify_timer_shot(self):
         for label in self.identify_labels:
             label.hide()

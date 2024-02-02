@@ -25,7 +25,7 @@ Provides the dialog window for selecting video source for projector.
 """
 import logging
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.platform import is_macosx
@@ -309,7 +309,7 @@ class SourceSelectTabs(QtWidgets.QDialog):
         selected = super(SourceSelectTabs, self).exec()
         return selected
 
-    @QtCore.pyqtSlot(QtWidgets.QAbstractButton)
+    @QtCore.Slot(QtWidgets.QAbstractButton)
     def button_clicked(self, button):
         """
         Checks which button was clicked
@@ -456,7 +456,7 @@ class SourceSelectSingle(QtWidgets.QDialog):
         selected = super(SourceSelectSingle, self).exec()
         return selected
 
-    @QtCore.pyqtSlot(QtWidgets.QAbstractButton)
+    @QtCore.Slot(QtWidgets.QAbstractButton)
     def button_clicked(self, button):
         """
         Checks which button was clicked
@@ -492,7 +492,7 @@ class SourceSelectSingle(QtWidgets.QDialog):
         self.projectordb.delete_all_objects(ProjectorSource, ProjectorSource.projector_id == self.projector.db_item.id)
         self.done(100)
 
-    @QtCore.pyqtSlot()
+    @QtCore.Slot()
     def accept_me(self):
         """
         Slot to accept 'OK' button

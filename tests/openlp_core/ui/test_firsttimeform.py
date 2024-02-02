@@ -25,7 +25,7 @@ import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch, DEFAULT
 
-from PyQt6 import QtCore, QtWidgets, QtTest
+from PySide6 import QtCore, QtWidgets, QtTest
 
 from openlp.core.common.registry import Registry
 from openlp.core.ui.firsttimeform import FirstTimeForm, ThemeListWidgetItem

@@ -27,7 +27,7 @@ from qrcode.image.svg import SvgPathFillImage
 
 from time import sleep
 
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.api.deploy import download_and_install, download_version_info, get_installed_version
 from openlp.core.common import get_network_interfaces

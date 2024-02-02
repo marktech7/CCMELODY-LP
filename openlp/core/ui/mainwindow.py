@@ -30,7 +30,7 @@ from pathlib import Path
 from tempfile import gettempdir
 from threading import Lock
 
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.api.http.server import HttpServer
 from openlp.core.api.websockets import WebSocketServer

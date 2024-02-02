@@ -21,7 +21,7 @@
 import logging
 
 from flask import jsonify, request, abort, Blueprint
-from PyQt6 import QtCore
+from PySide6 import QtCore
 
 from openlp.core.api.lib import login_required
 from openlp.core.common.registry import Registry

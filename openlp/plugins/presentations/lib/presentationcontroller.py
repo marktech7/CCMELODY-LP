@@ -22,7 +22,7 @@ import logging
 import shutil
 from pathlib import Path
 
-from PyQt6 import QtCore
+from PySide6 import QtCore
 
 from openlp.core.common import Singleton, md5_hash, sha256_file_hash
 from openlp.core.common.applocation import AppLocation

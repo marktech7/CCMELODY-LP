@@ -21,7 +21,7 @@
 """
 The :mod:`~openlp.core.widgets.layouts` module contains customised layout classes
 """
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 
 class AspectRatioLayout(QtWidgets.QLayout):
@@ -30,7 +30,7 @@ class AspectRatioLayout(QtWidgets.QLayout):
 
     This is based on the C++ example here: https://gist.github.com/pavel-perina/1324ff064aedede0e01311aab315f83d
     """
-    resize = QtCore.pyqtSignal(QtCore.QSize)
+    resize = QtCore.Signal(QtCore.QSize)
 
     def __init__(self, parent=None, aspect_ratio=None):
         """

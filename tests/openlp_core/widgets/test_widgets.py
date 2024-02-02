@@ -26,7 +26,7 @@ import pytest
 
 from unittest.mock import MagicMock, call, patch
 
-from PyQt6 import QtCore, QtWidgets, QtTest
+from PySide6 import QtCore, QtWidgets, QtTest
 
 from openlp.core.common.settings import ProxyMode
 from openlp.core.display.screens import Screen

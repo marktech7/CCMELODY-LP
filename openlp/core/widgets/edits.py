@@ -25,7 +25,7 @@ import logging
 import re
 from pathlib import Path
 
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import CONTROL_CHARS
 from openlp.core.common.i18n import UiStrings, translate
@@ -53,8 +53,8 @@ class SearchEdit(QtWidgets.QLineEdit):
     """
     This is a specialised QLineEdit with a "clear" button inside for searches.
     """
-    searchTypeChanged = QtCore.pyqtSignal(QtCore.QVariant)
-    cleared = QtCore.pyqtSignal()
+    searchTypeChanged = QtCore.Signal(int)
+    cleared = QtCore.Signal()
 
     def __init__(self, parent, settings_section):
         """
@@ -170,7 +170,7 @@ class SearchEdit(QtWidgets.QLineEdit):
         Internally implemented slot to react to when the text in the line edit has changed so that we can show or hide
         the clear button.
 
-        :param text: A :class:`~PyQt6.QtCore.QString` instance which represents the text in the line edit.
+        :param text: A :class:`~PySide6.QtCore.QString` instance which represents the text in the line edit.
         """
         self.clear_button.setVisible(bool(text))
 
@@ -200,7 +200,7 @@ class PathEdit(QtWidgets.QWidget):
     The :class:`~openlp.core.widgets.edits.PathEdit` class subclasses QWidget to create a custom widget for use when
     a file or directory needs to be selected.
     """
-    pathChanged = QtCore.pyqtSignal(Path)
+    pathChanged = QtCore.Signal(Path)
 
     def __init__(self, parent=None, path_type=PathEditType.Files, default_path=None, dialog_caption=None,
                  show_revert=True):
@@ -246,7 +246,7 @@ class PathEdit(QtWidgets.QWidget):
         self.line_edit.editingFinished.connect(self.on_line_edit_editing_finished)
         self.update_button_tool_tips()
 
-    @QtCore.pyqtProperty('QVariant')
+    @property
     def path(self):
         """
         A property getter method to return the selected path.
@@ -523,7 +523,7 @@ class SpellAction(QtGui.QAction):
     """
     A special QAction that returns the text in a signal.
     """
-    correct = QtCore.pyqtSignal(str)
+    correct = QtCore.Signal(str)
 
     def __init__(self, *args):
         """
@@ -539,7 +539,7 @@ class HistoryComboBox(QtWidgets.QComboBox):
     signal for when the :kbd:`Enter` or :kbd:`Return` keys are pressed, and saves anything that is typed into the edit
     box into its list.
     """
-    returnPressed = QtCore.pyqtSignal()
+    returnPressed = QtCore.Signal()
 
     def __init__(self, parent=None):
         """

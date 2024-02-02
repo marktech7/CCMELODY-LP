@@ -21,7 +21,7 @@
 """
 The file rename dialog.
 """
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties

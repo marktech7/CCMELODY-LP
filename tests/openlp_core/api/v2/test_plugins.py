@@ -22,7 +22,7 @@ from collections import namedtuple
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from PyQt6 import QtCore
+from PySide6 import QtCore
 
 from openlp.core.common.registry import Registry
 from openlp.core.common.enum import PluginStatus

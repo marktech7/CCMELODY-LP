@@ -30,7 +30,7 @@ from copy import deepcopy
 from pathlib import Path
 from shutil import copytree, copy, move
 
-from PyQt6 import QtGui
+from PySide6 import QtGui
 
 from openlp.core.common import ThemeLevel, sha256_file_hash
 from openlp.core.common.applocation import AppLocation

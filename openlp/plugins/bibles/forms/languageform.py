@@ -24,8 +24,8 @@ Module implementing LanguageForm.
 """
 import logging
 
-from PyQt6 import QtCore
-from PyQt6.QtWidgets import QDialog
+from PySide6 import QtCore
+from PySide6.QtWidgets import QDialog
 
 from openlp.core.common.i18n import LANGUAGES, translate
 from openlp.core.lib.ui import critical_error_message_box

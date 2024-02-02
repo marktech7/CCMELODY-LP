@@ -21,7 +21,7 @@
 """
 The Create/Edit theme wizard
 """
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.platform import is_macosx

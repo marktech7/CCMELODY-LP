@@ -21,7 +21,7 @@
 """
 A widget representing a song in the duplicate song removal wizard review page.
 """
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.ui.icons import UiIcons
 from openlp.plugins.songs.lib import VerseType
@@ -46,7 +46,7 @@ class SongReviewWidget(QtWidgets.QWidget):
     # connect calls.
     # That's why we cheat a little and use QWidget instead of SongReviewWidget as parameter.
     # While not being entirely correct, it does work.
-    song_remove_button_clicked = QtCore.pyqtSignal(QtWidgets.QWidget)
+    song_remove_button_clicked = QtCore.Signal(QtWidgets.QWidget)
 
     def __init__(self, parent, song):
         """

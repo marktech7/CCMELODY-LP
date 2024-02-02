@@ -23,7 +23,7 @@ Provide plugin management
 """
 import os
 
-from PyQt6 import QtWidgets
+from PySide6 import QtWidgets
 
 from openlp.core.state import State, MessageType
 from openlp.core.common import extension_loader

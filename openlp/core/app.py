@@ -35,7 +35,7 @@ from pathlib import Path
 from shutil import copytree, move
 from traceback import format_exception
 
-from PyQt6 import QtCore, QtWebEngineCore, QtWidgets  # noqa
+from PySide6 import QtCore, QtWebEngineCore, QtWidgets  # noqa
 
 from openlp.core.api.deploy import check_for_remote_update
 from openlp.core.common.applocation import AppLocation
@@ -423,7 +423,7 @@ def apply_dpi_adjustments_stage_application(hidpi_mode: HiDPIMode, application: 
     """
     if hidpi_mode == HiDPIMode.Default and is_win() and application.devicePixelRatio() > 1.0:
         # Increasing font size to match pixel ratio (Windows only)
-        # TODO: Review on PyQt6 migration
+        # TODO: Review on Qt6 migration
         font = application.font()
         font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
         application.setFont(font)
@@ -472,14 +472,14 @@ def main():
         qt_args.extend(['-platform', 'windows:darkmode=1'])
     elif is_macosx() and getattr(sys, 'frozen', False) and not os.environ.get('QTWEBENGINEPROCESS_PATH'):
         # Work around an issue where PyInstaller is not setting this environment variable
-        os.environ['QTWEBENGINEPROCESS_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'PyQt6' / 'Qt6' /
+        os.environ['QTWEBENGINEPROCESS_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'PySide6' / 'Qt6' /
                                                     'lib' / 'QtWebEngineCore.framework' / 'Versions' / '6' /
                                                     'Helpers' / 'QtWebEngineProcess.app' / 'Contents' / 'MacOS' /
                                                     'QtWebEngineProcess')
     no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
                                      and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
     if no_custom_factor_rounding:
-        # TODO Won't be needed on PyQt6
+        # TODO Won't be needed on PySide6
         os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'] = 'PassThrough'
     # Initialise the resources
     qInitResources()
@@ -505,7 +505,7 @@ def main():
     # Doing HiDPI adjustments that need to be done after QCoreApplication instantiation.
     apply_dpi_adjustments_stage_application(hidpi_mode, application)
     if no_custom_factor_rounding and hasattr(QtWidgets.QApplication, 'setHighDpiScaleFactorRoundingPolicy'):
-        # TODO: Check won't be needed on PyQt6
+        # TODO: Check won't be needed on PySide6
         application.setHighDpiScaleFactorRoundingPolicy(QtCore.Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     if is_win() and application.devicePixelRatio() > 1.0:
         # Increasing font size to match pixel ratio (Windows only)

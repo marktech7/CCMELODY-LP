@@ -21,7 +21,7 @@
 Package to test the openlp.core.ui.icons package.
 """
 from unittest.mock import patch
-from PyQt6 import QtGui
+from PySide6 import QtGui
 
 from openlp.core.ui.icons import UiIcons
 

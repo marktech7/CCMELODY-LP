@@ -21,7 +21,7 @@
 
 import logging
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from .editcustomslidedialog import Ui_CustomSlideEditDialog
 

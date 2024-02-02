@@ -27,7 +27,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from lxml import etree, objectify
-from PyQt6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialog
 
 from openlp.core.common.i18n import Language
 from openlp.core.common.registry import Registry

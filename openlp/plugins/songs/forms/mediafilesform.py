@@ -21,7 +21,7 @@
 
 import logging
 
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from .mediafilesdialog import Ui_MediaFilesDialog
 

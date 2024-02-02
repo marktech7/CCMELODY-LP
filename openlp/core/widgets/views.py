@@ -24,7 +24,7 @@ It is based on a QTableWidget but represents its contents in list form.
 """
 from pathlib import Path
 
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.mixins import RegistryProperties
@@ -78,7 +78,7 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
     :param parent:
     :param screen_ratio:
     """
-    resize_event = QtCore.pyqtSignal()
+    resize_event = QtCore.Signal()
 
     def __init__(self, parent, screen_ratio):
         """
