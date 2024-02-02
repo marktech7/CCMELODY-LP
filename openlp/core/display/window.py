@@ -78,8 +78,8 @@ class DisplayWatcher(QtCore.QObject):
         """
         self._display_window.webview.update()
 
-    @QtCore.Slot(str, 'QJsonObject')
-    def dispatchEvent(self, event_name, event_data):
+    @QtCore.Slot(str, QtCore.QJsonValue)
+    def dispatchEvent(self, event_name: str, event_data: QtCore.QJsonValue):
         """
         Called from the js in the webengine view for event dispatches
         """
@@ -176,6 +176,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         self.channel.registerObject('displayWatcher', self.display_watcher)
         self.webview.page().setWebChannel(self.channel)
         self.display_watcher.initialised.connect(self.on_initialised)
+        self.display_watcher.register_event_listener("runJavascriptCallback", self.handle_javascript_result, False)
         self.openlp_splash_screen_path = 'openlp://display/openlp-splash-screen.png'
         # Using custom display if provided
         if Registry().has('display_custom_url') and Registry().get('display_custom_url') is not None:
@@ -381,15 +382,8 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         if is_sync:
             self.__script_done = False
             self.__script_result = None
-
-            def handle_result(result):
-                """
-                Handle the result from the asynchronous call
-                """
-                self.__script_done = True
-                self.__script_result = result
-
-            self.webview.page().runJavaScript(script, handle_result)
+            self.webview.page().runJavaScript(
+                "window.displayWatcher.dispatchEvent(\"runJavascriptCallback\", " + script + ")")
             # Wait for script to finish
             if not wait_for(lambda: self.__script_done):
                 self.__script_done = True
@@ -397,6 +391,14 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         else:
             self.webview.page().runJavaScript(script)
         self.raise_()
+
+    @QtCore.Slot()
+    def handle_javascript_result(self, result):
+        """
+        Handle the result from the asynchronous call
+        """
+        self.__script_result = result
+        self.__script_done = True
 
     def go_to_slide(self, verse):
         """
