@@ -43,7 +43,7 @@ from openlp.core.common.enum import HiDPIMode
 from openlp.core.common.i18n import LanguageManager, UiStrings, translate
 from openlp.core.common.mixins import LogMixin
 from openlp.core.common.path import create_paths, resolve
-from openlp.core.common.platform import is_macosx, is_win
+from openlp.core.common.platform import is_macosx, is_wayland_compositor, is_win
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
@@ -478,9 +478,9 @@ def main():
                                                     'QtWebEngineProcess')
     no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
                                      and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
-    if no_custom_factor_rounding:
-        # TODO Won't be needed on PySide6
-        os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'] = 'PassThrough'
+    # Prevent the use of wayland, use xcb instead
+    if is_wayland_compositor():
+        qt_args.extend(['-platform', 'xcb'])
     # Initialise the resources
     qInitResources()
     # Initialise OpenLP
@@ -504,9 +504,6 @@ def main():
     application.setAttribute(QtCore.Qt.ApplicationAttribute.AA_DontCreateNativeWidgetSiblings, True)
     # Doing HiDPI adjustments that need to be done after QCoreApplication instantiation.
     apply_dpi_adjustments_stage_application(hidpi_mode, application)
-    if no_custom_factor_rounding and hasattr(QtWidgets.QApplication, 'setHighDpiScaleFactorRoundingPolicy'):
-        # TODO: Check won't be needed on PySide6
-        application.setHighDpiScaleFactorRoundingPolicy(QtCore.Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     if is_win() and application.devicePixelRatio() > 1.0:
         # Increasing font size to match pixel ratio (Windows only)
         font = application.font()
