@@ -58,7 +58,7 @@ class FakeIP4InterfaceEntry(QObject):
                                              'broadcast': '255.255.255.0',
                                              'netmask': '255.255.255.0',
                                              'prefix': 24,
-                                             'localnet': ''}}
+                                             'localnet': '127.254.0.0'}}
 
     def addressEntries(self):
         """
