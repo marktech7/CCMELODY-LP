@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -75,6 +75,7 @@ def settings(qapp, registry):
     Settings().setDefaultFormat(QtCore.QSettings.Format.IniFormat)
     # Needed on windows to make sure a Settings object is available during the tests
     sets = Settings()
+    sets.init_default_shortcuts()
     sets.setValue('themes/global theme', 'my_theme')
     registry.register('settings', sets)
     registry.register('settings_thread', sets)

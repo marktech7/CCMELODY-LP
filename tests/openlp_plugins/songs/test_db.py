@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -113,7 +113,7 @@ def test_get_author_type_from_translated_text():
     Test getting an author type from translated text
     """
     # GIVEN: A string with an author type
-    author_type_name = AuthorType.Types[AuthorType.Words]
+    author_type_name = AuthorType.get_translated_type(AuthorType.Words)
 
     # WHEN: We call the method
     author_type = AuthorType.from_translated_text(author_type_name)

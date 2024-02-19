@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -1050,7 +1050,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         Handle the blank screen button actions
 
-        :param checked: the new state of the of the widget
+        :param checked: the new state of the widget
         """
         self.set_hide_mode(None)
 

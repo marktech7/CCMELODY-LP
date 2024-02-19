@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -28,7 +28,9 @@ import logging
 import re
 import sys
 import traceback
+
 from ipaddress import IPv4Address, IPv6Address, AddressValueError
+from pathlib import Path
 from shutil import which
 
 from PyQt5 import QtGui
@@ -100,16 +102,20 @@ def trace_error_handler(logger):
     logger.error(log_string)
 
 
-def path_to_module(path):
+def path_to_module(path: Path, community: bool = None) -> str:
     """
     Convert a path to a module name (i.e openlp.core.common)
 
     :param pathlib.Path path: The path to convert to a module name.
+    :param bool False community: Are we in Community Mode?
     :return: The module name.
     :rtype: str
     """
     module_path = path.with_suffix('')
-    return 'openlp.' + '.'.join(module_path.parts)
+    if community:
+        return 'contrib.' + '.'.join(module_path.parts)
+    else:
+        return 'openlp.' + '.'.join(module_path.parts)
 
 
 def import_openlp_module(module_name):
@@ -119,7 +125,7 @@ def import_openlp_module(module_name):
     importlib.import_module(module_name)
 
 
-def extension_loader(glob_pattern, excluded_files=None):
+def extension_loader(glob_pattern: str, excluded_files: list = None, community: bool = False) -> None:
     """
     A utility function to find and load OpenLP extensions, such as plugins, presentation and media controllers and
     importers.
@@ -127,16 +133,22 @@ def extension_loader(glob_pattern, excluded_files=None):
     :param str glob_pattern: A glob pattern used to find the extension(s) to be imported. Should be relative to the
         application directory. i.e. plugins/*/*plugin.py
     :param list[str] | None excluded_files: A list of file names to exclude that the glob pattern may find.
+    :param bool | False community: are we using the community directory path
     :rtype: None
     """
     from openlp.core.common.applocation import AppLocation
-    app_dir = AppLocation.get_directory(AppLocation.AppDir)
+    if community:
+        app_dir = AppLocation.get_directory(AppLocation.DataDir)
+        sys.path.insert(0, str(app_dir))
+        app_dir = app_dir / 'contrib'
+    else:
+        app_dir = AppLocation.get_directory(AppLocation.AppDir)
     for extension_path in app_dir.glob(glob_pattern):
         extension_path = extension_path.relative_to(app_dir)
         if extension_path.name in (excluded_files or []):
             continue
         log.debug('Attempting to import %s', extension_path)
-        module_name = path_to_module(extension_path)
+        module_name = path_to_module(extension_path, community)
         try:
             import_openlp_module(module_name)
         except (ImportError, OSError):

@@ -24,11 +24,16 @@ test-debian:
   image: $IMAGE_BASE/debian
   script:
     - sh scripts/generate_resources.sh
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --cov openlp --cov-report term
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --cov openlp --cov-report term --cov-report xml:coverage.xml
     - mv .coverage linux.coverage
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     paths:
       - linux.coverage
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
 
 test-ubuntu:
   stage: test
@@ -102,11 +107,16 @@ pages:
     - python3-coverage combine linux.coverage macos.coverage
     - python3-coverage html
     - mv htmlcov public
-    - python3-coverage report
+    - python3-coverage xml
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     paths:
       - public
     expire_in: 30 days
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
   dependencies:
     - test-debian
     - test-macos-intel

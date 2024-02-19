@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -43,6 +43,6 @@ class SplashScreen(QtWidgets.QSplashScreen):
         self.setObjectName('splashScreen')
         self.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
         splash_image = QtGui.QPixmap(':/graphics/openlp-splash-screen.png')
+        splash_image.setDevicePixelRatio(self.devicePixelRatioF())
         self.setPixmap(splash_image)
-        self.setMask(splash_image.mask())
         self.resize(370, 370)

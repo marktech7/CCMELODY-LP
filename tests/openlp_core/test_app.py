@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -31,8 +31,9 @@ from PyQt5 import QtCore, QtWidgets
 # Mock QtWebEngineWidgets
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
-from openlp.core.app import parse_options, backup_if_version_changed, main as app_main
+from openlp.core.app import parse_options, backup_if_version_changed, main as app_main, setup_portable_settings
 from openlp.core.common.platform import is_win
+from openlp.core.common.settings import Settings
 
 
 @pytest.fixture
@@ -43,7 +44,7 @@ def app_main_env():
             patch('openlp.core.app.LanguageManager'), \
             patch('openlp.core.app.qInitResources'), \
             patch('openlp.core.app.parse_options'), \
-            patch('openlp.core.app.QtWidgets.QApplication'), \
+            patch('openlp.core.app.QtWidgets.QApplication') as mock_qapp, \
             patch('openlp.core.app.QtWidgets.QMessageBox.warning') as mock_warn, \
             patch('openlp.core.app.QtWidgets.QMessageBox.information'), \
             patch('openlp.core.app.OpenLP') as mock_openlp, \
@@ -57,6 +58,7 @@ def app_main_env():
         openlp_server.is_another_instance_running.return_value = False
         mock_apploc.get_data_path.return_value = Path()
         mock_apploc.get_directory.return_value = Path()
+        mock_qapp.return_value.devicePixelRatio.return_value = 1.0
         mock_warn.return_value = True
         openlp_instance = MagicMock()
         mock_openlp.return_value = openlp_instance
@@ -333,7 +335,8 @@ def test_main(mock_logging, mock_web_cache, mock_backup, mock_sys, mock_openlp, 
 @patch('openlp.core.app.get_version')
 @patch('openlp.core.app.AppLocation.get_data_path')
 @patch('openlp.core.app.move')
-def test_main_future_settings(mock_move, mock_get_path, mock_version, mock_warn, app_main_env, settings):
+def test_main_future_settings(mock_move: MagicMock, mock_get_path: MagicMock, mock_version: MagicMock,
+                              mock_warn: MagicMock, app_main_env: None, settings: Settings):
     """
     Test the backup_if_version_changed method backs up data if version from the future and user consents
     """
@@ -341,6 +344,7 @@ def test_main_future_settings(mock_move, mock_get_path, mock_version, mock_warn,
     settings.from_future = MagicMock(return_value=True)
     settings.version_mismatched = MagicMock(return_value=True)
     settings.clear = MagicMock()
+    settings.upgrade_settings = MagicMock()
     settings.setValue('core/application version', '3.0.1')
     mock_warn.return_value = QtWidgets.QMessageBox.Yes
     MOCKED_VERSION = {
@@ -359,4 +363,37 @@ def test_main_future_settings(mock_move, mock_get_path, mock_version, mock_warn,
     assert result is True
     mock_move.assert_called_once()
     settings.clear.assert_called_once_with()
+    settings.upgrade_settings.assert_called_once_with()
     mock_warn.assert_called_once()
+
+
+if is_win():
+    p_prefix = 'C:'
+else:
+    p_prefix = ''
+
+
+@pytest.mark.parametrize('portable_path, settings_path',
+                         [('settings', str(Path(p_prefix + '/openlp/settings/Data/OpenLP.ini'))),
+                          (None, str(Path(p_prefix + '/Data/OpenLP.ini'))),
+                          (p_prefix + '/openlp/settings/', str(Path(p_prefix + '/openlp/settings/Data/OpenLP.ini')))])
+@patch('openlp.core.app.Settings')
+@patch('openlp.core.app.AppLocation')
+def test_setup_portable_settings(MockAppLocation: MagicMock, MockSettings: MagicMock, portable_path: str,
+                                 settings_path: str):
+    """Test that the setup_portable_settings() function correctly creates the portable settings."""
+    print(portable_path)
+    print(settings_path)
+    # GIVEN: A portable path, a mocked settings class
+    MockAppLocation.get_directory.return_value = Path('/openlp/openlp')
+    mocked_settings = MagicMock()
+    MockSettings.return_value = mocked_settings
+    MockSettings.IniFormat = Settings.IniFormat
+
+    # WHEN: setup_portable_settings() is called
+    result_path, settings = setup_portable_settings(portable_path)
+
+    # THEN: The settings should be set up correctly
+    MockSettings.setDefaultFormat.assert_called_once_with(Settings.IniFormat)
+    MockSettings.set_filename.assert_called_once_with(Path(settings_path))
+    assert settings is mocked_settings

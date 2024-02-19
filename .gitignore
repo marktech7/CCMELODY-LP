@@ -33,6 +33,7 @@ __pycache__
 build
 cover
 coverage
+coverage.xml
 dist
 env
 htmlcov

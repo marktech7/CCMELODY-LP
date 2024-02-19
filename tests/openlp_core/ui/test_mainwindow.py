@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -97,6 +97,7 @@ def main_window_reduced(settings, state):
     # Mock classes and methods used by mainwindow.
     with patch('openlp.core.ui.mainwindow.SettingsForm'), \
             patch('openlp.core.ui.mainwindow.OpenLPDockWidget'), \
+            patch('openlp.core.ui.mainwindow.QtCore.QTimer.singleShot'), \
             patch('openlp.core.ui.mainwindow.QtWidgets.QToolBox'), \
             patch('openlp.core.ui.mainwindow.QtWidgets.QMainWindow.addDockWidget'), \
             patch('openlp.core.ui.mainwindow.ServiceManager'), \
@@ -757,8 +758,10 @@ def test_load_settings_view_mode_live(mocked_view_mode, main_window, settings):
     mocked_view_mode.assert_called_with(True, True, True, True, False, True)
 
 
+@patch('openlp.core.ui.mainwindow.QtCore.QTimer.singleShot')
 @patch('openlp.core.ui.mainwindow.QtWidgets.QMessageBox.information')
-def test_screen_changed_modal(mocked_information: MagicMock, main_window: MainWindow):
+def test_screen_changed_modal(mocked_information: MagicMock, mocked_timer_singleshot: MagicMock,
+                              main_window: MainWindow):
     """
     Test that the screen changed modal is shown whether a 'config_screen_changed' event is dispatched
     """
@@ -774,8 +777,10 @@ def test_screen_changed_modal(mocked_information: MagicMock, main_window: MainWi
     mocked_information.assert_called_once()
 
 
+@patch('openlp.core.ui.mainwindow.QtCore.QTimer.singleShot')
 @patch('openlp.core.ui.mainwindow.QtWidgets.QMessageBox.information')
 def test_screen_changed_modal_sets_timestamp_after_blocking_on_modal(mocked_information: MagicMock,
+                                                                     mocked_timer_singleshot: MagicMock,
                                                                      main_window: MainWindow):
     """
     Test that the screen changed modal latest shown timestamp is set after showing warning message, so

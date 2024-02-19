@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -2546,3 +2546,63 @@ def test_process_service_items(mocked_fns_combo: Mock, MockServiceItem: Mock, se
         call({}, service_manager.service_path, service_manager.servicefile_version),
         call({}, version=service_manager.servicefile_version)
     ]
+
+
+def test_on_theme_combo_box_selected(service_manager: ServiceManager, registry: Registry, settings: Settings):
+    """Test the on_theme_combo_box_selected() method"""
+    # GIVEN: A ServiceManager
+    # Need this to get around globals/locals
+    results = {}
+
+    def theme_changed():
+        results['theme_changed'] = True
+
+    if registry.has_function('theme_change_service'):
+        registry.remove_function('theme_change_service')
+    registry.register_function('theme_change_service', theme_changed)
+    service_manager.theme_combo_box = MagicMock(**{'currentText.return_value': 'Blue'})
+
+    # WHEN: on_theme_combo_box_selected() is called
+    service_manager.on_theme_combo_box_selected(0)
+
+    # THEN: The correct calls should have been made
+    assert service_manager.service_theme == 'Blue'
+    assert results.get('theme_changed') is True
+    assert settings.value('servicemanager/service theme') == 'Blue'
+
+
+@patch('openlp.core.ui.servicemanager.find_and_set_in_combo_box')
+def test_on_service_theme_change(mocked_find: MagicMock, service_manager: ServiceManager, registry: Registry,
+                                 settings: Settings):
+    """Test the on_service_theme_change() method"""
+    # GIVEN: A ServiceManager
+    # Need this to get around globals/locals
+    results = {}
+
+    def theme_changed():
+        results['theme_changed'] = True
+
+    if registry.has_function('theme_change_service'):
+        registry.remove_function('theme_change_service')
+    registry.register_function('theme_change_service', theme_changed)
+    settings.setValue('servicemanager/service theme', 'Red')
+
+    # WHEN: on_service_theme_change() is called
+    service_manager.on_service_theme_change()
+
+    # THEN: The correct calls should have been made
+    assert service_manager.service_theme == 'Red'
+    assert results.get('theme_changed') is True
+    mocked_find.assert_called_once_with(service_manager.theme_combo_box, 'Red')
+
+
+def test_regenerate_changed_service_items(service_manager: ServiceManager):
+    """Test the regenerate_changed_service_items() method"""
+    # GIVEN: A ServiceManager, with a patched regenerate_service_items()
+    service_manager.regenerate_service_items = MagicMock()
+
+    # WHEN: regenerate_changed_service_items() is called
+    service_manager.regenerate_changed_service_items()
+
+    # THEN: regenerate_service_items() should have been called with the changed parameter
+    service_manager.regenerate_service_items.assert_called_once_with(changed=True)

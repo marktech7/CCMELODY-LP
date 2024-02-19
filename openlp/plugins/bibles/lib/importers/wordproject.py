@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -122,11 +122,16 @@ class WordProjectBible(BibleImport):
                 log.debug('Cannot find chapters, using all p instead')
                 chapters_p = soup.p
         log.debug(chapters_p)
+        chapter_number = 0
         for item in chapters_p.contents:
             if self.stop_import_flag:
                 break
             if isinstance(item, Tag) and item.name in ['a', 'span']:
-                chapter_number = int(item.string.strip())
+                old_chapter_number = chapter_number
+                chapter_number = self.get_number(item.string.strip())
+                if chapter_number is None:
+                    # attempt to fix a broken bible input by assuming the next chapter is just an increment
+                    chapter_number = old_chapter_number + 1
                 self.set_current_chapter(db_book.name, chapter_number)
                 self.process_verses(db_book, book_id, chapter_number)
 
@@ -150,7 +155,11 @@ class WordProjectBible(BibleImport):
             if isinstance(item, Tag) and 'verse' in item.get('class', []):
                 if verse_number > 0:
                     self.process_verse(db_book, chapter_number, verse_number, verse_text.strip())
-                verse_number = int(item.string.strip())
+                old_verse_number = verse_number
+                verse_number = self.get_number(item.string.strip())
+                if verse_number is None:
+                    # attempt to fix a broken bible input by assuming the next verse is just an increment
+                    verse_number = old_verse_number + 1
                 verse_text = ''
             elif isinstance(item, NavigableString):
                 verse_text += str(item)
@@ -186,3 +195,14 @@ class WordProjectBible(BibleImport):
             result = self.process_books()
         self._cleanup()
         return result
+
+    def get_number(self, input_: str) -> None | int:
+        """
+        Given a string extracts the integer value from the beginning of the string, stopping at first non-numeric char
+        :param str: input string
+        :return: integer if found, else None
+        """
+        if result := re.findall(r'\d+', input_):
+            return int(result[0])
+        else:
+            return None

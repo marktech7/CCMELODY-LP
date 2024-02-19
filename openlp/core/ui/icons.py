@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -44,9 +44,8 @@ class UiIcons(metaclass=Singleton):
         """
         These are the font icons used in the code.
         """
-        font_path = AppLocation.get_directory(AppLocation.AppDir) / 'core' / 'ui' / 'fonts' / 'OpenLP.ttf'
-        charmap_path = AppLocation.get_directory(AppLocation.AppDir) / 'core' / 'ui' / 'fonts' / 'openlp-charmap.json'
-        qta.load_font('op', font_path, charmap_path)
+        font_path = AppLocation.get_directory(AppLocation.AppDir) / 'core' / 'ui' / 'fonts'
+        qta.load_font('op', 'OpenLP.ttf', 'openlp-charmap.json', directory=str(font_path))
         palette = QtWidgets.QApplication.palette()
         self._default_icon_colors = {
             "color": palette.color(QtGui.QPalette.ColorGroup.Active, QtGui.QPalette.ColorRole.WindowText),

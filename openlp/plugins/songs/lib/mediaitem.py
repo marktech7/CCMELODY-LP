@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -657,17 +657,21 @@ class SongMediaItem(MediaManagerItem):
             item.raw_footer.append("{text}: {authors}".format(text=translate('OpenLP.Ui', 'Written by'),
                                                               authors=create_separated_list(authors.none)))
         if authors.words_music:
-            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.Types[AuthorType.WordsAndMusic],
-                                                              authors=create_separated_list(authors.words_music)))
+            item.raw_footer.append("{text}: {authors}".format(
+                text=AuthorType.get_translated_type(AuthorType.WordsAndMusic),
+                authors=create_separated_list(authors.words_music))
+            )
         if authors.words:
-            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.Types[AuthorType.Words],
+            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.get_translated_type(AuthorType.Words),
                                                               authors=create_separated_list(authors.words)))
         if authors.music:
-            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.Types[AuthorType.Music],
+            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.get_translated_type(AuthorType.Music),
                                                               authors=create_separated_list(authors.music)))
         if authors.translation:
-            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.Types[AuthorType.Translation],
-                                                              authors=create_separated_list(authors.translation)))
+            item.raw_footer.append("{text}: {authors}".format(
+                text=AuthorType.get_translated_type(AuthorType.Translation),
+                authors=create_separated_list(authors.translation))
+            )
         if song.copyright:
             item.raw_footer.append("{symbol} {song}".format(symbol=SongStrings.CopyrightSymbol,
                                                             song=song.copyright))
@@ -708,13 +712,13 @@ class SongMediaItem(MediaManagerItem):
             'alternate_title': song.alternate_title,
             'authors_none_label': translate('OpenLP.Ui', 'Written by'),
             'authors_none': authors.none,
-            'authors_words_label': AuthorType.Types[AuthorType.Words],
+            'authors_words_label': AuthorType.get_translated_type(AuthorType.Words),
             'authors_words': authors.words,
-            'authors_music_label': AuthorType.Types[AuthorType.Music],
+            'authors_music_label': AuthorType.get_translated_type(AuthorType.Music),
             'authors_music': authors.music,
-            'authors_words_music_label': AuthorType.Types[AuthorType.WordsAndMusic],
+            'authors_words_music_label': AuthorType.get_translated_type(AuthorType.WordsAndMusic),
             'authors_words_music': authors.words_music,
-            'authors_translation_label': AuthorType.Types[AuthorType.Translation],
+            'authors_translation_label': AuthorType.get_translated_type(AuthorType.Translation),
             'authors_translation': authors.translation,
             'authors_words_all': authors.words + authors.words_music,
             'authors_music_all': authors.music + authors.words_music,

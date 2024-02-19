@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -206,13 +206,15 @@ def test_import_function_called_when_import_button_clicked(mocked_do_import: Mag
 
 
 @patch('PyQt5.QtWidgets.QDialog.exec')
+@patch('openlp.plugins.planningcenter.forms.selectplanform.warning_message_box')
 @patch('openlp.plugins.planningcenter.lib.songimport.PlanningCenterSongImport.finish')
 @patch('openlp.plugins.planningcenter.lib.customimport.CustomSlide')
 @patch('openlp.plugins.planningcenter.forms.selectplanform.parse_reference')
 @patch('openlp.plugins.planningcenter.forms.selectplanform.date')
 def test_service_imported_when_import_button_clicked(mocked_date: MagicMock, mocked_parse_reference: MagicMock,
                                                      MockCustomSlide: MagicMock, mocked_finish: MagicMock,
-                                                     mocked_exec: MagicMock, form: SelectPlanForm):
+                                                     mocked_warning_box: MagicMock, mocked_exec: MagicMock,
+                                                     form: SelectPlanForm):
     """
     Test that a service is imported when the "Import New" button is clicked
     """
@@ -222,10 +224,12 @@ def test_service_imported_when_import_button_clicked(mocked_date: MagicMock, moc
     mocked_date.today.return_value = date(2019, 9, 29)
     mocked_date.side_effect = lambda *args, **kw: date(*args, **kw)
     form.exec()
+    mocked_bible_plugin = MagicMock()
+    mocked_bible_plugin.version_combo_box.currentText.return_value = 'mocked_bible'
     Registry().register('service_manager', MagicMock())
     Registry().register('plugin_manager', MagicMock())
     Registry().register('songs', MagicMock())
-    Registry().register('bibles', MagicMock())
+    Registry().register('bibles', mocked_bible_plugin)
     Registry().register('custom', MagicMock())
     # WHEN: The Service Type combo is set to index 1 and the Select Plan combo box is set to
     # index 1 and the "Import New" button is clicked
@@ -236,16 +240,19 @@ def test_service_imported_when_import_button_clicked(mocked_date: MagicMock, moc
     mocked_finish.assert_called_once()
     assert MockCustomSlide.call_count == 4, '4 custom slide added via custom_media_item'
     assert mocked_parse_reference.call_count == 2, '2 bible verses submitted for parsing'
+    assert mocked_warning_box.call_count == 0, 'No warnings triggered'
 
 
 @patch('PyQt5.QtWidgets.QDialog.exec')
+@patch('openlp.plugins.planningcenter.forms.selectplanform.warning_message_box')
 @patch('openlp.plugins.planningcenter.lib.songimport.PlanningCenterSongImport.finish')
 @patch('openlp.plugins.planningcenter.lib.customimport.CustomSlide')
 @patch('openlp.plugins.planningcenter.forms.selectplanform.parse_reference')
 @patch('openlp.plugins.planningcenter.forms.selectplanform.date')
 def test_service_refreshed_when_refresh_button_clicked(mocked_date: MagicMock, mocked_parse_reference: MagicMock,
                                                        MockCustomSlide: MagicMock, mocked_finish: MagicMock,
-                                                       mocked_exec: MagicMock, form: SelectPlanForm):
+                                                       mocked_warning_box: MagicMock, mocked_exec: MagicMock,
+                                                       form: SelectPlanForm):
     """
     Test that a service is refreshed when the "Refresh Service" button is clicked
     """
@@ -255,10 +262,12 @@ def test_service_refreshed_when_refresh_button_clicked(mocked_date: MagicMock, m
     mocked_date.today.return_value = date(2019, 9, 29)
     mocked_date.side_effect = lambda *args, **kw: date(*args, **kw)
     form.exec()
+    mocked_bible_plugin = MagicMock()
+    mocked_bible_plugin.version_combo_box.currentText.return_value = 'mocked_bible'
     Registry().register('service_manager', MagicMock())
     Registry().register('plugin_manager', MagicMock())
     Registry().register('songs', MagicMock())
-    Registry().register('bibles', MagicMock())
+    Registry().register('bibles', mocked_bible_plugin)
     Registry().register('custom', MagicMock())
     # WHEN: The Service Type combo is set to index 1 and the Select Plan combo box is
     # set to index 1 and the "Update" button is clicked
@@ -269,16 +278,19 @@ def test_service_refreshed_when_refresh_button_clicked(mocked_date: MagicMock, m
     mocked_finish.assert_called_once()
     assert MockCustomSlide.call_count == 4, '4 custom slide added via custom_media_item'
     assert mocked_parse_reference.call_count == 2, '2 bible verses submitted for parsing'
+    assert mocked_warning_box.call_count == 0, 'No warnings triggered'
 
 
 @patch('PyQt5.QtWidgets.QDialog.exec')
+@patch('openlp.plugins.planningcenter.forms.selectplanform.warning_message_box')
 @patch('openlp.plugins.planningcenter.lib.songimport.PlanningCenterSongImport.finish')
 @patch('openlp.plugins.planningcenter.lib.customimport.CustomSlide')
 @patch('openlp.plugins.planningcenter.forms.selectplanform.parse_reference')
 @patch('openlp.plugins.planningcenter.forms.selectplanform.date')
 def test_other_bible_is_used_when_bible_gui_form_is_blank(mocked_date: MagicMock, mocked_parse_reference: MagicMock,
                                                           MockCustomSlide: MagicMock, mocked_finish: MagicMock,
-                                                          mocked_exec: MagicMock, form: SelectPlanForm):
+                                                          mocked_warning_box: MagicMock, mocked_exec: MagicMock,
+                                                          form: SelectPlanForm):
     """
     Test that an other bible is used when the GUI has an empty string for current selected bible
     """
@@ -287,10 +299,12 @@ def test_other_bible_is_used_when_bible_gui_form_is_blank(mocked_date: MagicMock
     # need to always return 9/29/2019 for date.today()
     mocked_date.today.return_value = date(2019, 9, 29)
     mocked_date.side_effect = lambda *args, **kw: date(*args, **kw)
+    mocked_bible_plugin = MagicMock()
+    mocked_bible_plugin.version_combo_box.currentText.return_value = 'mocked_bible'
     Registry().register('service_manager', MagicMock())
     Registry().register('plugin_manager', MagicMock())
     Registry().register('songs', MagicMock())
-    Registry().register('bibles', MagicMock())
+    Registry().register('bibles', mocked_bible_plugin)
     Registry().register('custom', MagicMock())
     form.exec()
     # WHEN: The Service Type combo is set to index 1 and the Select Plan combo box
@@ -299,6 +313,42 @@ def test_other_bible_is_used_when_bible_gui_form_is_blank(mocked_date: MagicMock
     QtTest.QTest.mouseClick(form.import_as_new_button, QtCore.Qt.LeftButton)
     # THEN: There should be 2 bible verse parse attempts
     assert mocked_parse_reference.call_count == 2, '2 bible verses submitted for parsing'
+    assert mocked_warning_box.call_count == 0, 'No warnings triggered'
+
+
+@patch('PyQt5.QtWidgets.QDialog.exec')
+@patch('openlp.plugins.planningcenter.forms.selectplanform.warning_message_box')
+@patch('openlp.plugins.planningcenter.lib.songimport.PlanningCenterSongImport.finish')
+@patch('openlp.plugins.planningcenter.lib.customimport.CustomSlide')
+@patch('openlp.plugins.planningcenter.forms.selectplanform.parse_reference')
+@patch('openlp.plugins.planningcenter.forms.selectplanform.date')
+def test_warning_importing_bible_with_no_bible_available(mocked_date: MagicMock, mocked_parse_reference: MagicMock,
+                                                         MockCustomSlide: MagicMock, mocked_finish: MagicMock,
+                                                         mocked_warning_box: MagicMock, mocked_exec: MagicMock,
+                                                         form: SelectPlanForm):
+    """
+    Test that a warning is shown when trying to import a bible text without having a bible installed
+    """
+    # GIVEN: An SelectPlanForm instance with airplane mode enabled, resources available,
+    # mocked out "on_new_service_clicked"
+    # need to always return 9/29/2019 for date.today()
+    mocked_date.today.return_value = date(2019, 9, 29)
+    mocked_date.side_effect = lambda *args, **kw: date(*args, **kw)
+    mocked_bible_plugin = MagicMock()
+    mocked_bible_plugin.version_combo_box.currentText.return_value = ''
+    Registry().register('service_manager', MagicMock())
+    Registry().register('plugin_manager', MagicMock())
+    Registry().register('songs', MagicMock())
+    Registry().register('bibles', mocked_bible_plugin)
+    Registry().register('custom', MagicMock())
+    form.exec()
+    # WHEN: The Service Type combo is set to index 1 and the Select Plan combo box
+    # is set to index 1 and the "Import New" button is clicked
+    form.service_type_combo_box.setCurrentIndex(1)
+    QtTest.QTest.mouseClick(form.import_as_new_button, QtCore.Qt.LeftButton)
+    # THEN: There should be 2 bible verse parse attempts
+    assert mocked_parse_reference.call_count == 0, '0 bible verses submitted for parsing'
+    assert mocked_warning_box.call_count == 2, '2 warnings should be triggered'
 
 
 @pytest.mark.skip('fails to run when executed with all other openlp tests.  awaiting pytest fixtures to enable again')

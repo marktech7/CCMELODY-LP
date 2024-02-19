@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -30,6 +30,7 @@ from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
+from openlp.core.lib.ui import warning_message_box
 from openlp.plugins.bibles.lib import parse_reference
 from openlp.plugins.planningcenter.forms.selectplandialog import Ui_SelectPlanDialog
 from openlp.plugins.planningcenter.lib.customimport import PlanningCenterCustomImport
@@ -68,10 +69,10 @@ class SelectPlanForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
         # check our credentials and connection to the PlanningCenter server
         organization = self.planning_center_api.check_credentials()
         if len(organization) == 0:
-            QtWidgets.QMessageBox.warning(self.parent(), 'Authentication Failed',
-                                          'Authentiation Failed.  '
-                                          'Check your credentials in OpenLP Settings.',
-                                          QtWidgets.QMessageBox.Ok)
+            warning_message_box(translate('PlanningCenterPlugin.PlanningCenterForm', 'Authentication Failed'),
+                                translate('PlanningCenterPlugin.PlanningCenterForm',
+                                          'Authentiation Failed. Check your credentials in OpenLP Settings.'),
+                                self.parent())
             return
         # set the Service Type Dropdown Box from PCO
         service_types_list = self.planning_center_api.get_service_type_list()
@@ -237,15 +238,21 @@ class SelectPlanForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
                         # if we have no bible in the version_combo_box, but we have
                         # one or more bibles available, use one of those
                         bible = next(iter(bibles))
-                    language_selection = bible_media.plugin.manager.get_language_selection(bible)
-                    # replace long dashes with normal dashes -- why do these get inserted in PCO?
-                    tmp_item_title = re.sub('–', '-', item_title)
-                    ref_list = parse_reference(tmp_item_title, bibles[bible], language_selection)
-                    if ref_list:
-                        bible_media.search_results = bibles[bible].get_verses(ref_list)
-                        bible_media.list_view.clear()
-                        bible_media.display_results()
-                        bible_media.add_to_service()
+                    if len(bible) > 0:
+                        language_selection = bible_media.plugin.manager.get_language_selection(bible)
+                        # replace long dashes with normal dashes -- why do these get inserted in PCO?
+                        tmp_item_title = re.sub('–', '-', item_title)
+                        ref_list = parse_reference(tmp_item_title, bibles[bible], language_selection)
+                        if ref_list:
+                            bible_media.search_results = bibles[bible].get_verses(ref_list)
+                            bible_media.list_view.clear()
+                            bible_media.display_results()
+                            bible_media.add_to_service()
+                    else:
+                        warning_message_box(translate('PlanningCenterPlugin.PlanningCenterForm', 'Import failed'),
+                                            translate('PlanningCenterPlugin.PlanningCenterForm',
+                                                      'Could not import bible text because no bible is installed.'),
+                                            self)
                 service_manager.main_window.increment_progress_bar()
             if update:
                 for old_service_item in old_service_items:

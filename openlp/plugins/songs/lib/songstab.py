@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -194,13 +194,15 @@ class SongsTab(SettingsTab):
             ['alternate_title', translate('SongsPlugin.SongsTab', 'Alternate Title'), True, False],
             ['written_by', const.format(translate('SongsPlugin.SongsTab', 'Written By')), True, False],
             ['authors_none', translate('SongsPlugin.SongsTab', 'Authors when type is not set'), False, True],
-            ['authors_words_label', const.format(AuthorType.Types[AuthorType.Words]), False, False],
+            ['authors_words_label', const.format(AuthorType.get_translated_type(AuthorType.Words)), False, False],
             ['authors_words', translate('SongsPlugin.SongsTab', 'Authors (Type "Words")'), False, True],
-            ['authors_music_label', const.format(AuthorType.Types[AuthorType.Music]), False, False],
+            ['authors_music_label', const.format(AuthorType.get_translated_type(AuthorType.Music)), False, False],
             ['authors_music', translate('SongsPlugin.SongsTab', 'Authors (Type "Music")'), False, True],
-            ['authors_words_music_label', const.format(AuthorType.Types[AuthorType.WordsAndMusic]), False, False],
+            ['authors_words_music_label', const.format(AuthorType.get_translated_type(AuthorType.WordsAndMusic)),
+             False, False],
             ['authors_words_music', translate('SongsPlugin.SongsTab', 'Authors (Type "Words and Music")'), False, True],
-            ['authors_translation_label', const.format(AuthorType.Types[AuthorType.Translation]), False, False],
+            ['authors_translation_label', const.format(AuthorType.get_translated_type(AuthorType.Translation)),
+             False, False],
             ['authors_translation', translate('SongsPlugin.SongsTab', 'Authors (Type "Translation")'), False, True],
             ['authors_words_all', translate('SongsPlugin.SongsTab', 'Authors (Type "Words" & "Words and Music")'),
              False, True],

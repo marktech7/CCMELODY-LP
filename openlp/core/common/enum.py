@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -174,3 +174,12 @@ class SongFirstSlideMode(IntEnum):
     Default = 0  # No cover
     Songbook = 1
     Footer = 2
+
+
+@unique
+class HiDPIMode(IntEnum):
+    Default = 0,
+    # Legacy HiDPI mode is the default Qt behavior, without any OpenLP-specific HiDPI modifications
+    Legacy = 1,
+    # (Windows only) Make the OpenLP run unaware of any screen scaling.
+    Windows_Unaware = 2

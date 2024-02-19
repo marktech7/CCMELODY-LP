@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -886,11 +886,12 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             if 'openlp_core' in item:
                 item = item['openlp_core']
                 self._save_lite = item.get('lite-service', False)
-                theme = item.get('service-theme', None)
-                if theme:
+                if theme := item.get('service-theme', None):
                     find_and_set_in_combo_box(self.theme_combo_box, theme, set_missing=False)
                     if theme == self.theme_combo_box.currentText():
                         self.service_theme = theme
+                        self.settings.setValue('servicemanager/service theme', theme)
+                        Registry().execute('theme_change_service')
             else:
                 if self._save_lite:
                     service_item.set_from_service(item, version=self.servicefile_version)
@@ -1480,8 +1481,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
 
         :param current_index: The combo box index for the selected item
         """
-        new_service_theme = self.theme_combo_box.currentText()
-        self.settings.setValue('servicemanager/service theme', new_service_theme)
+        self.service_theme = self.theme_combo_box.currentText()
+        self.settings.setValue('servicemanager/service theme', self.service_theme)
         Registry().execute('theme_change_service')
 
     def on_theme_level_changed(self):

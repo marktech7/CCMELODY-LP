@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -48,9 +48,12 @@ There are two acceptable formats of the verses file.  They are:
 
 All CSV files are expected to use a comma (',') as the delimiter and double quotes ('"') as the quote symbol.
 """
+from enum import Enum
 import logging
 from collections import namedtuple
 from csv import Error as CSVError, reader
+from typing import Type, Union, Optional
+from pathlib import Path
 
 from openlp.core.common import get_file_encoding
 from openlp.core.common.i18n import translate
@@ -63,7 +66,12 @@ Book = namedtuple('Book', 'id, testament_id, name, abbreviation')
 Verse = namedtuple('Verse', 'book_id_name, chapter_number, number, text')
 
 
-def _has_header(sample):
+class CSVBibleFileType(str, Enum):
+    Book = 'book'
+    Verse = 'verse'
+
+
+def _has_header(sample: str, file_type: CSVBibleFileType) -> bool:
     """Determine if the sample of a csv file has a header line"""
     if '\r\n' in sample:
         lines = sample.split('\r\n')
@@ -71,7 +79,13 @@ def _has_header(sample):
         lines = sample.split('\n')
     row_1 = lines[0].split(',')
     row_2 = lines[1].split(',')
-    if all([row_2[0].isdigit(), row_2[1].isdigit()]) and not all([row_1[0].isdigit(), row_1[1].isdigit()]):
+    if file_type == CSVBibleFileType.Book and all([row_2[0].isdigit(),
+                                                   row_2[1].isdigit()]) and not all([row_1[0].isdigit(),
+                                                                                     row_1[1].isdigit()]):
+        return True
+    elif file_type == CSVBibleFileType.Verse and all([row_2[1].isdigit(),
+                                                      row_2[2].isdigit()]) and not all([row_1[1].isdigit(),
+                                                                                        row_1[2].isdigit()]):
         return True
     return False
 
@@ -106,12 +120,17 @@ class CSVBible(BibleImport):
         return book_name
 
     @staticmethod
-    def parse_csv_file(file_path, results_tuple):
+    def parse_csv_file(
+        file_path: Path,
+        results_tuple: Type[Union[Book, Verse]],
+        file_type: CSVBibleFileType
+    ) -> list[Union[Book, Verse]]:
         """
         Parse the supplied CSV file.
 
         :param pathlib.Path file_path: The name of the file to parse.
         :param namedtuple results_tuple: The namedtuple to use to store the results.
+        :param CSVBibleFileType file_type: Specifies if its a book file or verses file.
         :return: An list of namedtuples of type results_tuple
         :rtype: list[namedtuple]
         """
@@ -124,7 +143,7 @@ class CSVBible(BibleImport):
                 # Create the reader
                 csv_reader = reader(csv_file, delimiter=',', quotechar='"')
                 # Determine if the CSV has a header and skip if necessary
-                if _has_header(sample):
+                if _has_header(sample, file_type):
                     print("has_header")
                     next(csv_reader)
                 return [results_tuple(*line) for line in csv_reader]
@@ -132,7 +151,7 @@ class CSVBible(BibleImport):
             log.exception('Parsing {file} failed.'.format(file=file_path))
             raise ValidationError(msg='Parsing "{file}" failed'.format(file=file_path))
 
-    def process_books(self, books):
+    def process_books(self, books: list[Book]) -> dict:
         """
         Process the books parsed from the books file.
 
@@ -150,7 +169,7 @@ class CSVBible(BibleImport):
             book_list.update({int(book.id): book.name})
         return book_list
 
-    def process_verses(self, verses, books):
+    def process_verses(self, verses: list[Verse], books: dict):
         """
         Process the verses parsed from the verses file.
 
@@ -173,7 +192,7 @@ class CSVBible(BibleImport):
             self.create_verse(book.id, int(verse.chapter_number), int(verse.number), verse.text)
         self.session.commit()
 
-    def do_import(self, bible_name=None):
+    def do_import(self, bible_name: Optional[str] = None):
         """
         Import a bible from the CSV files.
 
@@ -183,12 +202,12 @@ class CSVBible(BibleImport):
         self.language_id = self.get_language(bible_name)
         if not self.language_id:
             return False
-        books = self.parse_csv_file(self.books_path, Book)
+        books: list[Book] = self.parse_csv_file(self.books_path, Book, CSVBibleFileType.Book)
         self.wizard.progress_bar.setValue(0)
         self.wizard.progress_bar.setMinimum(0)
         self.wizard.progress_bar.setMaximum(len(books))
         book_list = self.process_books(books)
-        verses = self.parse_csv_file(self.verses_path, Verse)
+        verses: list[Verse] = self.parse_csv_file(self.verses_path, Verse, CSVBibleFileType.Verse)
         self.wizard.progress_bar.setValue(0)
         self.wizard.progress_bar.setMaximum(len(books) + 1)
         self.process_verses(verses, book_list)

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -57,7 +57,7 @@ def test_image_filenames_table(db_url, settings):
     Test that the ImageFilenames table is correctly upgraded to the latest version
     """
     # GIVEN: An unversioned image database
-    with patch.object(AppLocation, 'get_data_path', return_value=Path('/', 'test', 'dir')),\
+    with patch.object(AppLocation, 'get_data_path', return_value=Path('/', 'test', 'dir')), \
             patch('openlp.plugins.images.lib.upgrade.sha256_file_hash') as mocked_sha256_file_hash:
         mocked_sha256_file_hash.return_value = 'abcd'
         # WHEN: Initalising the database manager

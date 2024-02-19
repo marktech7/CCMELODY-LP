@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -73,7 +73,7 @@ def test_local_send_command_network_error(mock_log, mock_reset, mock_state, mock
         mock_log.error.assert_has_calls(log_error_calls)
         mock_log.warning.assert_has_calls(log_warning_calls)
         mock_log.debug.assert_has_calls(log_debug_calls)
-        mock_change_status.called_with(E_NETWORK, 'Error while sending data to projector')
+        mock_change_status.assert_called_with(E_NETWORK, 'Error while sending data to projector')
         assert not pjlink.send_queue, 'Send queue should be empty'
         assert not pjlink.priority_queue, 'Priority queue should be empty'
         assert mock_timer.start.called, 'Timer should have been called'
@@ -421,7 +421,7 @@ def test_send_command_add_normal_command(mock_log, mock_send_command, mock_reset
         pjlink.send_command(cmd='CLSS')
 
         # THEN:
-        mock_send.append.called_with(test_command)
+        mock_send.append.assert_called_with(test_command)
         mock_priority.append.called is False
         mock_log.debug.assert_has_calls(log_debug_calls)
         mock_log.warning.assert_has_calls(log_warning_calls)

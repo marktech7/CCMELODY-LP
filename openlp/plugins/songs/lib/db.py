@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -143,14 +143,6 @@ class AuthorType(object):
     Music = 'music'
     WordsAndMusic = 'words+music'
     Translation = 'translation'
-    Types = {
-        NoType: '',
-        Words: translate('SongsPlugin.AuthorType', 'Words', 'Author who wrote the lyrics of a song'),
-        Music: translate('SongsPlugin.AuthorType', 'Music', 'Author who wrote the music of a song'),
-        WordsAndMusic: translate('SongsPlugin.AuthorType', 'Words and Music',
-                                 'Author who wrote both lyrics and music of a song'),
-        Translation: translate('SongsPlugin.AuthorType', 'Translation', 'Author who translated the song')
-    }
     SortedTypes = [
         NoType,
         Words,
@@ -158,13 +150,45 @@ class AuthorType(object):
         WordsAndMusic,
         Translation
     ]
-    TranslatedTypes = [
-        Types[NoType],
-        Types[Words],
-        Types[Music],
-        Types[WordsAndMusic],
-        Types[Translation]
-    ]
+
+    @classmethod
+    def get_translated_type(cls, author_type: str) -> str:
+        if author_type == cls.NoType:
+            return ''
+        elif author_type == cls.Words:
+            return translate('SongsPlugin.AuthorType', 'Words',
+                             'Author who wrote the lyrics of a song')
+        elif author_type == cls.Music:
+            return translate('SongsPlugin.AuthorType', 'Music',
+                             'Author who wrote the music of a song')
+        elif author_type == cls.WordsAndMusic:
+            return translate('SongsPlugin.AuthorType', 'Words and Music',
+                             'Author who wrote both lyrics and music of a song')
+        elif author_type == cls.Translation:
+            return translate('SongsPlugin.AuthorType', 'Translation',
+                             'Author who translated the song')
+
+        raise ValueError(f'Unknown author type: {author_type}')
+
+    @classmethod
+    def get_translated_types(cls):
+        return {
+            cls.NoType: cls.get_translated_type(cls.NoType),
+            cls.Words: cls.get_translated_type(cls.Words),
+            cls.Music: cls.get_translated_type(cls.Music),
+            cls.WordsAndMusic: cls.get_translated_type(cls.WordsAndMusic),
+            cls.Translation: cls.get_translated_type(cls.Translation)
+        }
+
+    @classmethod
+    def get_translated_types_list(cls):
+        return [
+            cls.get_translated_type(cls.NoType),
+            cls.get_translated_type(cls.Words),
+            cls.get_translated_type(cls.Music),
+            cls.get_translated_type(cls.WordsAndMusic),
+            cls.get_translated_type(cls.Translation)
+        ]
 
     @staticmethod
     def from_translated_text(translated_type):
@@ -172,7 +196,7 @@ class AuthorType(object):
         Get the AuthorType from a translated string.
         :param translated_type: Translated Author type.
         """
-        for key, value in AuthorType.Types.items():
+        for key, value in AuthorType.get_translated_types().items():
             if value == translated_type:
                 return key
         return AuthorType.NoType
@@ -194,7 +218,8 @@ class Author(Base):
     def get_display_name(self, author_type: Optional[str] = None) -> str:
         """Determine the display name"""
         if author_type:
-            return "{name} ({author})".format(name=self.display_name, author=AuthorType.Types[author_type])
+            return "{name} ({author})".format(name=self.display_name,
+                                              author=AuthorType.get_translated_type(author_type))
         return self.display_name
 
     @property

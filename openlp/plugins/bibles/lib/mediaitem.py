@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -604,7 +604,8 @@ class BibleMediaItem(MediaManagerItem):
         else:
             self.style_combo_box.setEnabled(False)
             self.settings.setValue('bibles/second bible', self.second_bible.name)
-            self.initialise_advanced_bible(self.select_book_combo_box.currentData())
+            if bible := self.select_book_combo_box.currentData():
+                self.initialise_advanced_bible(bible)
 
     def on_advanced_book_combo_box(self):
         """

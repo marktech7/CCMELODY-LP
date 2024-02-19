@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -33,7 +33,7 @@ from openlp.plugins.bibles.lib.mediaitem import VALID_TEXT_SEARCH, BibleMediaIte
 
 
 @pytest.fixture()
-def media_item(mock_settings):
+def media_item(mock_settings) -> BibleMediaItem:
     Registry().register('main_window', MagicMock())
 
     with patch('openlp.plugins.bibles.lib.mediaitem.MediaManagerItem._setup'), \
@@ -136,7 +136,7 @@ def test_bible_media_item_signals():
     assert isinstance(BibleMediaItem.bibles_add_to_service, QtCore.pyqtSignal)
 
 
-def test_media_item_instance(media_item):
+def test_media_item_instance(media_item: BibleMediaItem):
     """
     When creating an instance of C test that it is also an instance of
     :class:`MediaManagerItem`
@@ -147,7 +147,7 @@ def test_media_item_instance(media_item):
     assert isinstance(media_item, MediaManagerItem)
 
 
-def test_setup_item(media_item):
+def test_setup_item(media_item: BibleMediaItem):
     """
     Test the setup_item method
     """
@@ -164,11 +164,11 @@ def test_setup_item(media_item):
         mocked_register_function.assert_called_once_with('bibles_load_list', media_item.reload_bibles)
 
 
-def test_required_icons(media_item):
+def test_required_icons(media_item: BibleMediaItem):
     """
     Test that all the required icons are set properly.
     """
-    # GIVEN: An instance of :class:`MediaManagerItem`
+    # GIVEN: An instance of :class:`BibleMediaItem`
     # WHEN: required_icons is called
     media_item.required_icons()
 
@@ -180,7 +180,32 @@ def test_required_icons(media_item):
     assert media_item.add_to_service_item is False, 'Check that the icon is called as False'
 
 
-def test_on_focus_search_tab_visible(media_item):
+def test_add_middle_header_bar(media_item: BibleMediaItem):
+    """Test that the add_middle_header_bar method adds the correct objects"""
+    # GIVEN: An instance of the class BibleMediaItem with some mocked objects
+    media_item.page_layout = MagicMock()
+
+    # WHEN: The add_middle_header_bar method is called
+    media_item.add_middle_header_bar()
+
+    # THEN: All the items should be added to the middle of the toolbar
+    assert media_item.search_tab_bar is not None
+    assert media_item.search_tab is not None
+    assert media_item.select_tab is not None
+    assert media_item.options_tab is not None
+    assert media_item.search_button_widget is not None
+    assert media_item.results_view_tab is not None
+    assert media_item.page_layout.addWidget.call_args_list == [
+        call(media_item.search_tab_bar),
+        call(media_item.search_tab),
+        call(media_item.select_tab),
+        call(media_item.options_tab),
+        call(media_item.search_button_widget),
+        call(media_item.results_view_tab)
+    ]
+
+
+def test_on_focus_search_tab_visible(media_item: BibleMediaItem):
     """
     Test the correct widget gets focus when the BibleMediaItem receives focus
     """
@@ -201,7 +226,7 @@ def test_on_focus_search_tab_visible(media_item):
     media_item.version_combo_box.setFocus.assert_not_called()
 
 
-def test_on_focus_select_tab_visible(media_item):
+def test_on_focus_select_tab_visible(media_item: BibleMediaItem):
     """
     Test the correct widget gets focus when the BibleMediaItem receives focus
     """
@@ -223,7 +248,7 @@ def test_on_focus_select_tab_visible(media_item):
     media_item.version_combo_box.setFocus.assert_not_called()
 
 
-def test_on_focus_options_tab_visible(media_item):
+def test_on_focus_options_tab_visible(media_item: BibleMediaItem):
     """
     Test the correct widget gets focus when the BibleMediaItem receives focus
     """
@@ -245,7 +270,7 @@ def test_on_focus_options_tab_visible(media_item):
     media_item.version_combo_box.setFocus.assert_called_once_with()
 
 
-def test_config_update_show_second_bible(media_item):
+def test_config_update_show_second_bible(media_item: BibleMediaItem):
     """
     Test the config update method
     """
@@ -262,7 +287,7 @@ def test_config_update_show_second_bible(media_item):
     media_item.second_combo_box.setVisible.assert_called_once_with(True)
 
 
-def test_config_update_hide_second_bible(media_item):
+def test_config_update_hide_second_bible(media_item: BibleMediaItem):
     """
     Test the config update method
     """
@@ -279,7 +304,7 @@ def test_config_update_hide_second_bible(media_item):
     media_item.second_combo_box.setVisible.assert_called_once_with(False)
 
 
-def test_config_update_set_layout_style(media_item):
+def test_config_update_set_layout_style(media_item: BibleMediaItem):
     """
     Test the config update method
     """
@@ -296,7 +321,7 @@ def test_config_update_set_layout_style(media_item):
     media_item.style_combo_box.setCurrentIndex(1)
 
 
-def test_initalise(media_item):
+def test_initalise(media_item: BibleMediaItem):
     """
     Test the initalise method
     """
@@ -314,7 +339,7 @@ def test_initalise(media_item):
         assert media_item.search_edit.set_current_search_type.called is False
 
 
-def test_initalise_reset_search_type(media_item):
+def test_initalise_reset_search_type(media_item: BibleMediaItem):
     """
     Test the initalise method
     """
@@ -333,7 +358,7 @@ def test_initalise_reset_search_type(media_item):
         media_item.search_edit.set_current_search_type.assert_called_once_with(BibleSearch.Combined)
 
 
-def test_populate_bible_combo_boxes(media_item):
+def test_populate_bible_combo_boxes(media_item: BibleMediaItem):
     """
     Test populate_bible_combo_boxes method
     """
@@ -363,7 +388,7 @@ def test_populate_bible_combo_boxes(media_item):
             [call(media_item.version_combo_box, bible_2), call(media_item.second_combo_box, bible_3)])
 
 
-def test_reload_bibles(media_item):
+def test_reload_bibles(media_item: BibleMediaItem):
     """
     Test reload_bibles
     """
@@ -377,7 +402,7 @@ def test_reload_bibles(media_item):
         mocked_populate_bible_combo_boxes.assert_called_once_with()
 
 
-def test_get_common_books_no_second_book(media_item):
+def test_get_common_books_no_second_book(media_item: BibleMediaItem):
     """
     Test get_common_books when called with out a second bible
     """
@@ -389,7 +414,7 @@ def test_get_common_books_no_second_book(media_item):
     assert result == book_list_1
 
 
-def test_get_common_books_second_book(media_item):
+def test_get_common_books_second_book(media_item: BibleMediaItem):
     """
     Test get_common_books when called with a second bible
     """
@@ -401,7 +426,7 @@ def test_get_common_books_second_book(media_item):
     assert result == [mocked_book_2, mocked_book_3]
 
 
-def test_initialise_advanced_bible_no_bible(media_item):
+def test_initialise_advanced_bible_no_bible(media_item: BibleMediaItem):
     """
     Test initialise_advanced_bible when there is no main bible
     """
@@ -418,7 +443,7 @@ def test_initialise_advanced_bible_no_bible(media_item):
         mocked_get_common_books.assert_not_called()
 
 
-def test_initialise_advanced_bible_add_books_with_last_id_found(media_item):
+def test_initialise_advanced_bible_add_books_with_last_id_found(media_item: BibleMediaItem):
     """
     Test initialise_advanced_bible when the last_id argument is supplied and it is found in the list
     """
@@ -438,7 +463,7 @@ def test_initialise_advanced_bible_add_books_with_last_id_found(media_item):
         media_item.select_book_combo_box.setCurrentIndex.assert_called_once_with(2)
 
 
-def test_initialise_advanced_bible_add_books_with_last_id_not_found(media_item):
+def test_initialise_advanced_bible_add_books_with_last_id_not_found(media_item: BibleMediaItem):
     """
     Test initialise_advanced_bible when the last_id argument is supplied and it is not found in the list
     """
@@ -458,7 +483,7 @@ def test_initialise_advanced_bible_add_books_with_last_id_not_found(media_item):
         media_item.select_book_combo_box.setCurrentIndex.assert_called_once_with(0)
 
 
-def test_update_auto_completer_search_no_bible(media_item):
+def test_update_auto_completer_search_no_bible(media_item: BibleMediaItem):
     """
     Test update_auto_completer when there is no main bible selected and the search_edit type is
     'BibleSearch.Reference'
@@ -480,7 +505,7 @@ def test_update_auto_completer_search_no_bible(media_item):
         mocked_set_case_insensitive_completer.assert_called_once_with([], mocked_search_edit)
 
 
-def test_update_auto_completer_search_reference_type(media_item):
+def test_update_auto_completer_search_reference_type(media_item: BibleMediaItem):
     """
     Test update_auto_completer when a main bible is selected and the search_edit type is 'BibleSearch.Reference'
     """
@@ -501,7 +526,7 @@ def test_update_auto_completer_search_reference_type(media_item):
             ['Book 1 ', 'Book 2 ', 'Book 3 '], mocked_search_edit)
 
 
-def test_update_auto_completer_search_combined_type(media_item):
+def test_update_auto_completer_search_combined_type(media_item: BibleMediaItem):
     """
     Test update_auto_completer when a main bible is selected and the search_edit type is 'BibleSearch.Combined'
     """
@@ -522,7 +547,7 @@ def test_update_auto_completer_search_combined_type(media_item):
             ['Book 1 ', 'Book 2 ', 'Book 3 '], mocked_search_edit)
 
 
-def test_on_import_click_no_import_wizard_attr(media_item):
+def test_on_import_click_no_import_wizard_attr(media_item: BibleMediaItem):
     """
     Test on_import_click when media_item does not have the `import_wizard` attribute. And the wizard was canceled.
     """
@@ -540,7 +565,7 @@ def test_on_import_click_no_import_wizard_attr(media_item):
         assert mocked_reload_bibles.called is False
 
 
-def test_on_import_click_wizard_not_canceled(media_item):
+def test_on_import_click_wizard_not_canceled(media_item: BibleMediaItem):
     """
     Test on_import_click when the media item has the import_wizard attr set and wizard completes sucessfully.
     """
@@ -558,7 +583,7 @@ def test_on_import_click_wizard_not_canceled(media_item):
         assert mocked_reload_bibles.called is True
 
 
-def test_on_edit_click_no_bible(media_item):
+def test_on_edit_click_no_bible(media_item: BibleMediaItem):
     """
     Test on_edit_click when there is no main bible selected
     """
@@ -573,7 +598,7 @@ def test_on_edit_click_no_bible(media_item):
         assert mocked_edit_bible_form.called is False
 
 
-def test_on_edit_click_user_cancel_edit_form(media_item):
+def test_on_edit_click_user_cancel_edit_form(media_item: BibleMediaItem):
     """
     Test on_edit_click when the user cancels the EditBibleForm
     """
@@ -593,7 +618,7 @@ def test_on_edit_click_user_cancel_edit_form(media_item):
         assert mocked_reload_bibles.called is False
 
 
-def test_on_edit_click_user_accepts_edit_form(media_item):
+def test_on_edit_click_user_accepts_edit_form(media_item: BibleMediaItem):
     """
     Test on_edit_click when the user accepts the EditBibleForm
     """
@@ -614,7 +639,7 @@ def test_on_edit_click_user_accepts_edit_form(media_item):
         assert mocked_reload_bibles.called is True
 
 
-def test_on_delete_click_no_bible(media_item):
+def test_on_delete_click_no_bible(media_item: BibleMediaItem):
     """
     Test on_delete_click when there is no main bible selected
     """
@@ -629,7 +654,7 @@ def test_on_delete_click_no_bible(media_item):
         assert mocked_qmessage_box.question.called is False
 
 
-def test_on_delete_click_response_no(media_item):
+def test_on_delete_click_response_no(media_item: BibleMediaItem):
     """
     Test on_delete_click when the user selects no from the message box
     """
@@ -646,7 +671,7 @@ def test_on_delete_click_response_no(media_item):
         assert media_item.plugin.manager.delete_bible.called is False
 
 
-def test_on_delete_click_response_yes(media_item):
+def test_on_delete_click_response_yes(media_item: BibleMediaItem):
     """
     Test on_delete_click when the user selects yes from the message box
     """
@@ -664,47 +689,49 @@ def test_on_delete_click_response_yes(media_item):
         assert media_item.plugin.manager.delete_bible.called is True
 
 
-def test_on_search_tab_bar_current_changed_search_tab_selected(media_item):
+@pytest.mark.parametrize('index, btn_enabled, search_visible, select_visible, options_visible',
+                         [(SearchTabs.Search, True, True, False, False),
+                          (SearchTabs.Select, True, False, True, False),
+                          (SearchTabs.Options, False, False, False, True)])
+def test_on_search_tab_bar_current_changed(media_item: BibleMediaItem, index: int, btn_enabled: bool,
+                                           search_visible: bool, select_visible: bool, options_visible: bool):
     """
-    Test on_search_tab_bar_current_changed when the search_tab is selected
-    """
-    # GIVEN: An instance of :class:`MediaManagerItem` and mocked out search_tab and select_tab
-    media_item.search_tab = MagicMock()
-    media_item.select_tab = MagicMock()
-    media_item.options_tab = MagicMock()
-    media_item.search_button = MagicMock()
-    with patch.object(media_item, 'on_focus'):
-
-        # WHEN: The search_tab has been selected
-        media_item.on_search_tab_bar_current_changed(SearchTabs.Search)
-
-        # THEN: The search_button should be enabled, search_tab should be setVisible and select_tab should be hidden
-        media_item.search_button.setEnabled.assert_called_once_with(True)
-        media_item.search_tab.setVisible.assert_called_once_with(True)
-        media_item.select_tab.setVisible.assert_called_once_with(False)
-
-
-def test_on_search_tab_bar_current_changed_select_tab_selected(media_item):
-    """
-    Test on_search_tab_bar_current_changed when the select_tab is selected
+    Test on_search_tab_bar_current_changed when each tab is selected
     """
     # GIVEN: An instance of :class:`MediaManagerItem` and mocked out search_tab and select_tab
     media_item.search_tab = MagicMock()
     media_item.select_tab = MagicMock()
     media_item.options_tab = MagicMock()
     media_item.search_button = MagicMock()
-    with patch.object(media_item, 'on_focus'):
+    media_item.on_focus = MagicMock()
 
-        # WHEN: The select_tab has been selected
-        media_item.on_search_tab_bar_current_changed(SearchTabs.Select)
+    # WHEN: The search_tab has been selected
+    media_item.on_search_tab_bar_current_changed(index)
 
-        # THEN: The search_button should be enabled, select_tab should be setVisible and search_tab should be hidden
-        media_item.search_button.setEnabled.assert_called_once_with(True)
-        media_item.search_tab.setVisible.assert_called_once_with(False)
-        media_item.select_tab.setVisible.assert_called_once_with(True)
+    # THEN: The search_button should be enabled, search_tab should be setVisible and select_tab should be hidden
+    media_item.search_button.setEnabled.assert_called_once_with(btn_enabled)
+    media_item.search_tab.setVisible.assert_called_once_with(search_visible)
+    media_item.select_tab.setVisible.assert_called_once_with(select_visible)
+    media_item.options_tab.setVisible.assert_called_once_with(options_visible)
+    media_item.on_focus.assert_called_once_with()
 
 
-def test_on_book_order_button_toggled_checked(media_item):
+@pytest.mark.parametrize('index, widget_name', [(ResultsTab.Saved, 'saved_results'),
+                                                (ResultsTab.Search, 'current_results')])
+def test_on_results_view_tab_current_changed_saved(media_item: BibleMediaItem, index: int, widget_name: str):
+    """Test that the 'on_results_view_tab_current_changed' method updates the correct list widget"""
+    # GIVEN: A BibleMediaItem with a list widget
+    list_widget = getattr(media_item, widget_name)
+    media_item.add_built_results_to_list_widget = MagicMock()
+
+    # WHEN: The list is updated
+    media_item.on_results_view_tab_current_changed(index)
+
+    # THEN: The correct list should have been populated
+    media_item.add_built_results_to_list_widget.assert_called_once_with(list_widget)
+
+
+def test_on_book_order_button_toggled_checked(media_item: BibleMediaItem):
     """
     Test that 'on_book_order_button_toggled' changes the order of the book list
     """
@@ -717,7 +744,7 @@ def test_on_book_order_button_toggled_checked(media_item):
     media_item.select_book_combo_box.model().sort.assert_called_once_with(0)
 
 
-def test_on_book_order_button_toggled_un_checked(media_item):
+def test_on_book_order_button_toggled_un_checked(media_item: BibleMediaItem):
     """
     Test that 'on_book_order_button_toggled' changes the order of the book list
     """
@@ -730,7 +757,7 @@ def test_on_book_order_button_toggled_un_checked(media_item):
     media_item.select_book_combo_box.model().sort.assert_called_once_with(-1)
 
 
-def test_on_clear_button_clicked(media_item):
+def test_on_clear_button_clicked(media_item: BibleMediaItem):
     """
     Test on_clear_button_clicked when the search tab is selected
     """
@@ -749,7 +776,7 @@ def test_on_clear_button_clicked(media_item):
         media_item.list_view.row.assert_has_calls([call('Some'), call('Results')])
 
 
-def test_on_save_results_button_clicked(media_item):
+def test_on_save_results_button_clicked(media_item: BibleMediaItem):
     """
     Test that "on_save_results_button_clicked" saves the results.
     """
@@ -771,7 +798,7 @@ def test_on_save_results_button_clicked(media_item):
         mocked_on_results_view_tab_total_update.assert_called_once_with(ResultsTab.Saved)
 
 
-def test_on_style_combo_box_changed(media_item):
+def test_on_style_combo_box_changed(media_item: BibleMediaItem):
     """
     Test on_style_combo_box_index_changed
     """
@@ -785,7 +812,7 @@ def test_on_style_combo_box_changed(media_item):
     assert media_item.settings_tab.layout_style == 2
 
 
-def test_on_version_combo_box_index_changed_no_bible(media_item):
+def test_on_version_combo_box_index_changed_no_bible(media_item: BibleMediaItem):
     """
     Test on_version_combo_box_index_changed when there is no main bible.
     """
@@ -801,7 +828,7 @@ def test_on_version_combo_box_index_changed_no_bible(media_item):
         assert media_item.initialise_advanced_bible.called is True
 
 
-def test_on_version_combo_box_index_changed_bible_selected(media_item):
+def test_on_version_combo_box_index_changed_bible_selected(media_item: BibleMediaItem):
     """
     Test on_version_combo_box_index_changed when a bible has been selected.
     """
@@ -819,7 +846,7 @@ def test_on_version_combo_box_index_changed_bible_selected(media_item):
         assert media_item.initialise_advanced_bible.called is True
 
 
-def test_on_second_combo_box_index_changed_mode_not_changed(media_item):
+def test_on_second_combo_box_index_changed_mode_not_changed(media_item: BibleMediaItem):
     """
     Test on_second_combo_box_index_changed when the user does not change from dual mode
     results and the user chooses no to the message box
@@ -844,7 +871,7 @@ def test_on_second_combo_box_index_changed_mode_not_changed(media_item):
         media_item.settings.setValue.assert_called_once_with('bibles/second bible', 'Bible 2')
 
 
-def test_on_second_combo_box_index_changed_single_to_dual_user_abort(media_item):
+def test_on_second_combo_box_index_changed_single_to_dual_user_abort(media_item: BibleMediaItem):
     """
     Test on_second_combo_box_index_changed when the user changes from single to dual bible mode, there are search
     results and the user chooses no to the message box
@@ -872,7 +899,7 @@ def test_on_second_combo_box_index_changed_single_to_dual_user_abort(media_item)
         media_item.settings.setValue.assert_not_called()
 
 
-def test_on_second_combo_box_index_changed_single_to_dual(media_item):
+def test_on_second_combo_box_index_changed_single_to_dual(media_item: BibleMediaItem):
     """
     Test on_second_combo_box_index_changed when the user changes from single to dual bible mode, there are search
     results and the user chooses yes to the message box
@@ -902,7 +929,7 @@ def test_on_second_combo_box_index_changed_single_to_dual(media_item):
         media_item.settings.setValue.assert_called_once_with('bibles/second bible', 'Bible 1')
 
 
-def test_on_second_combo_box_index_changed_dual_to_single(media_item):
+def test_on_second_combo_box_index_changed_dual_to_single(media_item: BibleMediaItem):
     """
     Test on_second_combo_box_index_changed when the user changes from dual to single bible mode, there are search
     results and the user chooses yes to the message box
@@ -931,7 +958,7 @@ def test_on_second_combo_box_index_changed_dual_to_single(media_item):
         media_item.settings.setValue.assert_called_once_with('bibles/second bible', None)
 
 
-def test_on_advanced_book_combo_box(media_item):
+def test_on_advanced_book_combo_box(media_item: BibleMediaItem):
     """
     Test on_advanced_book_combo_box when the book returns 0 for the verse count.
     """
@@ -952,7 +979,7 @@ def test_on_advanced_book_combo_box(media_item):
         assert mocked_critical_error_message_box.called is True
 
 
-def test_on_advanced_book_combo_box_no_selection(media_item):
+def test_on_advanced_book_combo_box_no_selection(media_item: BibleMediaItem):
     """
     Test on_advanced_book_combo_box when there is nothing selected
     """
@@ -966,7 +993,7 @@ def test_on_advanced_book_combo_box_no_selection(media_item):
     assert media_item.plugin.manager.get_book_by_id.call_count == 0
 
 
-def test_on_advanced_book_combo_box_set_up_comboboxes(media_item):
+def test_on_advanced_book_combo_box_set_up_comboboxes(media_item: BibleMediaItem):
     """
     Test on_advanced_book_combo_box when the book returns 6 for the verse count.
     """
@@ -990,7 +1017,7 @@ def test_on_advanced_book_combo_box_set_up_comboboxes(media_item):
         assert mocked_adjust_combo_box.call_count == 4
 
 
-def test_on_from_chapter_activated_invalid_to_chapter(media_item):
+def test_on_from_chapter_activated_invalid_to_chapter(media_item: BibleMediaItem):
     """
     Test on_from_chapter_activated when the to_chapter is less than the from_chapter
     """
@@ -1014,7 +1041,7 @@ def test_on_from_chapter_activated_invalid_to_chapter(media_item):
             call(10, 25, media_item.to_chapter, False)]
 
 
-def test_on_from_chapter_activated_same_chapter(media_item):
+def test_on_from_chapter_activated_same_chapter(media_item: BibleMediaItem):
     """
     Test on_from_chapter_activated when the to_chapter is the same as from_chapter
     """
@@ -1038,7 +1065,7 @@ def test_on_from_chapter_activated_same_chapter(media_item):
             call(5, 25, media_item.to_chapter, False)]
 
 
-def test_on_from_chapter_activated_lower_chapter(media_item):
+def test_on_from_chapter_activated_lower_chapter(media_item: BibleMediaItem):
     """
     Test on_from_chapter_activated when the to_chapter is greater than the from_chapter
     """
@@ -1060,7 +1087,7 @@ def test_on_from_chapter_activated_lower_chapter(media_item):
             call(1, 20, media_item.from_verse), call(5, 25, media_item.to_chapter, True)]
 
 
-def test_on_from_verse(media_item):
+def test_on_from_verse(media_item: BibleMediaItem):
     """
     Test on_from_verse when the to_chapter is not equal to the from_chapter
     """
@@ -1076,7 +1103,7 @@ def test_on_from_verse(media_item):
     assert media_item.select_book_combo_box.currentData.called is False
 
 
-def test_on_from_verse_equal(media_item):
+def test_on_from_verse_equal(media_item: BibleMediaItem):
     """
     Test on_from_verse when the to_chapter is equal to the from_chapter
     """
@@ -1097,7 +1124,7 @@ def test_on_from_verse_equal(media_item):
         mocked_adjust_combo_box.assert_called_once_with(7, 20, media_item.to_verse, True)
 
 
-def test_on_to_chapter_same_chapter_from_greater_than(media_item):
+def test_on_to_chapter_same_chapter_from_greater_than(media_item: BibleMediaItem):
     """
     Test on_to_chapter when the to_chapter is equal to the from_chapter and the from_verse is greater than the
     to_verse
@@ -1119,7 +1146,7 @@ def test_on_to_chapter_same_chapter_from_greater_than(media_item):
         mocked_adjust_combo_box.assert_called_once_with(10, 20, media_item.to_verse)
 
 
-def test_on_from_verse_chapters_not_equal(media_item):
+def test_on_from_verse_chapters_not_equal(media_item: BibleMediaItem):
     """
     Test on_from_verse when the to_chapter is not equal to the from_chapter
     """
@@ -1140,7 +1167,7 @@ def test_on_from_verse_chapters_not_equal(media_item):
         mocked_adjust_combo_box.assert_called_once_with(1, 20, media_item.to_verse)
 
 
-def test_on_from_verse_from_verse_less_than(media_item):
+def test_on_from_verse_from_verse_less_than(media_item: BibleMediaItem):
     """
     Test on_from_verse when the to_chapter is equal to the from_chapter and from_verse is less than to_verse
     """
@@ -1161,7 +1188,7 @@ def test_on_from_verse_from_verse_less_than(media_item):
         mocked_adjust_combo_box.assert_called_once_with(1, 20, media_item.to_verse)
 
 
-def test_adjust_combo_box_no_restore(media_item):
+def test_adjust_combo_box_no_restore(media_item: BibleMediaItem):
     """
     Test adjust_combo_box  when being used with out the restore function
     """
@@ -1177,7 +1204,7 @@ def test_adjust_combo_box_no_restore(media_item):
         [call('10', 10), call('11', 11), call('12', 12), call('13', 13)]
 
 
-def test_adjust_combo_box_restore_found(media_item):
+def test_adjust_combo_box_restore_found(media_item: BibleMediaItem):
     """
     Test adjust_combo_box  when being used with out the restore function
     """
@@ -1195,7 +1222,7 @@ def test_adjust_combo_box_restore_found(media_item):
     mocked_combo_box.setCurrentIndex.assert_called_once_with(2)
 
 
-def test_adjust_combo_box_restore_not_found(media_item):
+def test_adjust_combo_box_restore_not_found(media_item: BibleMediaItem):
     """
     Test adjust_combo_box  when being used with out the restore function when the selected item is not available
     after the combobox has been updated
@@ -1213,7 +1240,7 @@ def test_adjust_combo_box_restore_not_found(media_item):
     mocked_combo_box.setCurrentIndex.assert_called_once_with(0)
 
 
-def test_on_search_button_no_bible(media_item):
+def test_on_search_button_no_bible(media_item: BibleMediaItem):
     """
     Test on_search_button_clicked when there is no bible selected
     """
@@ -1226,7 +1253,7 @@ def test_on_search_button_no_bible(media_item):
     assert Registry().get('main_window').information_message.call_count == 1
 
 
-def test_on_search_button_search_tab(media_item):
+def test_on_search_button_search_tab(media_item: BibleMediaItem):
     """
     Test on_search_button_clicked when the `Search` tab is selected
     """
@@ -1243,7 +1270,7 @@ def test_on_search_button_search_tab(media_item):
         mocked_text_search.assert_called_once_with()
 
 
-def test_on_search_button_select_tab(media_item):
+def test_on_search_button_select_tab(media_item: BibleMediaItem):
     """
     Test on_search_button_clicked when the `Select` tab is selected
     """
@@ -1261,7 +1288,7 @@ def test_on_search_button_select_tab(media_item):
         mocked_select_search.assert_called_once_with()
 
 
-def test_select_search_single_bible(media_item):
+def test_select_search_single_bible(media_item: BibleMediaItem):
     """
     Test select_search when only one bible is selected
     """
@@ -1283,7 +1310,7 @@ def test_select_search_single_bible(media_item):
         mocked_display_results.assert_called_once_with()
 
 
-def test_select_search_dual_bibles(media_item):
+def test_select_search_dual_bibles(media_item: BibleMediaItem):
     """
     Test select_search when two bibles are selected
     """
@@ -1305,7 +1332,7 @@ def test_select_search_dual_bibles(media_item):
         mocked_display_results.assert_called_once_with()
 
 
-def test_text_reference_search_single_bible(media_item):
+def test_text_reference_search_single_bible(media_item: BibleMediaItem):
     """
     Test text_reference_search when only one bible is selected
     """
@@ -1333,7 +1360,7 @@ def test_text_reference_search_single_bible(media_item):
             self.display_results()
 
 
-def test_text_reference_search_dual_bible_no_results(media_item):
+def test_text_reference_search_dual_bible_no_results(media_item: BibleMediaItem):
     """
     Test text_reference_search when two bible are selected, but the search of the first bible does not return any
     results
@@ -1351,7 +1378,7 @@ def test_text_reference_search_dual_bible_no_results(media_item):
         mocked_display_results.assert_called_once_with()
 
 
-def test_text_reference_search_dual_bible(media_item):
+def test_text_reference_search_dual_bible(media_item: BibleMediaItem):
     """
     Test text_reference_search when two bible are selected
     """
@@ -1373,7 +1400,7 @@ def test_text_reference_search_dual_bible(media_item):
         mocked_display_results.assert_called_once_with()
 
 
-def test_on_text_search_single_bible(media_item):
+def test_on_text_search_single_bible(media_item: BibleMediaItem):
     """
     Test on_text_search when only one bible is selected
     """
@@ -1391,7 +1418,7 @@ def test_on_text_search_single_bible(media_item):
         mocked_display_results.assert_called_once_with()
 
 
-def test_on_text_search_no_results(media_item):
+def test_on_text_search_no_results(media_item: BibleMediaItem):
     """
     Test on_text_search when the search of the first bible does not return any results
     """
@@ -1501,7 +1528,7 @@ def test_on_search_edit_text_changed_search_while_typing_enabled(media_item, moc
     media_item.search_timer.start.assert_called_once_with()
 
 
-def test_on_search_timer_timeout(media_item):
+def test_on_search_timer_timeout(media_item: BibleMediaItem):
     """
     Test on_search_timer_timeout
     """
@@ -1516,7 +1543,7 @@ def test_on_search_timer_timeout(media_item):
         mocked_text_search.assert_called_once_with()
 
 
-def test_display_results_no_results(media_item):
+def test_display_results_no_results(media_item: BibleMediaItem):
     """
     Test the display_results method when there are no items to display
     """
@@ -1535,7 +1562,7 @@ def test_display_results_no_results(media_item):
         assert media_item.list_view.addItem.called is False
 
 
-def test_display_results_results(media_item):
+def test_display_results_results(media_item: BibleMediaItem):
     """
     Test the display_results method when there are items to display
     """
@@ -1555,7 +1582,7 @@ def test_display_results_results(media_item):
             [{'item_title': 'Title 1'}, {'item_title': 'Title 2'}])
 
 
-def test_search_options(media_item):
+def test_search_options(media_item: BibleMediaItem):
     """
     Test that the bible search options are returned
     """
@@ -1570,7 +1597,7 @@ def test_search_options(media_item):
     assert result == [{'name': 'primary bible', 'list': ['a', 'b', 'c'], 'selected': 'b'}]
 
 
-def test_set_search_option(media_item):
+def test_set_search_option(media_item: BibleMediaItem):
     """
     Test that the bible set search option function works
     """
@@ -1589,7 +1616,7 @@ def test_set_search_option(media_item):
     populate_bible_combo_boxes.assert_called_once()
 
 
-def test_set_search_option_invalid_option(media_item):
+def test_set_search_option_invalid_option(media_item: BibleMediaItem):
     """
     Test that the bible set search option function rejects when using non existing option
     """
@@ -1608,7 +1635,7 @@ def test_set_search_option_invalid_option(media_item):
     populate_bible_combo_boxes.assert_not_called()
 
 
-def test_set_search_option_invalid_value(media_item):
+def test_set_search_option_invalid_value(media_item: BibleMediaItem):
     """
     Test that the bible set search option function rejects when using non existing value
     """
@@ -1627,7 +1654,7 @@ def test_set_search_option_invalid_value(media_item):
     populate_bible_combo_boxes.assert_not_called()
 
 
-def test_generate_slide_data_data_string(media_item):
+def test_generate_slide_data_data_string(media_item: BibleMediaItem):
     """
     Test that the generated_slide_data provides data values for the api
     """
@@ -1671,7 +1698,7 @@ def test_generate_slide_data_data_string(media_item):
     }
 
 
-def test_generate_slide_data_data_string_one_bible(media_item):
+def test_generate_slide_data_data_string_one_bible(media_item: BibleMediaItem):
     """
     Test that the generated_slide_data provides data values for the api
     """

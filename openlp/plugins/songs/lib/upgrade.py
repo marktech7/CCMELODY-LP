@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -173,23 +173,26 @@ def upgrade_7(session, metadata):
     Version 7 upgrade - Move file path from old db to JSON encoded path to new db. Upgrade added in 2.5 dev
     """
     log.debug('Starting upgrade_7 for file_path to JSON')
+    metadata.clear()
     media_files = Table('media_files', metadata, autoload_with=metadata.bind)
     if 'file_path' not in [col.name for col in media_files.c.values()]:
         op = get_upgrade_op(session)
+        conn = op.get_bind()
+        results = conn.execute(select(media_files))
+        data_path = AppLocation.get_data_path()
+        # Add the column after doing the select, otherwise the records from the select are incomplete
         op.add_column('media_files', Column('file_path', PathType()))
         media_files.append_column(Column('file_path', PathType()))
-        conn = op.get_bind()
-        results = conn.scalars(select(media_files))
-        data_path = AppLocation.get_data_path()
+        # Now update the table and set the new column
         for row in results.all():
             file_path_json = json.dumps(Path(row.file_name), cls=OpenLPJSONEncoder, base_path=data_path)
             conn.execute(update(media_files).where(media_files.c.id == row.id).values(file_path=file_path_json))
         # Drop old columns
-        # with op.batch_alter_table('media_files') as batch_op:
-            # if metadata.bind.url.get_dialect().name != 'sqlite':
-            #     for fk in media_files.foreign_keys:
-            #         batch_op.drop_constraint(fk.name, 'foreignkey')
-            # batch_op.drop_column('filename')
+        with op.batch_alter_table('media_files') as batch_op:
+            if metadata.bind.url.get_dialect().name != 'sqlite':
+                for fk in media_files.foreign_keys:
+                    batch_op.drop_constraint(fk.name, 'foreignkey')
+            batch_op.drop_column('file_name')
 
 
 def upgrade_8(session, metadata):
@@ -197,21 +200,24 @@ def upgrade_8(session, metadata):
     Version 8 upgrade - add sha256 hash to media
     """
     log.debug('Starting upgrade_8 for adding sha256 hashes')
+    metadata.clear()
     media_files = Table('media_files', metadata, autoload_with=metadata.bind)
     if 'file_hash' not in [col.name for col in media_files.c.values()]:
         op = get_upgrade_op(session)
+        conn = op.get_bind()
+        results = conn.execute(select(media_files))
+        data_path = AppLocation.get_data_path()
+        # Add the column after doing the select, otherwise the records from the select are incomplete
         op.add_column('media_files', Column('file_hash', Unicode(128)))
         media_files.append_column(Column('file_hash', Unicode(128)))
-        conn = op.get_bind()
-        results = conn.scalars(select(media_files))
-        data_path = AppLocation.get_data_path()
+        # Now update the table and set the new column
         for row in results.all():
             file_path = json.loads(row.file_path, cls=OpenLPJSONDecoder)
             full_file_path = data_path / file_path
             if full_file_path.exists():
-                hash = sha256_file_hash(full_file_path)
+                hash_ = sha256_file_hash(full_file_path)
             else:
                 log.warning('{audio} does not exists, so no sha256 hash added.'.format(audio=str(file_path)))
                 # set a fake "hash" to allow for the upgrade to go through. The image will be marked as invalid
-                hash = 'NONE'
-            conn.execute(update(media_files).where(media_files.c.id == row.id).values(file_hash=hash))
+                hash_ = 'NONE'
+            conn.execute(update(media_files).where(media_files.c.id == row.id).values(file_hash=hash_))

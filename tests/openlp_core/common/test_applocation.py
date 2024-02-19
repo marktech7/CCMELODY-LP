@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -226,9 +226,9 @@ def test_get_directory_for_language_dir_from_macosx(mocked_getenv, mocked_is_mac
 @patch('openlp.core.common.applocation.resolve')
 @patch('openlp.core.common.applocation.is_win')
 @patch('openlp.core.common.applocation.is_macosx')
-@patch('openlp.core.common.applocation.AppDirs')
+@patch('openlp.core.common.applocation.PlatformDirs')
 @patch('openlp.core.common.applocation.Path.exists', autospec=True)
-def test_get_directory_for_language_dir_from_linux(mocked_exists, MockAppDirs, mocked_is_macosx, mocked_is_win,
+def test_get_directory_for_language_dir_from_linux(mocked_exists, MockPlatformDirs, mocked_is_macosx, mocked_is_win,
                                                    mocked_resolve):
     """
     Test the AppLocation.get_directory() method for AppLocation.LanguageDir
@@ -240,7 +240,7 @@ def test_get_directory_for_language_dir_from_linux(mocked_exists, MockAppDirs, m
     mocked_is_macosx.return_value = False
     candidate_dirs = ['/usr/share/gnome/openlp', '/usr/local/share/openlp', '/usr/share/openlp']
     mocked_dirs = MagicMock(site_data_dir=os.pathsep.join(candidate_dirs))
-    MockAppDirs.return_value = mocked_dirs
+    MockPlatformDirs.return_value = mocked_dirs
     mocked_exists.side_effect = lambda p: p in candidate_dirs + [openlp_i18n_path]
 
     # WHEN: We call AppLocation.get_directory

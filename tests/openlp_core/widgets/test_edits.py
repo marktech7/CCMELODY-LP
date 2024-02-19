@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,7 +21,6 @@
 """
 This module contains tests for the openlp.core.widgets.edits module
 """
-import os
 import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, patch, call
@@ -29,6 +28,8 @@ from typing import Any
 
 from PyQt5 import QtCore, QtGui, QtTest, QtWidgets
 
+from openlp.core.common.path import path_to_str
+from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.core.widgets.dialogs import FileDialog
 from openlp.core.widgets.edits import PathEdit, HistoryComboBox, SearchEdit
@@ -87,9 +88,15 @@ def test_path_getter(path_edit: PathEdit):
     assert path_edit.path == Path('getter', 'test', 'pat.h')
 
 
+if is_win():
+    p_prefix = 'C:\\'
+else:
+    p_prefix = ''
+
+
 @pytest.mark.parametrize('prop, expected', [
-    (Path('setter', 'test', 'pat.h'), ('setter', 'test', 'pat.h')),
-    ('setter/str/test/pat.h', ('setter', 'str', 'test', 'pat.h')),
+    (Path(p_prefix, 'setter', 'test', 'pat.h'), (p_prefix, 'setter', 'test', 'pat.h')),
+    (p_prefix + 'setter/str/test/pat.h', (p_prefix, 'setter', 'str', 'test', 'pat.h')),
     (None, None)
 ])
 def test_path_setter(prop: Any, expected: Any, path_edit: PathEdit):
@@ -106,7 +113,7 @@ def test_path_setter(prop: Any, expected: Any, path_edit: PathEdit):
     #       should have also been set.
     if expected is not None:
         assert path_edit._path == Path(*expected)
-        os_normalised_str = os.path.join(*expected)
+        os_normalised_str = path_to_str(Path(*expected))
         path_edit.line_edit.setToolTip.assert_called_once_with(os_normalised_str)
         path_edit.line_edit.setText.assert_called_once_with(os_normalised_str)
     else:
