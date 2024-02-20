@@ -24,6 +24,7 @@ import shutil
 import logging
 from pathlib import Path
 
+from openlp.plugins.custom.lib.customxmlhandler import CustomXML
 from openlp.plugins.remotesync.lib.backends.synchronizer import Synchronizer, SyncItemType, ConflictException, \
     LockException, ConflictReason
 from openlp.plugins.remotesync.lib.db import RemoteSyncItem
@@ -83,7 +84,9 @@ class FolderSynchronizer(Synchronizer):
 
     def initialize_remote(self):
         self.song_history_folder_path.mkdir(parents=True, exist_ok=True)
-        self.custom_folder_path.mkdir(parents=True, exist_ok=True)
+        self.song_deleted_folder_path.mkdir(parents=True, exist_ok=True)
+        self.custom_history_folder_path.mkdir(parents=True, exist_ok=True)
+        self.custom_deleted_folder_path.mkdir(parents=True, exist_ok=True)
         self.service_folder_path.mkdir(parents=True, exist_ok=True)
 
     def _get_file_list(self, path, mask):
@@ -222,14 +225,66 @@ class FolderSynchronizer(Synchronizer):
         updated = self._get_remote_changes(SyncItemType.Custom)
         return updated
 
-    def send_custom(self, custom):
-        pass
+    def send_custom(self, custom, custom_uuid, last_known_version, first_sync_attempt, prev_lock_id):
+        """
+        Sends a custom slide to the shared folder.
+        :param custom: The sutom object to synchronize
+        :param custom_uuid: The uuid of the custom slide
+        :param last_known_version: The last known version of the custom slide
+        :param first_sync_attempt: If the custom slide has been attempted synchronized before,
+                                  this is the timestamp of the first sync attempt.
+        :param prev_lock_id: If the custom slide has been attempted synchronized before, this is the id of the lock
+                             that prevented the synchronization.
+        :return: The new version.
+        """
+        if last_known_version:
+            counter = int(last_known_version.split('=')[0]) + 1
+        else:
+            counter = 0
+        version = '{counter}={computer_id}'.format(counter=counter, computer_id=self.pc_id)
+        custom_xml = CustomXML(custom.text)
+        #custom_xml.set_version(version)
+        content = str(custom_xml.extract_xml(True), 'utf-8')
+        self._send_item(SyncItemType.Custom, content, custom_uuid, version, last_known_version, first_sync_attempt,
+                        prev_lock_id)
+        return version
 
-    def fetch_custom(self):
-        pass
+    def fetch_custom(self, custom_uuid, custom_id):
+        """
+        Fetch a specific custom slide from the shared folder
+        :param custom_uuid: uuid of the custom slide
+        :param custom_id: custom db id, None if the custom slide does not yet exists in the custom db
+        :return: The custom object
+        """
+        version, item_content = self._fetch_item(SyncItemType.Custom, custom_uuid)
+        if not version:
+            return None
+        custom = CustomXML(item_content)
+        sync_item = self.manager.get_object_filtered(RemoteSyncItem, RemoteSyncItem.uuid == custom_uuid)
+        if not sync_item:
+            sync_item = RemoteSyncItem()
+            sync_item.type = SyncItemType.Custom
+            sync_item.item_id = custom.id
+            sync_item.uuid = custom_uuid
+        sync_item.version = version
+        self.manager.save_object(sync_item, True)
+        return custom
 
-    def delete_custom(self):
-        pass
+    def delete_custom(self, custom_uuid, first_del_attempt, prev_lock_id):
+        """
+        Delete custom slide from the remote location. Does the following:
+        1. Check for an existing lock, raise LockException if one found.
+        2. Create a lock file and move the existing file to the history folder.
+        3. Place a file in the deleted folder, named after the custom slide uuid.
+        4. Delete lock file.
+        :param custom_uuid:
+        :type str:
+        :param first_del_attempt:
+        :type DateTime:
+        :param prev_lock_id:
+        :type str:
+        """
+        self._delete_item(SyncItemType.Custom, custom_uuid, first_del_attempt, prev_lock_id)
 
     def send_service(self, service):
         pass

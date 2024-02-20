@@ -124,7 +124,7 @@ class RemoteSyncPlugin(Plugin):
             self.synchronizer.initialize_remote()
         # TODO: register delete functions
         Registry().register_function('song_changed', self.queue_song_for_sync)
-        Registry().register_function('custom_changed', self.queue_custom_for_sync)  # TODO: implement executing
+        Registry().register_function('custom_changed', self.queue_custom_for_sync)
         Registry().register_function('service_changed', self.save_service)
         Registry().register_function('synchronize_to_remote', self.push_to_remote)
         Registry().register_function('synchronize_from_remote', self.pull_from_remote)
@@ -182,18 +182,28 @@ class RemoteSyncPlugin(Plugin):
                                                                  RemoteSyncItem.item_id == song.id))
             if not synced_songs:
                 self.queue_song_for_sync(song.id)
-        # TODO: Also check custom slides
+
+        custom_manager = Registry().get('custom_manager')
+        all_custom_slides = custom_manager.get_all_objects(CustomSlide)
+        for custom in all_custom_slides:
+            # TODO: Check that custom slide actually exists remotely - should we delete if not?
+            synced_custom = self.manager.get_object_filtered(RemoteSyncItem,
+                                                             and_(RemoteSyncItem.type == SyncItemType.Song,
+                                                                  RemoteSyncItem.item_id == custom.id))
+            if not synced_custom:
+                self.queue_custom_for_sync(custom.id)
 
     def synchronize(self):
         """
         Synchronize by first pulling data from remote and then pushing local changes to the remote
         """
-        self.synchronizer.connect()
-        self.pull_from_remote()
-        self.push_to_remote()
-        self.synchronizer.disconnect()
-        # Set a timer to start the synchronization again in 10 minutes.
-        self.sync_timer.start(60000)
+        if self.synchronizer:
+            self.synchronizer.connect()
+            self.pull_from_remote()
+            self.push_to_remote()
+            self.synchronizer.disconnect()
+            # Set a timer to start the synchronization again in 10 minutes.
+            self.sync_timer.start(60000)
 
     def push_to_remote(self):
         """
