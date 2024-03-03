@@ -80,7 +80,9 @@ class FolderSynchronizer(Synchronizer):
 
     def check_connection(self):
         return self.base_folder_path.exists() and self.song_history_folder_path.exists() and \
-            self.custom_folder_path.exists()
+            self.song_deleted_folder_path.exists() and self.custom_folder_path.exists() and \
+            self.custom_history_folder_path.exists() and custom_deleted_folder_path.exists() and \
+            self.service_folder_path.exists()
 
     def initialize_remote(self):
         self.song_history_folder_path.mkdir(parents=True, exist_ok=True)
