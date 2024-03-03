@@ -798,7 +798,7 @@ This means that the currently selected Bible is a Web Bible.</source>
         <translation>文字搜尋不適用於 Web 聖經。
 請使用參考經文搜尋。
 
-這表示目前選取的聖經為 Web 聖經。</translation>
+這表示目前所選的聖經為 Web 聖經。</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="800"/>
@@ -1110,7 +1110,7 @@ It is not possible to customize the Book Names.</source>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="813"/>
         <source>There was a problem downloading your verse selection. Please check your Internet connection, and if this error continues to occur, please consider reporting a bug.</source>
-        <translation>下載選取的經文時發生問題。請檢查網際網路連線，如錯誤仍繼續發生，請考據回報錯誤。</translation>
+        <translation>下載所選的經文時發生問題。請檢查網際網路連線，如錯誤仍繼續發生，請考據回報錯誤。</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="819"/>
@@ -1120,7 +1120,7 @@ It is not possible to customize the Book Names.</source>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="819"/>
         <source>There was a problem extracting your verse selection. If this error continues to occur please consider reporting a bug.</source>
-        <translation>解碼選取的經節時發生錯誤。若狀況持續發生，請回報此錯誤。</translation>
+        <translation>解碼所選的經節時發生錯誤。若狀況持續發生，請回報此錯誤。</translation>
     </message>
 </context>
 <context>
@@ -1303,22 +1303,22 @@ It is not possible to customize the Book Names.</source>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="626"/>
         <source>Invalid SWORD folder</source>
-        <translation type="unfinished"/>
+        <translation>SWORD 資料夾無效</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="626"/>
         <source>The folder selected does not contain a valid SWORD module.</source>
-        <translation type="unfinished"/>
+        <translation>所選的資料夾不與有效的 SWORD 模組相符。</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="646"/>
         <source>Invalid SWORD zip-file</source>
-        <translation type="unfinished"/>
+        <translation>SWORD 壓縮檔無效</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="646"/>
         <source>The file selected is not a valid SWORD zip-file.</source>
-        <translation type="unfinished"/>
+        <translation>所選的檔案並非有效的 SWORD 壓縮檔。</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="706"/>
@@ -1744,7 +1744,7 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/images/imageplugin.py" line="54"/>
         <source>&lt;strong&gt;Image Plugin&lt;/strong&gt;&lt;br /&gt;The image plugin provides displaying of images.&lt;br /&gt;One of the distinguishing features of this plugin is the ability to group a number of images together in the service manager, making the displaying of multiple images easier. This plugin can also make use of OpenLP&apos;s &quot;timed looping&quot; feature to create a slide show that runs automatically. In addition to this, images from the plugin can be used to override the current theme&apos;s background, which renders text-based items like songs with the selected image as a background instead of the background provided by the theme.</source>
-        <translation>&lt;strong&gt;圖片外掛&lt;/strong&gt;&lt;br /&gt;提供圖片顯示。&lt;br /&gt;此外掛的特點在於可將聚會管理員中的圖片組成群組，使使圖片更加容易顯示。此外，亦可利用 OpenLP 的「定時循環」功能，以循環播放投影片。另外，來自外掛的圖片亦可取代目前佈景主題背景，藉選取的圖片作為背景以轉譯如歌曲般基於文字的項目，而非佈景主題所提供的背景。</translation>
+        <translation>&lt;strong&gt;圖片外掛&lt;/strong&gt;&lt;br /&gt;提供圖片顯示。&lt;br /&gt;此外掛的特點在於可將聚會管理員中的圖片組成群組，使使圖片更加容易顯示。此外，亦可利用 OpenLP 的「定時循環」功能，以循環播放投影片。另外，來自外掛的圖片亦可取代目前佈景主題背景，藉所選的圖片作為背景以轉譯如歌曲般基於文字的項目，而非佈景主題所提供的背景。</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/imageplugin.py" line="79"/>
@@ -2416,12 +2416,12 @@ Do you want to add the other images anyway?</source>
 <context>
     <name>OpenLP</name>
     <message>
-        <location filename="../../openlp/core/app.py" line="172"/>
+        <location filename="../../openlp/core/app.py" line="174"/>
         <source>Data Directory Error</source>
         <translation>數據目錄錯誤</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="172"/>
+        <location filename="../../openlp/core/app.py" line="174"/>
         <source>OpenLP data folder was not found in:
 
 {path}
@@ -2442,23 +2442,23 @@ OpenLP 數據資料夾位址已變更。若數據位址儲存在抽取式裝置�
 是否要將位址重設至預設值？如否，OpenLP 將結束以利嘗試手動修復問題。</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="248"/>
+        <location filename="../../openlp/core/app.py" line="250"/>
         <source>Backup</source>
         <translation>備份</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="231"/>
+        <location filename="../../openlp/core/app.py" line="233"/>
         <source>OpenLP has been upgraded, do you want to create
 a backup of the old data folder?</source>
         <translation>已升級 OpenLP ，是否要建立舊數據資料夾備份？</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="242"/>
+        <location filename="../../openlp/core/app.py" line="244"/>
         <source>Backup of the data folder failed!</source>
         <translation>數據資料夾備份失敗！</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="245"/>
+        <location filename="../../openlp/core/app.py" line="247"/>
         <source>A backup of the data folder has been created at:
 
 {text}</source>
@@ -2467,12 +2467,12 @@ a backup of the old data folder?</source>
 {text}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="354"/>
+        <location filename="../../openlp/core/app.py" line="356"/>
         <source>Downgrade</source>
         <translation>降級</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="354"/>
+        <location filename="../../openlp/core/app.py" line="356"/>
         <source>OpenLP has found a configuration file created by a newer version of OpenLP. OpenLP will start with a fresh install as downgrading data is not supported. Any existing data will be backed up to:
 
 {data_folder_backup_path}
@@ -2485,17 +2485,17 @@ Do you want to continue?</source>
 確定要繼續？</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="379"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>Settings Backup</source>
         <translation>設定備份</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="371"/>
+        <location filename="../../openlp/core/app.py" line="373"/>
         <source>Your settings are about to be upgraded. A backup will be created at {settings_back_up_path}</source>
         <translation>即將升級設定。備份將會建立於「{settings_back_up_path}」</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="379"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>Settings back up failed.
 
 OpenLP will attempt to continue.</source>
@@ -2504,12 +2504,12 @@ OpenLP will attempt to continue.</source>
 OpenLP 將繼續嘗試。</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="390"/>
+        <location filename="../../openlp/core/app.py" line="392"/>
         <source>OpenLP Backup</source>
         <translation>OpenLP 備份</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="390"/>
+        <location filename="../../openlp/core/app.py" line="392"/>
         <source>Backup of the data folder failed during downgrade.</source>
         <translation>在降級期間備份數據資料夾失敗。</translation>
     </message>
@@ -2738,12 +2738,12 @@ OpenLP 將繼續嘗試。</translation>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="173"/>
         <source>Miscellaneous Workarounds</source>
-        <translation type="unfinished"/>
+        <translation>Miscellaneous Workarounds</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="174"/>
         <source>HiDPI Mode:</source>
-        <translation type="unfinished"/>
+        <translation>HiDPI 模式:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="175"/>
@@ -2753,12 +2753,12 @@ OpenLP 將繼續嘗試。</translation>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="176"/>
         <source>Legacy</source>
-        <translation type="unfinished"/>
+        <translation>傳統</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="177"/>
         <source>DPI Unaware (Windows only)</source>
-        <translation type="unfinished"/>
+        <translation>DPI Unaware (僅 Windows)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="240"/>
@@ -2807,7 +2807,7 @@ The location you have selected
 appears to contain OpenLP data files. Do you wish to replace these files with the current data files?</source>
         <translation>警告:
 
-所選取的位址
+所選的位址
 
 {path}
 
@@ -4499,7 +4499,7 @@ Processing has terminated and no changes have been made.</source>
         <source>The file you have selected does not appear to be a valid OpenLP settings file.
 
 Processing has terminated and no changes have been made.</source>
-        <translation>選取的檔案似乎不是有效的 OpenLP 設定檔。
+        <translation>所選的檔案似乎不是有效的 OpenLP 設定檔。
 
 已終止處理並且未作任何變更。</translation>
     </message>
@@ -4635,7 +4635,7 @@ Database: {db_name}</source>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="128"/>
         <source>&lt;strong&gt;OpenLP could not detect VLC.&lt;/strong&gt; You will not be able to play media without it. Please download and install from the VLC web site: &lt;a href=&quot;https://www.videolan.org/vlc/download-macosx.html&quot;&gt;https://www.videolan.org/vlc/&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;strong&gt;OpenLP 偵測不到 VLC。&lt;/strong&gt; 您無法不透過 VLC 而直接播放媒體。請造訪 VLC 網站以下載並安裝: &lt;a href=&quot;https://www.videolan.org/vlc/download-macosx.html&quot;&gt;https://www.videolan.org/vlc/&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="160"/>
@@ -8576,22 +8576,22 @@ Add some items to it then press Save</source>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplanform.py" line="72"/>
         <source>Authentication Failed</source>
-        <translation type="unfinished"/>
+        <translation>驗證失敗</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplanform.py" line="72"/>
         <source>Authentiation Failed. Check your credentials in OpenLP Settings.</source>
-        <translation type="unfinished"/>
+        <translation>驗證失敗。請檢查 OpenLP 設定中所配置的憑證。</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplanform.py" line="252"/>
         <source>Import failed</source>
-        <translation type="unfinished"/>
+        <translation>匯入失敗</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplanform.py" line="252"/>
         <source>Could not import bible text because no bible is installed.</source>
-        <translation type="unfinished"/>
+        <translation>由於尚無已安裝的聖經，以致無法匯入聖經內容。</translation>
     </message>
 </context>
 <context>
@@ -9097,7 +9097,7 @@ All data recorded before this date will be permanently deleted.</source>
     <message>
         <location filename="../../openlp/plugins/songusage/forms/songusagedeleteform.py" line="51"/>
         <source>Are you sure you want to delete selected Song Usage data?</source>
-        <translation>確定要刪除選取的歌曲使用狀況數據？</translation>
+        <translation>確定要刪除所選的歌曲使用狀況數據？</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/forms/songusagedeleteform.py" line="60"/>

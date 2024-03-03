@@ -2420,12 +2420,12 @@ Möchten Sie die anderen Bilder trotzdem hinzufügen?</translation>
 <context>
     <name>OpenLP</name>
     <message>
-        <location filename="../../openlp/core/app.py" line="172"/>
+        <location filename="../../openlp/core/app.py" line="174"/>
         <source>Data Directory Error</source>
         <translation>Fehler im Daten Ordner</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="172"/>
+        <location filename="../../openlp/core/app.py" line="174"/>
         <source>OpenLP data folder was not found in:
 
 {path}
@@ -2437,7 +2437,7 @@ You may reset the data location back to the default location, or you can try to 
 Do you want to reset to the default data location? If not, OpenLP will be closed so you can try to fix the problem.</source>
         <translation>OpenLP-Datenordner wurde nicht gefunden in: 
 
-{Weg} 
+{path} 
 
 Der Speicherort des Datenordners wurde zuvor vom Standardspeicherort von OpenLP geändert. Wenn die Daten auf einem Wechseldatenträger gespeichert wurden, muss dieser Datenträger verfügbar gemacht werden. 
 
@@ -2446,24 +2446,24 @@ Sie können den Datenspeicherort auf den Standardspeicherort zurücksetzen oder 
 Möchten Sie auf den Standarddatenspeicherort zurücksetzen? Wenn nicht, wird OpenLP geschlossen, damit Sie versuchen können, das Problem zu beheben.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="248"/>
+        <location filename="../../openlp/core/app.py" line="250"/>
         <source>Backup</source>
         <translation>Sicherung</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="231"/>
+        <location filename="../../openlp/core/app.py" line="233"/>
         <source>OpenLP has been upgraded, do you want to create
 a backup of the old data folder?</source>
         <translation>OpenLP wurde aktualisiert.
 Soll eine Sicherung des OpenLP Daten Ordners angelegt werden?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="242"/>
+        <location filename="../../openlp/core/app.py" line="244"/>
         <source>Backup of the data folder failed!</source>
         <translation>Sicherung des Daten Ordners fehlgeschlagen!</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="245"/>
+        <location filename="../../openlp/core/app.py" line="247"/>
         <source>A backup of the data folder has been created at:
 
 {text}</source>
@@ -2472,12 +2472,12 @@ Soll eine Sicherung des OpenLP Daten Ordners angelegt werden?</translation>
 {text}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="354"/>
+        <location filename="../../openlp/core/app.py" line="356"/>
         <source>Downgrade</source>
         <translation>Downgrade</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="354"/>
+        <location filename="../../openlp/core/app.py" line="356"/>
         <source>OpenLP has found a configuration file created by a newer version of OpenLP. OpenLP will start with a fresh install as downgrading data is not supported. Any existing data will be backed up to:
 
 {data_folder_backup_path}
@@ -2490,17 +2490,17 @@ Do you want to continue?</source>
 Möchten Sie weiter machen?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="379"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>Settings Backup</source>
         <translation>Einstellungen-Backup</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="371"/>
+        <location filename="../../openlp/core/app.py" line="373"/>
         <source>Your settings are about to be upgraded. A backup will be created at {settings_back_up_path}</source>
-        <translation>Ihre Einstellungen werden in Kürze aktualisiert. Es wird eine Sicherung unter {back_up_path} angelegt.</translation>
+        <translation>Ihre Einstellungen werden in Kürze aktualisiert. Es wird eine Sicherung unter {settings_back_up_path} angelegt.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="379"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>Settings back up failed.
 
 OpenLP will attempt to continue.</source>
@@ -2509,12 +2509,12 @@ OpenLP will attempt to continue.</source>
 OpenLP versucht, fortzufahren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="390"/>
+        <location filename="../../openlp/core/app.py" line="392"/>
         <source>OpenLP Backup</source>
         <translation>OpenLP Sicherung</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="390"/>
+        <location filename="../../openlp/core/app.py" line="392"/>
         <source>Backup of the data folder failed during downgrade.</source>
         <translation>Sicherung des Datenordners während des Downgrades fehlgeschlagen.</translation>
     </message>

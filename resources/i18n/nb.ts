@@ -715,7 +715,7 @@ Vil du fortsette likevel?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/upgrade.py" line="66"/>
         <source>The proxy server {proxy} was found in the bible {name}.&lt;br&gt;Would you like to set it as the proxy for OpenLP?</source>
-        <translation>Proxyserveren {proxy} ble funnet i bibelen {navn}. Vil du angi den som proxy for OpenLP?</translation>
+        <translation>Proxyserveren {proxy} ble funnet i bibelen {name}. Vil du angi den som proxy for OpenLP?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/upgrade.py" line="71"/>
@@ -2421,12 +2421,12 @@ Vil du likevel legge til de andre bildene?</translation>
 <context>
     <name>OpenLP</name>
     <message>
-        <location filename="../../openlp/core/app.py" line="172"/>
+        <location filename="../../openlp/core/app.py" line="174"/>
         <source>Data Directory Error</source>
         <translation>Datakatalogfeil</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="172"/>
+        <location filename="../../openlp/core/app.py" line="174"/>
         <source>OpenLP data folder was not found in:
 
 {path}
@@ -2447,23 +2447,23 @@ Du kan tilbakestille dataplasseringen tilbake til standardplasseringen, eller du
 Vil du tilbakestille til standard dataplassering? Hvis ikke, lukkes OpenLP slik at du kan prøve å fikse problemet. </translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="248"/>
+        <location filename="../../openlp/core/app.py" line="250"/>
         <source>Backup</source>
         <translation>Sikkerhetskopi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="231"/>
+        <location filename="../../openlp/core/app.py" line="233"/>
         <source>OpenLP has been upgraded, do you want to create
 a backup of the old data folder?</source>
         <translation>OpenLP har blitt oppgradert, vil du opprette en sikkerhetskopi av den gamle datamappen?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="242"/>
+        <location filename="../../openlp/core/app.py" line="244"/>
         <source>Backup of the data folder failed!</source>
         <translation>Sikkerhetskopieringen mislyktes!</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="245"/>
+        <location filename="../../openlp/core/app.py" line="247"/>
         <source>A backup of the data folder has been created at:
 
 {text}</source>
@@ -2472,12 +2472,12 @@ a backup of the old data folder?</source>
 {text}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="354"/>
+        <location filename="../../openlp/core/app.py" line="356"/>
         <source>Downgrade</source>
         <translation>Nedgradere</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="354"/>
+        <location filename="../../openlp/core/app.py" line="356"/>
         <source>OpenLP has found a configuration file created by a newer version of OpenLP. OpenLP will start with a fresh install as downgrading data is not supported. Any existing data will be backed up to:
 
 {data_folder_backup_path}
@@ -2490,17 +2490,17 @@ Do you want to continue?</source>
 Vil du fortsette?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="379"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>Settings Backup</source>
         <translation>Sikkerhetskopi av innstillinger</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="371"/>
+        <location filename="../../openlp/core/app.py" line="373"/>
         <source>Your settings are about to be upgraded. A backup will be created at {settings_back_up_path}</source>
         <translation>Innstillingene dine er i ferd med å bli oppgradert. En sikkerhetskopi vil bli opprettet på {settings_back_up_path}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="379"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>Settings back up failed.
 
 OpenLP will attempt to continue.</source>
@@ -2509,12 +2509,12 @@ OpenLP will attempt to continue.</source>
 OpenLP vil forsøke å fortsette.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="390"/>
+        <location filename="../../openlp/core/app.py" line="392"/>
         <source>OpenLP Backup</source>
         <translation>Sikkerhetskopi av OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="390"/>
+        <location filename="../../openlp/core/app.py" line="392"/>
         <source>Backup of the data folder failed during downgrade.</source>
         <translation>Sikkerhetskopiering av datamappen mislyktes under nedgradering.</translation>
     </message>
@@ -9151,7 +9151,7 @@ Velg en eksisterende sti på harddisken. </translation>
     <message>
         <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="90"/>
         <source>usage_detail_{old}_{new}.txt</source>
-        <translation>bruksdetaljer_{gml}_{ny}.txt</translation>
+        <translation>bruksdetaljer_{old}_{new}.txt</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="110"/>

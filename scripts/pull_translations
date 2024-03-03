@@ -42,4 +42,11 @@ echo Downloading the translated files
 echo
 tx pull -a --minimum-perc=45
 
+echo Checking for tag errors
+
+./check-i18n.py -b ../resources/i18n/
+
 echo Translation update complete
+
+
+
