@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -70,7 +70,7 @@ def test_setup(mocked_register_views: MagicMock, media_env: MediaController):
     # THEN: the functions should be defined along with the api blueprint
     assert list(Registry().functions_list.keys()) == expected_functions_list, \
         f'The function list should have been {(Registry().functions_list.keys())}'
-    mocked_register_views.called_once(), 'The media blueprint has not been registered'
+    mocked_register_views.assert_called_once(), 'The media blueprint has not been registered'
 
 
 def test_initialise_good(media_env: MediaController, state_media: State):
@@ -82,7 +82,7 @@ def test_initialise_good(media_env: MediaController, state_media: State):
         # THEN: The underlying method is called
         media_env.media_controller.bootstrap_initialise()
     # THEN: The following should have happened
-    mocked_setup.called_once(), 'The setup function has been called'
+    mocked_setup.assert_called_once(), 'The setup function has been called'
 
 
 def test_initialise_missing_vlc(media_env: MediaController, state_media: State):
@@ -95,7 +95,7 @@ def test_initialise_missing_vlc(media_env: MediaController, state_media: State):
         # THEN: The underlying method is called
         media_env.media_controller.bootstrap_initialise()
     # THEN: The following should have happened
-    mocked_setup.called_once(), 'The setup function has been called'
+    mocked_setup.assert_called_once(), 'The setup function has been called'
     text = State().get_text()
     if not is_macosx():
         assert text.find("python3-vlc") > 0, "VLC should not be missing"
@@ -111,7 +111,7 @@ def test_initialise_missing_pymedia(media_env: MediaController, state_media: Sta
         # THEN: The underlying method is called
         media_env.media_controller.bootstrap_initialise()
     # THEN: The following should have happened
-    mocked_setup.called_once(), 'The setup function has been called'
+    mocked_setup.assert_called_once(), 'The setup function has been called'
     text = State().get_text()
     if not is_macosx():
         assert text.find("python3-pymediainfo") > 0, "PyMedia should not be missing"
@@ -129,7 +129,7 @@ def test_initialise_missing_pymedia_fedora(media_env: MediaController, state_med
         # WHEN: The underlying method is called
         media_env.media_controller.bootstrap_initialise()
     # THEN: The following should have happened
-    mocked_setup.called_once(), 'The setup function has been called'
+    mocked_setup.assert_called_once(), 'The setup function has been called'
     text = State().get_text()
     assert text.find("python3-pymediainfo") == -1, "PyMedia should be missing"
     assert text.find("python3-vlc") > 0, "VLC should not be missing"
@@ -148,7 +148,7 @@ def test_initialise_missing_pymedia_not_fedora(media_env: MediaController, state
         # WHEN: The underlying method is called
         media_env.media_controller.bootstrap_initialise()
     # THEN: The following should have happened
-    mocked_setup.called_once(), 'The setup function has been called'
+    mocked_setup.assert_called_once(), 'The setup function has been called'
     text = State().get_text()
     assert text.find("python3-pymediainfo") == -1, "PyMedia should be missing"
     assert text.find("python3-vlc") > 0, "VLC should not be missing"
@@ -166,7 +166,7 @@ def test_initialise_missing_pymedia_mac_os(media_env: MediaController, state_med
         # WHEN: The underlying method is called
         media_env.media_controller.bootstrap_initialise()
     # THEN: The following should have happened
-    mocked_setup.called_once(), 'The setup function has been called'
+    mocked_setup.assert_called_once(), 'The setup function has been called'
     text = State().get_text()
     assert text.find("python3-pymediainfo") == -1, "PyMedia should be missing"
     assert text.find("python3-vlc") == -1, "PyMedia should be missing"
@@ -178,8 +178,10 @@ def test_post_set_up_good(media_env: MediaController, state_media: State, regist
     Test the Bootstrap post set up assuming all functions are good
     """
     # GIVEN: A working  environment
-    registry.register('live_controller', MagicMock())
-    registry.register('preview_controller', MagicMock())
+    mocked_live_controller = MagicMock()
+    registry.register('live_controller', mocked_live_controller)
+    mocked_preview_controller = MagicMock()
+    registry.register('preview_controller', mocked_preview_controller)
     media_env.vlc_live_media_stop = MagicMock()
     media_env.vlc_preview_media_stop = MagicMock()
     media_env.vlc_live_media_tick = MagicMock()
@@ -193,8 +195,8 @@ def test_post_set_up_good(media_env: MediaController, state_media: State, regist
     assert mocked_display.call_count == 2, "Should have been called twice"
     text = State().get_text()
     assert text.find("No Displays") == -1, "No Displays have been disable"
-    assert mocked_display.has_calls(None, False)  # Live Controller
-    assert mocked_display.has_calls(None, True)  # Preview Controller
+    mocked_display.assert_any_call(mocked_live_controller, False)  # Live Controller
+    mocked_display.assert_any_call(mocked_preview_controller, True)  # Preview Controller
 
 
 def test_media_state_live(media_env: MediaController, state_media: State):
@@ -209,16 +211,20 @@ def test_media_state_live(media_env: MediaController, state_media: State):
     mocked_live_controller.is_live = True
     mocked_live_controller.media_info.media_type = MediaType.Audio
     Registry().register('live_controller', mocked_live_controller)
+    mocked_preview_controller = MagicMock()
+    Registry().register('preview_controller', mocked_preview_controller)
     media_env.media_controller.vlc_player = MagicMock()
     media_env.media_controller._display_controllers = MagicMock(return_value=mocked_live_controller)
+    State().add_service("mediacontroller", 0)
+    State().update_pre_conditions("mediacontroller", True)
     # WHEN: I call the function
     with patch.object(media_env.media_controller, u'setup_display') as mocked_display:
         media_env.bootstrap_post_set_up()
     # THEN: the environment is set up correctly
     text = State().get_text()
     assert text.find("No Displays") == -1, "No Displays have been disable"
-    assert mocked_display.has_calls(None, False)  # Live Controller
-    assert mocked_display.has_calls(None, True)  # Preview Controller
+    mocked_display.assert_any_call(mocked_live_controller, False)  # Live Controller
+    mocked_display.assert_any_call(mocked_preview_controller, True)  # Preview Controller
 
 
 def test_post_set_up_no_controller(media_env: MediaController, state_media: State):

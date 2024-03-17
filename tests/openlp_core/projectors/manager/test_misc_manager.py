@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -26,9 +26,14 @@ add_projector_from_wizard()
 get_projector_list()
 
 """
-from unittest.mock import DEFAULT, patch
+from threading import Thread
+from time import sleep
+from typing import Optional
+from unittest.mock import DEFAULT, MagicMock, patch
 
+from openlp.core.common.registry import Registry
 from openlp.core.projectors.db import Projector
+from openlp.core.projectors.manager import ProjectorManager
 
 from tests.resources.projector.data import TEST1_DATA, TEST2_DATA, TEST3_DATA
 
@@ -118,3 +123,27 @@ def test_get_projector_list(projector_manager_mtdb):
     for dbitem in t_chk:
         t_chk_list.append(dbitem.db_item)
     assert t_list == t_chk_list, 'projector_list DB items do not match test items'
+
+
+def test_update_status_call_not_parallel(registry: Registry, projector_manager_nodb: ProjectorManager):
+    """
+    Tests if _replace_service_list calls are not done in parallel
+    """
+    # GIVEN a service manager and a mocked repaint
+    def mock_update_status(ip: str, status: int, msg: Optional[str] = None):
+        projector_manager_nodb.is_updating_status = True
+        sleep(0.25)
+        projector_manager_nodb.is_updating_status = False
+
+    projector_manager_nodb._update_status = MagicMock(side_effect=mock_update_status)
+
+    # WHEN repaint_service_list is called from different threads
+    thread_1 = Thread(target=lambda: projector_manager_nodb.update_status('192.168.88.238', 1))
+    thread_2 = Thread(target=lambda: projector_manager_nodb.update_status('192.168.88.238', 2))
+    thread_1.start()
+    thread_2.start()
+
+    # THEN the _repaint_service_list call must be called only once
+    thread_1.join()
+    thread_2.join()
+    projector_manager_nodb._update_status.assert_called_once()

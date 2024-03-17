@@ -2,7 +2,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -865,6 +865,8 @@ class ServiceItem(RegistryProperties):
         """
         self.theme_overwritten = (theme is None)
         self.theme = theme
+        if self.is_text():
+            self._clear_slides_cache()
         self._new_item()
 
     def remove_invalid_frames(self, invalid_paths=None):

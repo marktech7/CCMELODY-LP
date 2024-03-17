@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -30,7 +30,7 @@ from openlp.core.lib.ui import critical_error_message_box
 from openlp.plugins.songs.forms.authorsform import AuthorsForm
 from openlp.plugins.songs.forms.songbookform import SongBookForm
 from openlp.plugins.songs.forms.topicsform import TopicsForm
-from openlp.plugins.songs.lib.db import Author, SongBook, Song, Topic, SongBookEntry
+from openlp.plugins.songs.lib.db import Author, AuthorSong, SongBook, Song, Topic, SongBookEntry
 
 from .songmaintenancedialog import Ui_SongMaintenanceDialog
 
@@ -431,7 +431,13 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
             )
         )
         # Find the songs, which have the old_author as author.
-        songs = self.manager.get_all_objects(Song, Song.authors.contains(old_author))
+        songs = self.manager.get_all_objects(
+            Song,
+            and_(
+                Song.id == AuthorSong.song_id,
+                AuthorSong.author_id == old_author.id
+            )
+        )
         for song in songs:
             for author_song in song.authors_songs:
                 song.add_author(existing_author, author_song.author_type)

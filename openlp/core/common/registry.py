@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -37,6 +37,9 @@ class Registry(metaclass=Singleton):
     objects.
     """
     log.info('Registry loaded')
+
+    # Try to get around the AttributeError in tests
+    functions_list = {}
 
     @classmethod
     def create(cls) -> 'Registry':

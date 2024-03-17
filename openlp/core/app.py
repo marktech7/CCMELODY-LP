@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -101,6 +101,8 @@ class OpenLP(QtCore.QObject, LogMixin):
         if 'OpenLP' in args:
             args.remove('OpenLP')
         self.args.extend(args)
+        # set desktop file name, which is used to display the proper window icon on Wayland
+        QtGui.QGuiApplication.setDesktopFileName("openlp")
         # Decide how many screens we have and their size
         screens = ScreenList.create(app)
         # First time checks in settings
@@ -483,12 +485,12 @@ def main():
         # support dark mode on windows 10. This makes the titlebar dark, the rest is setup later
         # by calling set_windows_darkmode
         qt_args.extend(['-platform', 'windows:darkmode=1'])
-    elif is_macosx() and getattr(sys, 'frozen', False) and not os.environ.get('QTWEBENGINEPROCESS_PATH'):
-        # Work around an issue where PyInstaller is not setting this environment variable
-        os.environ['QTWEBENGINEPROCESS_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'PyQt5' / 'Qt5' /
-                                                    'lib' / 'QtWebEngineCore.framework' / 'Versions' / '5' /
-                                                    'Helpers' / 'QtWebEngineProcess.app' / 'Contents' / 'MacOS' /
-                                                    'QtWebEngineProcess')
+    elif is_macosx() and getattr(sys, 'frozen', False):
+        # Set the location to the QtWebEngineProcess binary, normally set by PyInstaller, but it moves around...
+        os.environ['QTWEBENGINEPROCESS_PATH'] = str((AppLocation.get_directory(AppLocation.AppDir) / '..' /
+                                                     'Frameworks' / 'QtWebEngineCore.framework' / 'Versions' / '5' /
+                                                     'Helpers' / 'QtWebEngineProcess.app' / 'Contents' / 'MacOS' /
+                                                     'QtWebEngineProcess').resolve())
     no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
                                      and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
     if no_custom_factor_rounding:

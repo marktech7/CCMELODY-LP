@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -135,7 +135,7 @@ def test_worker_start_nightly_version(mock_get_web_page, mock_platform):
     """
     # GIVEN: A last check date, current version, and an instance of worker
     last_check_date = '1970-01-01'
-    current_version = {'full': '2.1-bzr2345', 'version': '2.1', 'build': '2345'}
+    current_version = {'full': '2.1.0+git2345', 'version': '2.1', 'build': '2345'}
     mock_platform.system.return_value = 'Linux'
     mock_platform.release.return_value = '4.12.0-1-amd64'
     mock_get_web_page.return_value = '2.4.6'
@@ -148,7 +148,7 @@ def test_worker_start_nightly_version(mock_get_web_page, mock_platform):
 
     # THEN: The check completes and the signal is emitted
     expected_download_url = 'https://get.openlp.org/versions/nightly_version.txt'
-    expected_headers = {'User-Agent': 'OpenLP/2.1-bzr2345 Linux/4.12.0-1-amd64; '}
+    expected_headers = {'User-Agent': 'OpenLP/2.1.0+git2345 Linux/4.12.0-1-amd64; '}
     mock_get_web_page.assert_called_once_with(expected_download_url, headers=expected_headers)
     mock_new_version.emit.assert_called_once_with('2.4.6')
     mock_quit.emit.assert_called_once_with()
@@ -162,7 +162,7 @@ def test_worker_empty_response(mock_get_web_page, mock_platform):
     """
     # GIVEN: A last check date, current version, and an instance of worker
     last_check_date = '1970-01-01'
-    current_version = {'full': '2.1-bzr2345', 'version': '2.1', 'build': '2345'}
+    current_version = {'full': '2.1+git2345', 'version': '2.1', 'build': '2345'}
     mock_platform.system.return_value = 'Linux'
     mock_platform.release.return_value = '4.12.0-1-amd64'
     mock_get_web_page.return_value = '\n'
@@ -175,7 +175,7 @@ def test_worker_empty_response(mock_get_web_page, mock_platform):
 
     # THEN: The check completes and the signal is emitted
     expected_download_url = 'https://get.openlp.org/versions/nightly_version.txt'
-    expected_headers = {'User-Agent': 'OpenLP/2.1-bzr2345 Linux/4.12.0-1-amd64; '}
+    expected_headers = {'User-Agent': 'OpenLP/2.1+git2345 Linux/4.12.0-1-amd64; '}
     mock_get_web_page.assert_called_once_with(expected_download_url, headers=expected_headers)
     assert mock_new_version.emit.call_count == 0
     mock_quit.emit.assert_called_once_with()

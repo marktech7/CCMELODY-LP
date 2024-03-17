@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -79,8 +79,8 @@ def test_click_load_button(form):
     """
     # GIVEN: Mocked methods.
     with patch('openlp.plugins.media.forms.mediaclipselectorform.critical_error_message_box') as \
-            mocked_critical_error_message_box,\
-            patch('openlp.plugins.media.forms.mediaclipselectorform.os.path.exists') as mocked_os_path_exists,\
+            mocked_critical_error_message_box, \
+            patch('openlp.plugins.media.forms.mediaclipselectorform.os.path.exists') as mocked_os_path_exists, \
             patch('PyQt5.QtWidgets.QDialog.exec'):
         form.exec()
 
@@ -97,7 +97,7 @@ def test_click_load_button(form):
         QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.LeftButton)
 
         # THEN: we should get an error
-        assert form.media_path_combobox.currentText() == '/non-existing/test-path.test',\
+        assert form.media_path_combobox.currentText() == '/non-existing/test-path.test', \
             'The media path should be the given one.'
         mocked_critical_error_message_box.assert_called_with(message='Given path does not exist')
 
@@ -110,7 +110,7 @@ def test_click_load_button(form):
         QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.LeftButton)
 
         # THEN: we should get an error
-        assert form.media_path_combobox.currentText() == '/existing/test-path.test',\
+        assert form.media_path_combobox.currentText() == '/existing/test-path.test', \
             'The media path should be the given one.'
         mocked_critical_error_message_box.assert_called_with(message='VLC player failed playing the media')
 
@@ -149,7 +149,7 @@ def test_click_save_button(form):
     """
     # GIVEN: Mocked methods.
     with patch('openlp.plugins.media.forms.mediaclipselectorform.critical_error_message_box') as \
-            mocked_critical_error_message_box,\
+            mocked_critical_error_message_box, \
             patch('PyQt5.QtWidgets.QDialog.exec'):
         form.exec()
 

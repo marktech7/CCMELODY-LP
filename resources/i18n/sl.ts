@@ -1003,12 +1003,12 @@ vsaj {count} znakov in presledek zaradi učinkovitosti).</translation>
 <context>
     <name>BiblesPlugin.CSVBible</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/csvbible.py" line="147"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/csvbible.py" line="166"/>
         <source>Importing books... {book}</source>
         <translation>Uvažanje knjig ... {book}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/csvbible.py" line="169"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/csvbible.py" line="188"/>
         <source>Importing verses from {book}...</source>
         <comment>Importing verses from &lt;book name&gt;...</comment>
         <translation>Uvažanej vrstic iz {book} ...</translation>
@@ -1309,22 +1309,22 @@ Preverite vašo medmrežno povezavo, če pa do te napake še vedno prihaja, pred
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="626"/>
         <source>Invalid SWORD folder</source>
-        <translation type="unfinished"/>
+        <translation>Neveljavna SWORD mapa</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="626"/>
         <source>The folder selected does not contain a valid SWORD module.</source>
-        <translation type="unfinished"/>
+        <translation>Izbrana mapa ne vsebuje veljavnega SWORD modula.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="646"/>
         <source>Invalid SWORD zip-file</source>
-        <translation type="unfinished"/>
+        <translation>Neveljavna SWORD zip datoteka</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="646"/>
         <source>The file selected is not a valid SWORD zip-file.</source>
-        <translation type="unfinished"/>
+        <translation>Izbrana mapa ni veljavna SWORDova zip datoteka.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="706"/>
@@ -2422,12 +2422,12 @@ Ali želite vseeno dodati druge slike?</translation>
 <context>
     <name>OpenLP</name>
     <message>
-        <location filename="../../openlp/core/app.py" line="171"/>
+        <location filename="../../openlp/core/app.py" line="174"/>
         <source>Data Directory Error</source>
         <translation>Napaka podatkovne mape</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="171"/>
+        <location filename="../../openlp/core/app.py" line="174"/>
         <source>OpenLP data folder was not found in:
 
 {path}
@@ -2448,24 +2448,24 @@ Mesto podatkovne mape lahko ponastavite na privzeto pot, lahko pa poskusite omog
 Ali želite ponastaviti na privzeto mesto podatkov? Če ne, se bo OpenLP zaprl, da boste skušali odpraviti težavo.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="247"/>
+        <location filename="../../openlp/core/app.py" line="250"/>
         <source>Backup</source>
         <translation>Varnostni dvojnik</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="230"/>
+        <location filename="../../openlp/core/app.py" line="233"/>
         <source>OpenLP has been upgraded, do you want to create
 a backup of the old data folder?</source>
         <translation>OpenLP je bil nadgrajen. Ali želite narediti
 varnostno kopijo stare mape s podatki?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="241"/>
+        <location filename="../../openlp/core/app.py" line="244"/>
         <source>Backup of the data folder failed!</source>
         <translation>Varnostno kopiranje podatkovne mape je spodletelo!</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="244"/>
+        <location filename="../../openlp/core/app.py" line="247"/>
         <source>A backup of the data folder has been created at:
 
 {text}</source>
@@ -2474,12 +2474,12 @@ varnostno kopijo stare mape s podatki?</translation>
 {text}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="353"/>
+        <location filename="../../openlp/core/app.py" line="356"/>
         <source>Downgrade</source>
         <translation>Vrnitev na prejšnjo različico</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="353"/>
+        <location filename="../../openlp/core/app.py" line="356"/>
         <source>OpenLP has found a configuration file created by a newer version of OpenLP. OpenLP will start with a fresh install as downgrading data is not supported. Any existing data will be backed up to:
 
 {data_folder_backup_path}
@@ -2492,17 +2492,17 @@ Do you want to continue?</source>
 Ali želite nadaljevati?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="378"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>Settings Backup</source>
         <translation>Varnostna kopija nastavitev</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="370"/>
+        <location filename="../../openlp/core/app.py" line="373"/>
         <source>Your settings are about to be upgraded. A backup will be created at {settings_back_up_path}</source>
         <translation>Vaše nastavitve bodo posodobljene. Varnostna kopija bo ustvarjena v {settings_back_up_path}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="378"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>Settings back up failed.
 
 OpenLP will attempt to continue.</source>
@@ -2511,17 +2511,17 @@ OpenLP will attempt to continue.</source>
 OpenLP bo poskusil nadaljevati.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="389"/>
+        <location filename="../../openlp/core/app.py" line="392"/>
         <source>OpenLP Backup</source>
         <translation>Varnostna kopija OpenLP-ja</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="389"/>
+        <location filename="../../openlp/core/app.py" line="392"/>
         <source>Backup of the data folder failed during downgrade.</source>
         <translation>Varnostno kopiranje podatkovne mape med vrnitvijo v starejšo različico je spodletelo.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/__init__.py" line="406"/>
+        <location filename="../../openlp/core/common/__init__.py" line="414"/>
         <source>Image Files</source>
         <translation>Slikovne datoteke</translation>
     </message>
@@ -2551,7 +2551,7 @@ OpenLP bo poskusil nadaljevati.</translation>
         <translation>Video datoteke</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="667"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="673"/>
         <source>Open</source>
         <translation>Odpri</translation>
     </message>
@@ -2745,12 +2745,12 @@ OpenLP bo poskusil nadaljevati.</translation>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="173"/>
         <source>Miscellaneous Workarounds</source>
-        <translation type="unfinished"/>
+        <translation>Različni zaobidi</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="174"/>
         <source>HiDPI Mode:</source>
-        <translation type="unfinished"/>
+        <translation>HiDPI način:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="175"/>
@@ -2760,12 +2760,12 @@ OpenLP bo poskusil nadaljevati.</translation>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="176"/>
         <source>Legacy</source>
-        <translation type="unfinished"/>
+        <translation>Opuščeno</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="177"/>
         <source>DPI Unaware (Windows only)</source>
-        <translation type="unfinished"/>
+        <translation>Neoziranje na DPI (le Windows)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="240"/>
@@ -3821,7 +3821,7 @@ Za ponovni poskus kliknite gumb &quot;{back_button}&quot;.
     <message>
         <location filename="../../openlp/core/ui/formattingtagcontroller.py" line="172"/>
         <source>End tag {end} does not match end tag for start tag {start}</source>
-        <translation>Končna oznaka {tag} se ne ujema s končno oznako za začetno oznako {start} </translation>
+        <translation>Končna oznaka {end} se ne ujema s končno oznako za začetno oznako {start} </translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/formattingtagform.py" line="93"/>
@@ -4640,7 +4640,7 @@ Zbirka podatkov: {db_name}</translation>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="128"/>
         <source>&lt;strong&gt;OpenLP could not detect VLC.&lt;/strong&gt; You will not be able to play media without it. Please download and install from the VLC web site: &lt;a href=&quot;https://www.videolan.org/vlc/download-macosx.html&quot;&gt;https://www.videolan.org/vlc/&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;strong&gt;OpenLP ne zazna VLCja.&lt;/strong&gt; Brez njega ne boste mogli predvajati predstavnosti. Program lahko prenesete s spletne strani: &lt;a href=&quot;https://www.videolan.org/vlc/download-macosx.html&quot;&gt;https://www.videolan.org/vlc/&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="160"/>
@@ -4782,7 +4782,7 @@ Končnica ni podprta</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="168"/>
         <source>Acknowledge a PJLink SRCH command - returns MAC address.</source>
-        <translation type="unfinished"/>
+        <translation>Zaznaj ukaz PJLink SRCH - vrne MAC naslov.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="173"/>
@@ -4897,7 +4897,7 @@ Končnica ni podprta</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="284"/>
         <source>UDP broadcast search request for available projectors. Reply is ACKN.</source>
-        <translation type="unfinished"/>
+        <translation>Iskanje razpoložljivih naslikovalnikov po ODP oddajanju. Odgovor je ACKN.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="289"/>
@@ -5135,7 +5135,7 @@ Končnica ni podprta</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="415"/>
         <source>Projector check filter</source>
-        <translation type="unfinished"/>
+        <translation>Preveritev sita naslikovalnika</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="416"/>
@@ -5290,7 +5290,7 @@ Končnica ni podprta</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="470"/>
         <source>Connection initializing with pin</source>
-        <translation type="unfinished"/>
+        <translation>Pričetek povezovanja z geslom</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="471"/>
@@ -5330,7 +5330,7 @@ Končnica ni podprta</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="478"/>
         <source>Performing a host name lookup</source>
-        <translation type="unfinished"/>
+        <translation>Iskanje imena gostitelja</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="479"/>
@@ -5423,7 +5423,7 @@ Končnica ni podprta</translation>
     <message>
         <location filename="../../openlp/core/projectors/editform.py" line="203"/>
         <source>PIN</source>
-        <translation type="unfinished"/>
+        <translation>Geslo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/editform.py" line="205"/>
@@ -5649,157 +5649,157 @@ Končnica ni podprta</translation>
         <translation>Iz&amp;briši naslikovalnik</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="500"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="506"/>
         <source>Delete projector ({projector.link.ip}) {projector.link.name}?</source>
         <translation>Želite izbrisati naslikovalnik ({projector.link.ip}) {projector.link.name}?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="502"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="508"/>
         <source>Are you sure you want to delete this projector?</source>
         <translation>Ali ste prepričani, da želite izbrisati ta naslikovalnik?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="628"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="634"/>
         <source>Name</source>
         <translation>Ime</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="630"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="636"/>
         <source>IP</source>
         <translation>IP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="632"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="638"/>
         <source>Port</source>
         <translation>Vrata</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="634"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="640"/>
         <source>Notes</source>
         <translation>Opombe</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="638"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="644"/>
         <source>Projector information not available at this time.</source>
         <translation>Podatki o naslikovalniku trenutno niso na voljo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="640"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="646"/>
         <source>Projector Name</source>
         <translation>Ime naslikovalnika</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="643"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="649"/>
         <source>Manufacturer</source>
         <translation>Proizvajalec</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="645"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="651"/>
         <source>Model</source>
         <translation>Model</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="647"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="653"/>
         <source>PJLink Class</source>
         <translation>PJLink razred</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="650"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="656"/>
         <source>Software Version</source>
         <translation>Različica programja</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="653"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="659"/>
         <source>Serial Number</source>
         <translation>Serijska številka</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="656"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="662"/>
         <source>Lamp Model Number</source>
         <translation>Številka modela žarometa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="659"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="665"/>
         <source>Filter Model Number</source>
         <translation>Številka modela sita</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="662"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="668"/>
         <source>Other info</source>
         <translation>Drugi podatki</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="665"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="671"/>
         <source>Power status</source>
         <translation>Stanje napajanja</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="667"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="673"/>
         <source>Shutter is</source>
         <translation>Zaklopka je</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="667"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="673"/>
         <source>Closed</source>
         <translation>Zaprta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="671"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="677"/>
         <source>Current source input is</source>
         <translation>Trenutni vhodni vir</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="678"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="684"/>
         <source>Unavailable</source>
         <translation>ni na voljo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="680"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="686"/>
         <source>ON</source>
         <translation>Vključeno</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="682"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="688"/>
         <source>OFF</source>
         <translation>Izključeno</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="683"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="689"/>
         <source>Lamp</source>
         <translation>Žaromet</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="688"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="694"/>
         <source>Hours</source>
         <translation>Ure</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="693"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="699"/>
         <source>No current errors or warnings</source>
         <translation>Trenutno brez napak ali opozoril</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="695"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="701"/>
         <source>Current errors/warnings</source>
         <translation>Trenutne napake/opozorila</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="698"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="704"/>
         <source>Projector Information</source>
         <translation>Podatki o naslikovalniku</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="934"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="968"/>
         <source>Authentication Error</source>
         <translation>Napaka potrditve veljavnosti</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="949"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="983"/>
         <source>No Authentication Error</source>
         <translation>Brez napake potrditve veljavnosti</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="998"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="1032"/>
         <source>Not Implemented Yet</source>
         <translation>Ni še izvedeno</translation>
     </message>
@@ -5829,7 +5829,7 @@ Končnica ni podprta</translation>
     <message>
         <location filename="../../openlp/core/projectors/tab.py" line="116"/>
         <source>Poll time (seconds)</source>
-        <translation type="unfinished"/>
+        <translation>Čas pozivanja (sekunde)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/tab.py" line="120"/>
@@ -6225,7 +6225,7 @@ Končnica ni podprta</translation>
         <translation>Samodejno &amp;enkratno predvajanje</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="954"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="955"/>
         <source>&amp;Delay between slides</source>
         <translation>Z&amp;amik med prosojnicami</translation>
     </message>
@@ -6323,67 +6323,67 @@ These files will be removed if you continue to save.</source>
         <translation>Datoteke sporeda  {file_path} ni bilo mogoče naložiti, ker je bodisi okvarjena, bodisi nedosegljiva ali pa ni veljavna OpenLP 2 oz. OpenLP 3 datoteka sporeda.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="965"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="966"/>
         <source>&amp;Auto Start - active</source>
         <translation>&amp;Samodejni zagon - vključen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="969"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="970"/>
         <source>&amp;Auto Start - inactive</source>
         <translation>&amp;Samodejni zagon - izključen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1046"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1047"/>
         <source>Input delay</source>
         <translation>Vhodna zakasnitev</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1046"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1047"/>
         <source>Delay between slides in seconds.</source>
         <translation>Razmik med prosojnicami v sekundah.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1424"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1425"/>
         <source>Edit</source>
         <translation>Uredi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1425"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1426"/>
         <source>Service copy only</source>
         <translation>Kopiraj Spored</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1428"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1429"/>
         <source>Slide theme</source>
         <translation>Tema prosojnice</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1432"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1433"/>
         <source>Notes</source>
         <translation>Opombe</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1686"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1687"/>
         <source>Missing Display Handler</source>
         <translation>Manjka upravljalnik prikaza</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1619"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1620"/>
         <source>Your item cannot be displayed as there is no handler to display it</source>
         <translation>Vašega predmeta ni mogoče prikazati zaradi manjkajočega upravljalnika</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1686"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1687"/>
         <source>Your item cannot be displayed as the plugin required to display it is missing or inactive</source>
         <translation>Vašega predmeta ni mogoče prikazati zaradi manjkajočega oz. nedelujočega vtičnika, ki je potreben za prikazovanje</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1711"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1712"/>
         <source>Rename item title</source>
         <translation>Spremeni naslov predmeta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1711"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1712"/>
         <source>Title:</source>
         <translation>Naslov:</translation>
     </message>
@@ -8237,7 +8237,7 @@ Zapiranje tega programa</translation>
         <translation>Naslovi knjig imajo lahko skrajšane nazive, npr. Ps 23 = Psalm 23</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="709"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="713"/>
         <source>Written by</source>
         <translation>Avtor</translation>
     </message>
@@ -8581,22 +8581,22 @@ Dodajte nanj nekaj predmetov in nato pritisnite Shrani</translation>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplanform.py" line="72"/>
         <source>Authentication Failed</source>
-        <translation type="unfinished"/>
+        <translation>Overjanje spodletelo</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplanform.py" line="72"/>
         <source>Authentiation Failed. Check your credentials in OpenLP Settings.</source>
-        <translation type="unfinished"/>
+        <translation>Overjanje spodletelo. Preverite svoje poverilnice v nastavitvah OpenLPja.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplanform.py" line="252"/>
         <source>Import failed</source>
-        <translation type="unfinished"/>
+        <translation>Uvažanje spodletelo</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplanform.py" line="252"/>
         <source>Could not import bible text because no bible is installed.</source>
-        <translation type="unfinished"/>
+        <translation>Ni mogoče uvoziti svetopisemskega besedila, saj ni nameščenega nobenega Svetega pisma.</translation>
     </message>
 </context>
 <context>
@@ -8632,7 +8632,15 @@ Dodajte nanj nekaj predmetov in nato pritisnite Shrani</translation>
   &lt;li&gt;Enter a description of your use case (eg. &quot;OpenLP Integration&quot;)&lt;/li&gt;
   &lt;li&gt;Copy and paste the provided Application ID and Secret values below.&lt;/li&gt;
 &lt;/ol&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Vnesite v spodnja besedilna polja podorbnosti vašega &lt;i&gt;Osebnega dostopnega žetona&lt;/i&gt; za &lt;b&gt;Spletno razporedno središče&lt;/b&gt;. Osebne dostopne žetone pridobite na naslednje načine:
+&lt;ol&gt;
+ &lt;li&gt;Vpišite se v vaš račun Spletnega razporednega središča na naslovu &lt;br&gt;
+  &lt;a href=https://api.planningcenteronline.com/oauth/applications&gt;
+ https://api.planningcenteronline.com/oauth/applications&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;Na dnu zaslona kliknite &quot;Nov osebni dostopni žeton&quot;.&lt;/li&gt;
+ &lt;li&gt;Vnesite opis rabe (npr. &quot;integracija OpenLPja&quot;)&lt;/li&gt;
+ &lt;li&gt;Kopirajte in prilepite spodaj dano Tajne številke in ID programa,&lt;/li&gt;
+&lt;/ol&gt;</translation>
     </message>
 </context>
 <context>
@@ -9396,25 +9404,25 @@ To je odgovorno za pravilen prikaz znakov.</translation>
 <context>
     <name>SongsPlugin.AuthorType</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/db.py" line="148"/>
+        <location filename="../../openlp/plugins/songs/lib/db.py" line="159"/>
         <source>Words</source>
         <comment>Author who wrote the lyrics of a song</comment>
         <translation>Besedilo</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/db.py" line="149"/>
+        <location filename="../../openlp/plugins/songs/lib/db.py" line="162"/>
         <source>Music</source>
         <comment>Author who wrote the music of a song</comment>
         <translation>Glasba</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/db.py" line="150"/>
+        <location filename="../../openlp/plugins/songs/lib/db.py" line="165"/>
         <source>Words and Music</source>
         <comment>Author who wrote both lyrics and music of a song</comment>
         <translation>Glasba in besedilo</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/db.py" line="152"/>
+        <location filename="../../openlp/plugins/songs/lib/db.py" line="168"/>
         <source>Translation</source>
         <comment>Author who translated the song</comment>
         <translation>Prevod</translation>
@@ -10338,7 +10346,7 @@ Popravite te oznake pred nadaljevanjem.</translation>
 <context>
     <name>SongsPlugin.MediaItem</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="724"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="728"/>
         <source>CCLI License</source>
         <translation>CCLI dovoljenje</translation>
     </message>
@@ -10429,12 +10437,12 @@ Popravite te oznake pred nadaljevanjem.</translation>
         <translation>Predstavnost</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="677"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="681"/>
         <source>CCLI License: </source>
         <translation>CCLI dovoljenje:</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="737"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="741"/>
         <source>Failed to render Song footer html.
 See log for details</source>
         <translation>Izrisovanje html-ja noge pesmi spodletelo.
@@ -10786,47 +10794,47 @@ Za več podrobnosti poglejte poročilo</translation>
         <translation>Knjiga {original} že obstaja. Ali želite za pesmi iz kjige {new} uporabiti obstoječo knjigo {original}?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="520"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="526"/>
         <source>Delete Author</source>
         <translation>Izbriši ustvarjalca</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="520"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="526"/>
         <source>Are you sure you want to delete the selected author?</source>
         <translation>Ali ste prepričani, da želite izbrisati izbranega ustvarjalca?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="520"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="526"/>
         <source>This author cannot be deleted, they are currently assigned to at least one song.</source>
         <translation>Tega ustvarjalca ni mogoče izbrisati, ker je trenutno dodeljena vsaj eni pesmi.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="532"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="538"/>
         <source>Delete Topic</source>
         <translation>Izbriši vsebino</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="532"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="538"/>
         <source>Are you sure you want to delete the selected topic?</source>
         <translation>Ali ste prepričani, da želite izbrisati to vsebino?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="532"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="538"/>
         <source>This topic cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Te vsebine ni mogoče izbrisati, ker je trenutno dodeljena vsaj eni pesmi.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="543"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="549"/>
         <source>Delete Book</source>
         <translation>Izbriši knjigo</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="543"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="549"/>
         <source>Are you sure you want to delete the selected book?</source>
         <translation>Ali ste prepričani, da želite izbrisati izbrano knnjigo?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="543"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="549"/>
         <source>This book cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Te knjige ni mogoče izbrisati, ker je trenutno dodeljena vsaj eni pesmi.</translation>
     </message>
@@ -11078,102 +11086,102 @@ Ali res želite uvoziti to pesem?</translation>
         <translation>Ustvarjalci (področje &quot;glasba&quot;)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="202"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="203"/>
         <source>Authors (Type &quot;Words and Music&quot;)</source>
         <translation>Ustvarjalci (področje &quot;glasba in besedilo&quot;)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="204"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="206"/>
         <source>Authors (Type &quot;Translation&quot;)</source>
         <translation>Ustvarjalci (področje &quot;prevod&quot;)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="205"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="207"/>
         <source>Authors (Type &quot;Words&quot; &amp; &quot;Words and Music&quot;)</source>
         <translation>Ustvarjalci (področji &quot;besedilo&quot; in &quot;glasba in besedilo&quot;)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="207"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="209"/>
         <source>Authors (Type &quot;Music&quot; &amp; &quot;Words and Music&quot;)</source>
         <translation>Ustvarjalci (področji &quot;glasba&quot; in &quot;glasba in besedilo&quot;)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="209"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="211"/>
         <source>Copyright information</source>
         <translation>Podatki o ustvarjalčevih pravicah</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="210"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="212"/>
         <source>Songbook Entries</source>
         <translation>Vnosi pesmarice</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="212"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="214"/>
         <source>CCLI License</source>
         <translation>CCLI dovoljenje</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="213"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="215"/>
         <source>Song CCLI Number</source>
         <translation>CCLI številka pesmi</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="214"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="216"/>
         <source>Topics</source>
         <translation>Vsebina</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="215"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="217"/>
         <source>Where rendering on first (cover) slide</source>
         <translation>Mesto izrisovanja na prvi (naslovni) prosojnici</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="217"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="219"/>
         <source>Placeholder</source>
         <translation>Ograda</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="217"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="219"/>
         <source>Description</source>
         <translation>Opis</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="224"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="226"/>
         <source>can be empty</source>
         <translation>je lahko prazna</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="225"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="227"/>
         <source>list of entries, can be empty</source>
         <translation>seznam vnosov, lahko je prazen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="230"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="232"/>
         <source>How to Use</source>
         <translation>Kako uporabljati</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="231"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="233"/>
         <source>Template</source>
         <translation>Predloga</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="232"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="234"/>
         <source>Mako Syntax</source>
         <translation>Mako-skladnja</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="234"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="236"/>
         <source>Reset Template</source>
         <translation>Ponastavi predlogo</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="321"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="323"/>
         <source>Save Username and Password</source>
         <translation>Shrani uporabniško ime in geslo</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="321"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="323"/>
         <source>WARNING: Saving your SongSelect password is INSECURE, your password is stored in PLAIN TEXT. Click Yes to save your password or No to cancel this.</source>
         <translation>OPOZORILO: Shranjevanje vašega gesla SongSelecta NI VARNO, saj je shranjeno kot NAVADNO BESEDILO. Kliknite Da za shranjevanje ali Ne za preklic.</translation>
     </message>

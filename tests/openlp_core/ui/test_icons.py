@@ -2,7 +2,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -20,13 +20,18 @@
 """
 Package to test the openlp.core.ui.icons package.
 """
-from unittest.mock import patch
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
 from PyQt5 import QtGui
 
+from openlp.core.common import Singleton
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.ui.icons import UiIcons
 
 
-def test_simple_icon(settings):
+def test_simple_icon(settings: Settings):
     # GIVEN: an basic set of icons
     with patch('openlp.core.ui.icons.UiIcons.__init__', return_value=None):
         icons = UiIcons()
@@ -39,3 +44,31 @@ def test_simple_icon(settings):
         icon_active = UiIcons().active
         # THEN: I should have an icon
         assert isinstance(icon_active, QtGui.QIcon)
+
+
+@patch('openlp.core.ui.icons.qta')
+@patch('openlp.core.ui.icons.build_icon')
+@patch('openlp.core.ui.icons.UiIcons.load_icons')
+@patch('openlp.core.ui.icons.AppLocation.get_directory')
+def test_uiicons_init(mocked_get_directory: MagicMock, mocked_load_icons: MagicMock, mocked_build_icon: MagicMock,
+                      mocked_qta: MagicMock, settings: Settings, registry: Registry, request):
+    """Test the __init__ method, that it makes the correct calls"""
+    # Set up test cleanup
+    def remove_singleton():
+        del Singleton._instances[UiIcons]
+
+    request.addfinalizer(remove_singleton)
+
+    # GIVEN: A mocked out qta module, and no instances already created
+    remove_singleton()
+    mocked_get_directory.return_value = Path('openlp')
+    expected_dir = str(Path('openlp', 'core', 'ui', 'fonts'))
+
+    # WHEN: A UiIcons instance is created
+    icons = UiIcons()
+
+    # THEN: The mocks should have been called correctly
+    mocked_qta.load_font.assert_called_once_with('op', 'OpenLP.ttf', 'openlp-charmap.json', directory=expected_dir)
+    mocked_qta.set_defaults.assert_called_once_with(**icons._default_icon_colors)
+    mocked_load_icons.assert_called_once_with(icons._icon_list)
+    mocked_build_icon.assert_called_once_with(':/icon/openlp-logo.svg')

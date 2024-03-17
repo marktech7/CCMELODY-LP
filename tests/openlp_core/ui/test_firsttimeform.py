@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -77,7 +77,7 @@ def mocked_set_icon(mock_settings):
     q_thread_patcher.stop()
 
 
-def test_init_sample_data(download_env):
+def test_init_sample_data(download_env, mock_settings):
     """
     Test that the theme data is loaded correctly in to a ThemeListWidgetItem object when instantiated
     """
@@ -94,7 +94,7 @@ def test_init_sample_data(download_env):
     mocked_download_worker.assert_called_once_with('url', 'BlueBurst.png')
 
 
-def test_init_download_worker(download_env):
+def test_init_download_worker(download_env, mock_settings):
     """
     Test that the `DownloadWorker` worker is set up correctly and that the thread is started.
     """
@@ -109,8 +109,8 @@ def test_init_download_worker(download_env):
 
     # THEN: The `DownloadWorker` should have been set up with the appropriate data
     mocked_download_worker.assert_called_once_with('url', 'BlueBurst.png')
-    mocked_download_worker.download_failed.connect.called_once_with(instance._on_download_failed())
-    mocked_download_worker.download_succeeded.connect.called_once_with(instance._on_thumbnail_downloaded)
+    mocked_download_worker().download_failed.connect.assert_called_once_with(instance._on_download_failed)
+    mocked_download_worker().download_succeeded.connect.assert_called_once_with(instance._on_thumbnail_downloaded)
     mocked_run_thread.assert_called_once_with(mocked_download_worker(), 'thumbnail_download_BlueBurst.png')
     assert mocked_ftw.thumbnail_download_threads == ['thumbnail_download_BlueBurst.png']
 
@@ -461,7 +461,8 @@ def test_failed_download(mocked_set_icon):
     worker.download_failed.emit()
 
     # THEN: Then the initial loading icon should have been replaced by the exception icon
-    mocked_set_icon.assert_has_calls([call(UiIcons().picture), call(UiIcons().exception)])
+    mocked_set_icon.assert_has_calls([call(UiIcons().get_icon_variant('picture')),
+                                      call(UiIcons().get_icon_variant('exception'))])
 
 
 @patch('openlp.core.ui.firsttimeform.build_icon')
@@ -481,7 +482,7 @@ def test_successful_download(mocked_build_icon, mocked_set_icon):
 
     # THEN: An icon should have been built from the downloaded file and used to replace the loading icon
     mocked_build_icon.assert_called_once_with(test_path)
-    mocked_set_icon.assert_has_calls([call(UiIcons().picture), call(mocked_build_icon())])
+    mocked_set_icon.assert_has_calls([call(UiIcons().get_icon_variant('picture')), call(mocked_build_icon())])
 
 
 @patch.object(FirstTimeForm, 'provide_help')

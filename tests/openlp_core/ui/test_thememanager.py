@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -389,9 +389,9 @@ def test_unzip_theme_invalid_version(registry):
     Test that themes with invalid (< 2.0) or with no version attributes are rejected
     """
     # GIVEN: An instance of ThemeManager whilst mocking a theme that returns a theme with no version attribute
-    with patch('openlp.core.ui.thememanager.zipfile.ZipFile') as mocked_zip_file,\
-            patch('openlp.core.ui.thememanager.ElementTree.getroot') as mocked_getroot,\
-            patch('openlp.core.ui.thememanager.XML'),\
+    with patch('openlp.core.ui.thememanager.zipfile.ZipFile') as mocked_zip_file, \
+            patch('openlp.core.ui.thememanager.ElementTree.getroot') as mocked_getroot, \
+            patch('openlp.core.ui.thememanager.XML'), \
             patch('openlp.core.ui.thememanager.critical_error_message_box') as mocked_critical_error_message_box:
 
         mocked_zip_file.return_value = MagicMock(**{'namelist.return_value': [os.path.join('theme', 'theme.xml')]})

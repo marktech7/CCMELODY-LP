@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -203,7 +203,7 @@ def test_parse_csv_file_csverror():
     mocked_csv_file.__str__.return_value = 'file.csv'
 
     with patch('openlp.plugins.bibles.lib.importers.csvbible.get_file_encoding',
-               return_value={'encoding': 'utf-8', 'confidence': 0.99}),\
+               return_value={'encoding': 'utf-8', 'confidence': 0.99}), \
             patch('openlp.plugins.bibles.lib.importers.csvbible.reader', side_effect=csv.Error):
 
         # WHEN: Calling CSVBible.parse_csv_file
@@ -240,7 +240,7 @@ def test_process_books(registry):
     """
     # GIVEN: An instance of CSVBible with the stop_import_flag set to False, and some sample data
     mocked_manager = MagicMock()
-    with patch('openlp.plugins.bibles.lib.bibleimport.BibleDB._setup'),\
+    with patch('openlp.plugins.bibles.lib.bibleimport.BibleDB._setup'), \
             patch('openlp.plugins.bibles.lib.importers.csvbible.translate'):
         importer = CSVBible(mocked_manager, path='.', name='.', books_path=Path('books.csv'),
                             verse_path=Path('verse.csv'))
@@ -289,7 +289,7 @@ def test_process_verses_successful(registry):
     """
     # GIVEN: An instance of CSVBible with the application and wizard attributes mocked out, and some test data.
     mocked_manager = MagicMock()
-    with patch('openlp.plugins.bibles.lib.bibleimport.BibleDB._setup'),\
+    with patch('openlp.plugins.bibles.lib.bibleimport.BibleDB._setup'), \
             patch('openlp.plugins.bibles.lib.importers.csvbible.translate'):
         importer = CSVBible(mocked_manager, path='.', name='.', books_path=Path('books.csv'),
                             verse_path=Path('verse.csv'))

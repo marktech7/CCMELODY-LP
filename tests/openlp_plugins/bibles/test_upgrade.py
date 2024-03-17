@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -59,7 +59,11 @@ def db_url():
     dst_path = tmp_path / f'openlp-{secrets.token_urlsafe()}.sqlite'
     shutil.copyfile(src_path, dst_path)
     yield 'sqlite:///' + str(dst_path)
-    dst_path.unlink()
+    try:
+        dst_path.unlink()
+    except PermissionError:
+        # on windows sometimes we try to delete this while still in use...?
+        pass
 
 
 def test_upgrade_2_basic(mock_message_box, db_url, mock_settings):
