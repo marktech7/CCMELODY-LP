@@ -124,7 +124,7 @@ class UiAboutDialog(object):
         build_tech = ('<ul>'
                       '<li><a href="https://www.python.org/">Python</a> (PSFL)</li>'
                       '<li><a href="https://www.qt.io">Qt6</a> (GPL3/LGPL3)</li>'
-                      '<li><a href="https://www.riverbankcomputing.co.uk/software/pyqt/intro">PyQt6</a> (GPL3)</li>'
+                      '<li><a href="https://pyside.org">PySide6</a> (GPL3/LGPL3)</li>'
                       '<li><a href="https://github.com/ActiveState/appdirs">appdirs</a> (MIT)</li>'
                       '<li><a href="https://alembic.sqlalchemy.org/en/latest/">Alembic</a> (MIT)</li>'
                       '<li><a href="https://www.crummy.com/software/BeautifulSoup/">BeautifulSoup 4</a> (MIT)</li>'
