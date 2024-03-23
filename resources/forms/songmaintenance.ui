@@ -107,8 +107,7 @@
         </column>
         <item row="0" column="0">
          <property name="text">
-          <string>
-Authors</string>
+          <string>Authors</string>
          </property>
          <property name="textAlignment">
           <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -120,8 +119,7 @@ Authors</string>
         </item>
         <item row="1" column="0">
          <property name="text">
-          <string>
-Topics</string>
+          <string>Topics</string>
          </property>
          <property name="textAlignment">
           <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -133,8 +131,7 @@ Topics</string>
         </item>
         <item row="2" column="0">
          <property name="text">
-          <string>
-Books/Hymnals</string>
+          <string>Books/Hymnals</string>
          </property>
          <property name="textAlignment">
           <set>AlignHCenter|AlignVCenter|AlignCenter</set>

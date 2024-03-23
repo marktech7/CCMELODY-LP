@@ -384,7 +384,7 @@ def clean_song(manager, song):
     song.search_lyrics = ' '.join([clean_string(remove_tags(verse[1], True)) for verse in verses])
     # The song does not have any author, add one.
     if not song.authors_songs:
-        name = SongStrings.AuthorUnknown
+        name = SongStrings().AuthorUnknown
         author = manager.get_object_filtered(Author, Author.display_name == name)
         if author is None:
             author = Author(display_name=name, last_name='', first_name='')

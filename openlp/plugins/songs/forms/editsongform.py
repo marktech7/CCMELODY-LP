@@ -911,7 +911,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         """
         text = self.copyright_edit.text()
         pos = self.copyright_edit.cursorPosition()
-        sign = SongStrings.CopyrightSymbol
+        sign = SongStrings().CopyrightSymbol
         text = text[:pos] + sign + text[pos:]
         self.copyright_edit.setText(text)
         self.copyright_edit.setFocus()

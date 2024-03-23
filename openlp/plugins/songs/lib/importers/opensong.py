@@ -129,7 +129,7 @@ class OpenSongImport(SongImport):
         try:
             tree = objectify.parse(file)
         except (etree.Error, etree.LxmlError):
-            self.log_error(file.name, SongStrings.XMLSyntaxError)
+            self.log_error(file.name, SongStrings().XMLSyntaxError)
             log.exception('Error parsing XML')
             return
         root = tree.getroot()

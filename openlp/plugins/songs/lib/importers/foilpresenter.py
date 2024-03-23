@@ -125,7 +125,7 @@ class FoilPresenterImport(SongImport):
                 xml = etree.tostring(parsed_file).decode()
                 self.foil_presenter.xml_to_song(xml)
             except etree.XMLSyntaxError:
-                self.log_error(file_path, SongStrings.XMLSyntaxError)
+                self.log_error(file_path, SongStrings().XMLSyntaxError)
                 log.exception('XML syntax error in file {path}'.format(path=file_path))
             except AttributeError:
                 self.log_error(file_path, translate('SongsPlugin.FoilPresenterSongImport',

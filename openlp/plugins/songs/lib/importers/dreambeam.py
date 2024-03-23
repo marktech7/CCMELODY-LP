@@ -93,16 +93,16 @@ class DreamBeamImport(SongImport):
                         parsed_file = etree.parse(xml_file, parser)
                 except etree.XMLSyntaxError:
                     log.exception('XML syntax error in file {name}'.format(name=file_path))
-                    self.log_error(file_path, SongStrings.XMLSyntaxError)
+                    self.log_error(file_path, SongStrings().XMLSyntaxError)
                     continue
                 except UnicodeDecodeError:
                     log.exception('Unreadable characters in {name}'.format(name=file_path))
-                    self.log_error(file_path, SongStrings.XMLSyntaxError)
+                    self.log_error(file_path, SongStrings().XMLSyntaxError)
                     continue
                 file_str = etree.tostring(parsed_file)
                 if not file_str:
                     log.exception('Could not find XML in file {name}'.format(name=file_path))
-                    self.log_error(file_path, SongStrings.XMLSyntaxError)
+                    self.log_error(file_path, SongStrings().XMLSyntaxError)
                     continue
                 xml = file_str.decode()
                 song_xml = objectify.fromstring(xml)
@@ -151,7 +151,7 @@ class DreamBeamImport(SongImport):
                         author_copyright = song_xml.Text2.Text.text
                 if author_copyright:
                     author_copyright = str(author_copyright)
-                    if author_copyright.find(SongStrings.CopyrightSymbol) >= 0:
+                    if author_copyright.find(SongStrings().CopyrightSymbol) >= 0:
                         self.add_copyright(author_copyright)
                     else:
                         self.parse_author(author_copyright)

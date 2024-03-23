@@ -111,14 +111,14 @@ def test_can_parse_file_having_a_processing_instruction(mocked_logger: MagicMock
         # otherwise we don't care about it now (but should in other tests...)
         assert ex is not etree.XMLSyntaxError
 
-    # THEN: the importer's log_error method was never called with SongStrings.XMLSyntaxError as its second
+    # THEN: the importer's log_error method was never called with SongStrings().XMLSyntaxError as its second
     # positional argument
     if importer.log_error.called:
         for call_args in importer.log_error.call_args_list:
             args = call_args[0]
             # there are at least two positional arguments
             if len(args) > 1:
-                assert args[1] is not SongStrings.XMLSyntaxError
+                assert args[1] is not SongStrings().XMLSyntaxError
 
     # THEN: the logger's 'exception' method was never called with a first positional argument
     # which is a string and starts with 'XML syntax error in file'

@@ -54,16 +54,16 @@ class EasySlidesImport(SongImport):
                 parsed_file = etree.parse(xml_file, parser)
         except etree.XMLSyntaxError:
             log.exception('XML syntax error in file {name}'.format(name=self.import_source))
-            self.log_error(self.import_source, SongStrings.XMLSyntaxError)
+            self.log_error(self.import_source, SongStrings().XMLSyntaxError)
             return
         except UnicodeDecodeError:
             log.exception('Unreadable characters in {name}'.format(name=self.import_source))
-            self.log_error(self.import_source, SongStrings.XMLSyntaxError)
+            self.log_error(self.import_source, SongStrings().XMLSyntaxError)
             return
         file_str = etree.tostring(parsed_file)
         if not file_str:
             log.exception('Could not find XML in file {name}'.format(name=self.import_source))
-            self.log_error(self.import_source, SongStrings.XMLSyntaxError)
+            self.log_error(self.import_source, SongStrings().XMLSyntaxError)
             return
         xml = file_str.decode()
         song_xml = objectify.fromstring(xml)
