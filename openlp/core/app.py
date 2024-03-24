@@ -502,7 +502,7 @@ def main():
     app = OpenLP()
     Registry.create()
     QtWidgets.QApplication.setOrganizationName('OpenLP')
-    QtWidgets.QApplication.setOrganizationName('openlp.org')
+    QtWidgets.QApplication.setOrganizationDomain('openlp.org')
     if args.portable:
         # This has to be done here so that we can load the settings before instantiating the application object
         portable_path, settings = setup_portable_settings(args.portablepath)
