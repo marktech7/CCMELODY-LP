@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -101,6 +101,8 @@ class OpenLP(QtCore.QObject, LogMixin):
         if 'OpenLP' in args:
             args.remove('OpenLP')
         self.args.extend(args)
+        # set desktop file name, which is used to display the proper window icon on Wayland
+        QtGui.QGuiApplication.setDesktopFileName("openlp")
         # Decide how many screens we have and their size
         screens = ScreenList.create(app)
         # First time checks in settings
@@ -471,11 +473,11 @@ def main():
         # by calling set_windows_darkmode
         qt_args.extend(['-platform', 'windows:darkmode=1'])
     elif is_macosx() and getattr(sys, 'frozen', False) and not os.environ.get('QTWEBENGINEPROCESS_PATH'):
-        # Work around an issue where PyInstaller is not setting this environment variable
-        os.environ['QTWEBENGINEPROCESS_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'PySide6' / 'Qt6' /
+        # Set the location to the QtWebEngineProcess binary, normally set by PyInstaller, but it moves around...
+        os.environ['QTWEBENGINEPROCESS_PATH'] = str((AppLocation.get_directory(AppLocation.AppDir) / 'PySide6' / 'Qt6' /
                                                     'lib' / 'QtWebEngineCore.framework' / 'Versions' / '6' /
                                                     'Helpers' / 'QtWebEngineProcess.app' / 'Contents' / 'MacOS' /
-                                                    'QtWebEngineProcess')
+                                                    'QtWebEngineProcess').resolve())
     no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
                                      and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
     # Prevent the use of wayland, use xcb instead
@@ -487,9 +489,11 @@ def main():
     app = OpenLP()
     Registry.create()
     QtWidgets.QApplication.setOrganizationName('OpenLP')
-    QtWidgets.QApplication.setOrganizationName('openlp.org')
+    QtWidgets.QApplication.setApplicationName('OpenLP')
+    QtWidgets.QApplication.setOrganizationDomain('openlp.org')
     if args.portable:
         # This has to be done here so that we can load the settings before instantiating the application object
+        QtWidgets.QApplication.setApplicationName('OpenLPPortable')
         portable_path, settings = setup_portable_settings(args.portablepath)
     else:
         settings = Settings()
@@ -511,7 +515,6 @@ def main():
         font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
         application.setFont(font)
     if args.portable:
-        application.setApplicationName('OpenLPPortable')
         data_path = portable_path / 'Data'
         set_up_logging(portable_path / 'Other')
         set_up_web_engine_cache(portable_path / 'Other' / 'web_cache')
@@ -522,7 +525,6 @@ def main():
         settings.setValue('advanced/is portable', True)
         settings.sync()
     else:
-        application.setApplicationName('OpenLP')
         set_up_logging(AppLocation.get_directory(AppLocation.CacheDir))
         set_up_web_engine_cache(AppLocation.get_directory(AppLocation.CacheDir) / 'web_cache')
     settings.init_default_shortcuts()

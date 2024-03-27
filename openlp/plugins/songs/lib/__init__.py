@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -384,7 +384,7 @@ def clean_song(manager, song):
     song.search_lyrics = ' '.join([clean_string(remove_tags(verse[1], True)) for verse in verses])
     # The song does not have any author, add one.
     if not song.authors_songs:
-        name = SongStrings.AuthorUnknown
+        name = SongStrings().AuthorUnknown
         author = manager.get_object_filtered(Author, Author.display_name == name)
         if author is None:
             author = Author(display_name=name, last_name='', first_name='')

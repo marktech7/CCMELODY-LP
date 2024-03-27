@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -72,7 +72,7 @@ class LiveWorshipImport(SongImport):
         try:
             self.root = etree.fromstring(xml_content, parser)
         except etree.XMLSyntaxError:
-            self.log_error(self.dump_file, SongStrings.XMLSyntaxError)
+            self.log_error(self.dump_file, SongStrings().XMLSyntaxError)
             log.exception('XML syntax error in file {path}'.format(path=str(self.dump_file)))
 
     def extract_songs(self):

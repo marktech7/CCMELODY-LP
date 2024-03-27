@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -73,7 +73,7 @@ class OpenLyricsImport(SongImport):
                 self.open_lyrics.xml_to_song(xml)
             except etree.XMLSyntaxError:
                 log.exception('XML syntax error in file {path}'.format(path=file_path))
-                self.log_error(file_path, SongStrings.XMLSyntaxError)
+                self.log_error(file_path, SongStrings().XMLSyntaxError)
             except OpenLyricsError as exception:
                 log.exception('OpenLyricsException {error:d} in file {name}: {text}'.format(error=exception.type,
                                                                                             name=file_path,

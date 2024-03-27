@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -32,7 +32,7 @@ from openlp.core.ui.slidecontroller import LiveController, PreviewController
 
 def loader():
     """
-    God class to load all the components which are registered with the Registry
+    God method to load all the components which are registered with the Registry
 
     :return: None
     """

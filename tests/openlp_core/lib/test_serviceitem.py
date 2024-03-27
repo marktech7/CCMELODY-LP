@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -1173,3 +1173,25 @@ def test_get_service_repr_song(registry: Registry):
     assert rep['header'].get('plugin') == 'songs'
     assert rep['header'].get('theme') == 'Default'
     assert rep['header'].get('title') == 'Test Song'
+
+
+@pytest.mark.parametrize('is_text, is_clear_called', ((True, True), (False, False)))
+def test_update_theme(registry: Registry, is_text: bool, is_clear_called: bool):
+    """Test that the update_theme() method invalidates the cache when the theme changes for text items"""
+    # GIVEN: A service item
+    registry.register('renderer', MagicMock())
+    service_item = ServiceItem()
+    service_item._clear_slides_cache = MagicMock()
+    if is_text:
+        service_item.service_item_type = ServiceItemType.Text
+    else:
+        service_item.service_item_type = ServiceItemType.Image
+
+    # WHEN: update_theme() is called
+    service_item.update_theme('Snow')
+
+    # THEN: The clear method should or should not have been called
+    if is_clear_called:
+        service_item._clear_slides_cache.assert_called_once()
+    else:
+        service_item._clear_slides_cache.assert_not_called()

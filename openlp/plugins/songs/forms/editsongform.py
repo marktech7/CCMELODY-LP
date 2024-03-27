@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -278,6 +278,12 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
                                                            name=VerseType.translated_name(tag[0]),
                                                            number=tag[1:]))
                 return False
+        if self.audio_list_widget.count() > 1:
+            self.song_tab_widget.setCurrentIndex(3)
+            critical_error_message_box(message=translate('SongsPlugin.EditSongForm',
+                                                         'Cannot link more than one audio file. Remove items from '
+                                                         'Linked Audio other than the one you wish to keep.'))
+            return False
         return True
 
     def _validate_tags(self, tags, first_time=True):
@@ -911,7 +917,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         """
         text = self.copyright_edit.text()
         pos = self.copyright_edit.cursorPosition()
-        sign = SongStrings.CopyrightSymbol
+        sign = SongStrings().CopyrightSymbol
         text = text[:pos] + sign + text[pos:]
         self.copyright_edit.setText(text)
         self.copyright_edit.setFocus()
@@ -942,6 +948,10 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         """
         Loads file(s) from the filesystem.
         """
+        if self.audio_list_widget.count() > 0:
+            critical_error_message_box(message=translate('SongsPlugin.EditSongForm',
+                                                         'Cannot link more than one audio file.'))
+            return
         filters = '{text} (*)'.format(text=UiStrings().AllFiles)
         file_paths, filter_used = FileDialog.getOpenFileNames(
             parent=self, caption=translate('SongsPlugin.EditSongForm', 'Open File(s)'), filter=filters)
@@ -954,6 +964,10 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         """
         Loads file(s) from the media plugin.
         """
+        if self.audio_list_widget.count() > 0:
+            critical_error_message_box(message=translate('SongsPlugin.EditSongForm',
+                                                         'Cannot link more than one audio file.'))
+            return
         if self.media_form.exec():
             for file_path in self.media_form.get_selected_files():
                 item = QtWidgets.QListWidgetItem(file_path.name)

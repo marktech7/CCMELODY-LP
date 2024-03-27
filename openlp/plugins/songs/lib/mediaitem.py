@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -124,7 +124,7 @@ class SongMediaItem(MediaManagerItem):
     def retranslate_ui(self):
         self.search_text_label.setText('{text}:'.format(text=UiStrings().Search))
         self.search_text_button.setText(UiStrings().Search)
-        self.maintenance_action.setText(SongStrings.SongMaintenance)
+        self.maintenance_action.setText(SongStrings().SongMaintenance)
         self.maintenance_action.setToolTip(translate('SongsPlugin.MediaItem',
                                                      'Maintain the lists of authors, topics and books.'))
 
@@ -145,11 +145,11 @@ class SongMediaItem(MediaManagerItem):
             (SongSearch.Lyrics, UiIcons().search_lyrics,
                 translate('SongsPlugin.MediaItem', 'Lyrics'),
                 translate('SongsPlugin.MediaItem', 'Search Lyrics...')),
-            (SongSearch.Authors, UiIcons().user, SongStrings.Authors,
+            (SongSearch.Authors, UiIcons().user, SongStrings().Authors,
                 translate('SongsPlugin.MediaItem', 'Search Authors...')),
-            (SongSearch.Topics, UiIcons().light_bulb, SongStrings.Topics,
+            (SongSearch.Topics, UiIcons().light_bulb, SongStrings().Topics,
                 translate('SongsPlugin.MediaItem', 'Search Topics...')),
-            (SongSearch.Books, UiIcons().address, SongStrings.SongBooks,
+            (SongSearch.Books, UiIcons().address, SongStrings().SongBooks,
                 translate('SongsPlugin.MediaItem', 'Search Songbooks...')),
             (SongSearch.Themes, UiIcons().theme, UiStrings().Themes, UiStrings().SearchThemes),
             (SongSearch.Copyright, UiIcons().copyright,
@@ -673,7 +673,7 @@ class SongMediaItem(MediaManagerItem):
                 authors=create_separated_list(authors.translation))
             )
         if song.copyright:
-            item.raw_footer.append("{symbol} {song}".format(symbol=SongStrings.CopyrightSymbol,
+            item.raw_footer.append("{symbol} {song}".format(symbol=SongStrings().CopyrightSymbol,
                                                             song=song.copyright))
         if song.songbook_entries:
             item.raw_footer.append(", ".join(songbooks))

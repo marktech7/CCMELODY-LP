@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,6 +21,7 @@
 """
 This module contains tests for the WordProject Bible importer.
 """
+import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch
 
@@ -232,3 +233,14 @@ def test_do_import_no_language(settings):
     assert mocked_process_books.call_count == 0
     mocked_cleanup.assert_called_once_with()
     assert result is False
+
+
+@pytest.mark.parametrize('input_, output', [
+    ('1', 1),
+    ('02.', 2),
+    ('3-4', 3),
+    ('exodus', None)
+])
+def test_get_number(input_: str, output: int, settings):
+    importer = WordProjectBible(MagicMock(), path='.', name='.', file_path='dummy.zip')
+    assert importer.get_number(input_) == output

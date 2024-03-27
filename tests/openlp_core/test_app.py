@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -19,13 +19,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 import sys
-import pytest
-
+from argparse import Namespace
 from pathlib import Path
 from tempfile import mkdtemp
-
 from unittest.mock import MagicMock, patch
 
+import pytest
 from PySide6 import QtCore, QtWidgets
 
 # Mock QtWebEngineCore
@@ -37,14 +36,20 @@ from openlp.core.common.settings import Settings
 
 
 @pytest.fixture
-def app_main_env():
+def mocked_qapp():
+    patcher = patch('openlp.core.app.QtWidgets.QApplication')
+    yield patcher.start()
+    patcher.stop()
+
+
+@pytest.fixture
+def app_main_env(mocked_qapp):
     with patch('openlp.core.app.Settings') as mock_settings, \
             patch('openlp.core.app.Registry') as mock_registry, \
             patch('openlp.core.app.AppLocation') as mock_apploc, \
             patch('openlp.core.app.LanguageManager'), \
             patch('openlp.core.app.qInitResources'), \
-            patch('openlp.core.app.parse_options'), \
-            patch('openlp.core.app.QtWidgets.QApplication'), \
+            patch('openlp.core.app.parse_options') as mocked_parse_options, \
             patch('openlp.core.app.QtWidgets.QMessageBox.warning') as mock_warn, \
             patch('openlp.core.app.QtWidgets.QMessageBox.information'), \
             patch('openlp.core.app.OpenLP') as mock_openlp, \
@@ -58,6 +63,10 @@ def app_main_env():
         openlp_server.is_another_instance_running.return_value = False
         mock_apploc.get_data_path.return_value = Path()
         mock_apploc.get_directory.return_value = Path()
+        mocked_parse_options.return_value = Namespace(no_error_form=False, loglevel='warning', portable=False,
+                                                      portablepath=None, no_web_server=False, display_custom_path=None,
+                                                      rargs=[])
+        mocked_qapp.return_value.devicePixelRatio.return_value = 1.0
         mock_warn.return_value = True
         openlp_instance = MagicMock()
         mock_openlp.return_value = openlp_instance
@@ -310,7 +319,8 @@ def test_backup_on_upgrade(mocked_question, mocked_get_version, qapp, settings):
 @patch('openlp.core.app.backup_if_version_changed')
 @patch('openlp.core.app.set_up_web_engine_cache')
 @patch('openlp.core.app.set_up_logging')
-def test_main(mock_logging, mock_web_cache, mock_backup, mock_sys, mock_openlp, app_main_env):
+def test_main(mock_logging: MagicMock, mock_web_cache: MagicMock, mock_backup: MagicMock, mock_sys: MagicMock,
+              mock_openlp: MagicMock, mocked_qapp: MagicMock, app_main_env: None):
     """
     Test the main method performs primary actions
     """
@@ -328,6 +338,9 @@ def test_main(mock_logging, mock_web_cache, mock_backup, mock_sys, mock_openlp, 
     mock_logging.assert_called_once()
     mock_web_cache.assert_called_once()
     mock_sys.exit.assert_called_once()
+    mocked_qapp.setOrganizationName.assert_called_once_with('OpenLP')
+    mocked_qapp.setApplicationName.assert_called_once_with('OpenLP')
+    mocked_qapp.setOrganizationDomain.assert_called_once_with('openlp.org')
 
 
 @patch('openlp.core.app.QtWidgets.QMessageBox.warning')
@@ -343,6 +356,7 @@ def test_main_future_settings(mock_move: MagicMock, mock_get_path: MagicMock, mo
     settings.from_future = MagicMock(return_value=True)
     settings.version_mismatched = MagicMock(return_value=True)
     settings.clear = MagicMock()
+    settings.upgrade_settings = MagicMock()
     settings.setValue('core/application version', '3.0.1')
     mock_warn.return_value = QtWidgets.QMessageBox.StandardButton.Yes
     MOCKED_VERSION = {
@@ -361,13 +375,20 @@ def test_main_future_settings(mock_move: MagicMock, mock_get_path: MagicMock, mo
     assert result is True
     mock_move.assert_called_once()
     settings.clear.assert_called_once_with()
+    settings.upgrade_settings.assert_called_once_with()
     mock_warn.assert_called_once()
 
 
+if is_win():
+    p_prefix = 'C:'
+else:
+    p_prefix = ''
+
+
 @pytest.mark.parametrize('portable_path, settings_path',
-                         [('settings', str(Path('/openlp/settings/Data/OpenLP.ini'))),
-                          (None, str(Path('/Data/OpenLP.ini'))),
-                          ('/openlp/settings/', str(Path('/openlp/settings/Data/OpenLP.ini')))])
+                         [('settings', str(Path(p_prefix + '/openlp/settings/Data/OpenLP.ini'))),
+                          (None, str(Path(p_prefix + '/Data/OpenLP.ini'))),
+                          (p_prefix + '/openlp/settings/', str(Path(p_prefix + '/openlp/settings/Data/OpenLP.ini')))])
 @patch('openlp.core.app.Settings')
 @patch('openlp.core.app.AppLocation')
 def test_setup_portable_settings(MockAppLocation: MagicMock, MockSettings: MagicMock, portable_path: str,

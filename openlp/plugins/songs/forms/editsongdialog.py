@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -309,15 +309,15 @@ class Ui_EditSongDialog(object):
         self.verse_delete_button.setText(UiStrings().Delete)
         self.song_tab_widget.setTabText(self.song_tab_widget.indexOf(self.lyrics_tab),
                                         translate('SongsPlugin.EditSongForm', 'Title && Lyrics'))
-        self.authors_group_box.setTitle(SongStrings.Authors)
+        self.authors_group_box.setTitle(SongStrings().Authors)
         self.author_add_button.setText(translate('SongsPlugin.EditSongForm', '&Add to Song'))
         self.author_edit_button.setText(translate('SongsPlugin.EditSongForm', '&Edit Author Type'))
         self.author_remove_button.setText(translate('SongsPlugin.EditSongForm', '&Remove'))
         self.maintenance_button.setText(translate('SongsPlugin.EditSongForm', '&Manage Authors, Topics, Songbooks'))
-        self.topics_group_box.setTitle(SongStrings.Topics)
+        self.topics_group_box.setTitle(SongStrings().Topics)
         self.topic_add_button.setText(translate('SongsPlugin.EditSongForm', 'A&dd to Song'))
         self.topic_remove_button.setText(translate('SongsPlugin.EditSongForm', 'R&emove'))
-        self.songbook_group_box.setTitle(SongStrings.SongBooks)
+        self.songbook_group_box.setTitle(SongStrings().SongBooks)
         self.songbook_add_button.setText(translate('SongsPlugin.EditSongForm', 'Add &to Song'))
         self.songbook_remove_button.setText(translate('SongsPlugin.EditSongForm', 'Re&move'))
         self.song_tab_widget.setTabText(self.song_tab_widget.indexOf(self.authors_tab),
@@ -325,7 +325,7 @@ class Ui_EditSongDialog(object):
         self.theme_group_box.setTitle(UiStrings().Theme)
         self.theme_add_button.setText(translate('SongsPlugin.EditSongForm', 'New &Theme'))
         self.rights_group_box.setTitle(translate('SongsPlugin.EditSongForm', 'Copyright Information'))
-        self.copyright_insert_button.setText(SongStrings.CopyrightSymbol)
+        self.copyright_insert_button.setText(SongStrings().CopyrightSymbol)
         self.ccli_label.setText(UiStrings().CCLISongNumberLabel)
         self.comments_group_box.setTitle(translate('SongsPlugin.EditSongForm', 'Comments'))
         self.song_tab_widget.setTabText(self.song_tab_widget.indexOf(self.theme_tab),

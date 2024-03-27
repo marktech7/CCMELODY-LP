@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -58,14 +58,14 @@ def mock_geometry():
 def display_window_env():
     box_layout_patcher = patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
     web_view_patcher = patch('openlp.core.display.webengine.WebEngineView')
-    web_scheme_patcher = patch('openlp.core.display.webengine.WebViewSchemes')
+    web_view_schemes_patcher = patch('openlp.core.display.webengine.WebViewSchemes')
     box_layout_patcher.start()
     web_view_patcher.start()
-    web_scheme_patcher.start()
+    web_view_schemes_patcher.start()
     yield
     box_layout_patcher.stop()
     web_view_patcher.stop()
-    web_scheme_patcher.stop()
+    web_view_schemes_patcher.stop()
 
 
 def test_x11_override_on(display_window_env, mock_settings):

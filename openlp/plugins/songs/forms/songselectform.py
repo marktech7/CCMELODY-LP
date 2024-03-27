@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -127,7 +127,7 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
                 self.song_progress_bar.setValue(2)
                 song_filename = self.current_download_item.downloadDirectory() + '/' \
                     + self.current_download_item.downloadFileName()
-                song_file = open(song_filename, 'rt')
+                song_file = open(song_filename, 'rt', encoding='utf-8')
                 song_content = song_file.read()
                 song_file.seek(0)
                 if self.check_for_duplicate(song_content):

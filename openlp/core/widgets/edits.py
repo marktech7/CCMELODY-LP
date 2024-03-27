@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -266,7 +266,7 @@ class PathEdit(QtWidgets.QWidget):
         """
         if path:
             self._path = Path(path)
-            text = path_to_str(path)
+            text = path_to_str(self._path)
             self.line_edit.setText(text)
             self.line_edit.setToolTip(text)
 

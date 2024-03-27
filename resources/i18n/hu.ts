@@ -1004,12 +1004,12 @@ a keresett szöveg minimum {count} karaktert és egy üres karaktert kell tartal
 <context>
     <name>BiblesPlugin.CSVBible</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/csvbible.py" line="147"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/csvbible.py" line="166"/>
         <source>Importing books... {book}</source>
         <translation>Könyvek importálása… {book}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/csvbible.py" line="169"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/csvbible.py" line="188"/>
         <source>Importing verses from {book}...</source>
         <comment>Importing verses from &lt;book name&gt;...</comment>
         <translation>Versek importálása ebből a könyvből: {book}…</translation>
@@ -1309,22 +1309,22 @@ Nincs lehetőség a könyvnevek módosítására.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="626"/>
         <source>Invalid SWORD folder</source>
-        <translation type="unfinished"/>
+        <translation>Érvénytelen SWORD mappa</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="626"/>
         <source>The folder selected does not contain a valid SWORD module.</source>
-        <translation type="unfinished"/>
+        <translation>A kiválasztott mappa nem tartalmaz érvényes SWORD modult.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="646"/>
         <source>Invalid SWORD zip-file</source>
-        <translation type="unfinished"/>
+        <translation>Érvénytelen SWORD zip-fájl</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="646"/>
         <source>The file selected is not a valid SWORD zip-file.</source>
-        <translation type="unfinished"/>
+        <translation>A kiválasztott fájl nem érvényes SWORD zip-fájl.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="706"/>
@@ -2422,12 +2422,12 @@ Más képekkel kellene helyettesíteni ezeket?</translation>
 <context>
     <name>OpenLP</name>
     <message>
-        <location filename="../../openlp/core/app.py" line="171"/>
+        <location filename="../../openlp/core/app.py" line="174"/>
         <source>Data Directory Error</source>
         <translation>Adatmappahiba</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="171"/>
+        <location filename="../../openlp/core/app.py" line="174"/>
         <source>OpenLP data folder was not found in:
 
 {path}
@@ -2448,24 +2448,24 @@ Szerencsés lenne az adatmappát helyreállítani az alapértelmezett helyére, 
 Helyreállítható az adatmappa az alapértelmezett helyére? Ha nem, akkor az OpenLP bezáródik és meg lehet kísérelni elhárítani a problémát.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="247"/>
+        <location filename="../../openlp/core/app.py" line="250"/>
         <source>Backup</source>
         <translation>Biztonsági mentés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="230"/>
+        <location filename="../../openlp/core/app.py" line="233"/>
         <source>OpenLP has been upgraded, do you want to create
 a backup of the old data folder?</source>
         <translation>Az OpenLP frissítve lett, készüljön biztonsági mentés 
 az OpenLP régi adatmappájáról?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="241"/>
+        <location filename="../../openlp/core/app.py" line="244"/>
         <source>Backup of the data folder failed!</source>
         <translation>Az adatmappa biztonsági mentése nem sikerült!</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="244"/>
+        <location filename="../../openlp/core/app.py" line="247"/>
         <source>A backup of the data folder has been created at:
 
 {text}</source>
@@ -2474,12 +2474,12 @@ az OpenLP régi adatmappájáról?</translation>
 {text}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="353"/>
+        <location filename="../../openlp/core/app.py" line="356"/>
         <source>Downgrade</source>
         <translation>Visszafejlesztés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="353"/>
+        <location filename="../../openlp/core/app.py" line="356"/>
         <source>OpenLP has found a configuration file created by a newer version of OpenLP. OpenLP will start with a fresh install as downgrading data is not supported. Any existing data will be backed up to:
 
 {data_folder_backup_path}
@@ -2492,17 +2492,17 @@ Do you want to continue?</source>
 Folytatható a telepítés?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="378"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>Settings Backup</source>
         <translation>Beállítások biztonsági mentése</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="370"/>
+        <location filename="../../openlp/core/app.py" line="373"/>
         <source>Your settings are about to be upgraded. A backup will be created at {settings_back_up_path}</source>
         <translation>A beállítások frissítés alatt állnak. Biztonsági mentés készül ide: {settings_back_up_path}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="378"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>Settings back up failed.
 
 OpenLP will attempt to continue.</source>
@@ -2511,17 +2511,17 @@ OpenLP will attempt to continue.</source>
 Az OpenLP megkísérli a folytatást.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="389"/>
+        <location filename="../../openlp/core/app.py" line="392"/>
         <source>OpenLP Backup</source>
         <translation>OpenLP biztonsági mentés </translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="389"/>
+        <location filename="../../openlp/core/app.py" line="392"/>
         <source>Backup of the data folder failed during downgrade.</source>
         <translation>Az adatmappa biztonsági mentése nem sikerült a visszafejlesztés közben.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/__init__.py" line="406"/>
+        <location filename="../../openlp/core/common/__init__.py" line="414"/>
         <source>Image Files</source>
         <translation>Képfájlok</translation>
     </message>
@@ -2551,7 +2551,7 @@ Az OpenLP megkísérli a folytatást.</translation>
         <translation>Videofájlok</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="667"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="673"/>
         <source>Open</source>
         <translation>Megnyitás</translation>
     </message>
@@ -2745,12 +2745,12 @@ Az OpenLP megkísérli a folytatást.</translation>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="173"/>
         <source>Miscellaneous Workarounds</source>
-        <translation type="unfinished"/>
+        <translation>Egyéb kerülőmegoldások</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="174"/>
         <source>HiDPI Mode:</source>
-        <translation type="unfinished"/>
+        <translation>HiDPI-mód:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="175"/>
@@ -2760,12 +2760,12 @@ Az OpenLP megkísérli a folytatást.</translation>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="176"/>
         <source>Legacy</source>
-        <translation type="unfinished"/>
+        <translation>Örökség</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="177"/>
         <source>DPI Unaware (Windows only)</source>
-        <translation type="unfinished"/>
+        <translation>DPI-t nem ismerő (csak Windows)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="240"/>
@@ -4640,7 +4640,7 @@ Adatbázis: {db_name}</translation>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="128"/>
         <source>&lt;strong&gt;OpenLP could not detect VLC.&lt;/strong&gt; You will not be able to play media without it. Please download and install from the VLC web site: &lt;a href=&quot;https://www.videolan.org/vlc/download-macosx.html&quot;&gt;https://www.videolan.org/vlc/&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;strong&gt;OpenLP nem tudta észlelni a VLC-t.&lt;/strong&gt; Médialejátszás így nem lehetséges. Kérjük, töltse le és telepítse a VLC-t webhelyről: &lt;a href=&quot;https://www.videolan.org/vlc/download-macosx.html&quot;&gt;https://www.videolan.org/vlc/&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="160"/>
@@ -5649,157 +5649,157 @@ Az utótag nem támogatott</translation>
         <translation>Projektor &amp;törlése</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="500"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="506"/>
         <source>Delete projector ({projector.link.ip}) {projector.link.name}?</source>
         <translation>Projektor törlése: ({projector.link.ip}) {projector.link.name}?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="502"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="508"/>
         <source>Are you sure you want to delete this projector?</source>
         <translation>Valóban törölhető a projektor?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="628"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="634"/>
         <source>Name</source>
         <translation>Név</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="630"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="636"/>
         <source>IP</source>
         <translation>IP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="632"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="638"/>
         <source>Port</source>
         <translation>Portszám</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="634"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="640"/>
         <source>Notes</source>
         <translation>Jegyzetek</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="638"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="644"/>
         <source>Projector information not available at this time.</source>
         <translation>A projektorinformációk jelenleg nem állnak rendelkezésre.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="640"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="646"/>
         <source>Projector Name</source>
         <translation>Projektor neve</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="643"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="649"/>
         <source>Manufacturer</source>
         <translation>Gyártó</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="645"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="651"/>
         <source>Model</source>
         <translation>Modell</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="647"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="653"/>
         <source>PJLink Class</source>
         <translation>PJLink-osztály</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="650"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="656"/>
         <source>Software Version</source>
         <translation>Szoftververzió</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="653"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="659"/>
         <source>Serial Number</source>
         <translation>Sorozatszám</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="656"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="662"/>
         <source>Lamp Model Number</source>
         <translation>Lámpa modellszáma</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="659"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="665"/>
         <source>Filter Model Number</source>
         <translation>Szűrő modellszáma</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="662"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="668"/>
         <source>Other info</source>
         <translation>További információ</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="665"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="671"/>
         <source>Power status</source>
         <translation>Üzemállapot</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="667"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="673"/>
         <source>Shutter is</source>
         <translation>Zár…</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="667"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="673"/>
         <source>Closed</source>
         <translation>Bezárva</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="671"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="677"/>
         <source>Current source input is</source>
         <translation>Aktuális bemenet:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="678"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="684"/>
         <source>Unavailable</source>
         <translation>Elérhetetlen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="680"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="686"/>
         <source>ON</source>
         <translation>BEKAPCSOLVA</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="682"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="688"/>
         <source>OFF</source>
         <translation>KIKAPCSOLVA</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="683"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="689"/>
         <source>Lamp</source>
         <translation>Lámpa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="688"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="694"/>
         <source>Hours</source>
         <translation>Óra</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="693"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="699"/>
         <source>No current errors or warnings</source>
         <translation>Nincsenek hibák vagy figyelmeztetések</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="695"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="701"/>
         <source>Current errors/warnings</source>
         <translation>Aktuális hibák és figyelmeztetések</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="698"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="704"/>
         <source>Projector Information</source>
         <translation>Projektorinformációk</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="934"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="968"/>
         <source>Authentication Error</source>
         <translation>Azonosítási hiba</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="949"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="983"/>
         <source>No Authentication Error</source>
         <translation>Nincs azonosítási hiba</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="998"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="1032"/>
         <source>Not Implemented Yet</source>
         <translation>Nincs megvalósítva még</translation>
     </message>
@@ -6225,7 +6225,7 @@ Az utótag nem támogatott</translation>
         <translation>Automatikus &amp;egyszeri diavetítés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="954"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="955"/>
         <source>&amp;Delay between slides</source>
         <translation>&amp;Diák közötti késleltetés</translation>
     </message>
@@ -6323,67 +6323,67 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
         <translation>A sorrendfájlt nem lehet betölteni, mivel vagy sérült, vagy elérhetetlen vagy nem érvényes OpenLP2 vagy OpenLP 3 sorrendfájl: {file_path}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="965"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="966"/>
         <source>&amp;Auto Start - active</source>
         <translation>&amp;Automatikus indítás ‒ aktív</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="969"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="970"/>
         <source>&amp;Auto Start - inactive</source>
         <translation>&amp;Automatikus indítás ‒ inaktív</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1046"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1047"/>
         <source>Input delay</source>
         <translation>Bemeneti késleltetés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1046"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1047"/>
         <source>Delay between slides in seconds.</source>
         <translation>Diák közötti késleltetés másodpercben.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1424"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1425"/>
         <source>Edit</source>
         <translation>Szerkesztés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1425"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1426"/>
         <source>Service copy only</source>
         <translation>A sorrend csak másolható</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1428"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1429"/>
         <source>Slide theme</source>
         <translation>Dia témája</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1432"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1433"/>
         <source>Notes</source>
         <translation>Jegyzetek</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1686"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1687"/>
         <source>Missing Display Handler</source>
         <translation>Hiányzó képernyőkezelő</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1619"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1620"/>
         <source>Your item cannot be displayed as there is no handler to display it</source>
         <translation>Az elemet nem lehet megjeleníteni, mert nincs kezelő, amely megjelenítené</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1686"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1687"/>
         <source>Your item cannot be displayed as the plugin required to display it is missing or inactive</source>
         <translation>Az elemet nem lehet megjeleníteni, mert a bővítmény, amely kezelné, hiányzik vagy inaktív</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1711"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1712"/>
         <source>Rename item title</source>
         <translation>Elem címének átnevezése</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1711"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1712"/>
         <source>Title:</source>
         <translation>Cím:</translation>
     </message>
@@ -8236,7 +8236,7 @@ Ez a példány bezáródik.</translation>
         <translation>A könyvek nevei talán rövidítve vannak, pl. 23. Zsoltár = Zsolt 23.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="709"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="713"/>
         <source>Written by</source>
         <translation>Szerző</translation>
     </message>
@@ -8580,22 +8580,22 @@ Adjon hozzá néhány elemet és nyomja meg a Mentés gombot</translation>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplanform.py" line="72"/>
         <source>Authentication Failed</source>
-        <translation type="unfinished"/>
+        <translation>Sikertelen azonosítás</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplanform.py" line="72"/>
         <source>Authentiation Failed. Check your credentials in OpenLP Settings.</source>
-        <translation type="unfinished"/>
+        <translation>Az azonosítás sikertelen. Ellenőrizze a hitelesítési adatokat az OpenLP beállításaiban.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplanform.py" line="252"/>
         <source>Import failed</source>
-        <translation type="unfinished"/>
+        <translation>Sikertelen importálás</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplanform.py" line="252"/>
         <source>Could not import bible text because no bible is installed.</source>
-        <translation type="unfinished"/>
+        <translation>Nem lehet importálni bibliai szöveget, mert nincs Biblia telepítve.</translation>
     </message>
 </context>
 <context>
@@ -9399,25 +9399,25 @@ A kódlap felelős a karakterek helyes megjelenítéséért.</translation>
 <context>
     <name>SongsPlugin.AuthorType</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/db.py" line="148"/>
+        <location filename="../../openlp/plugins/songs/lib/db.py" line="159"/>
         <source>Words</source>
         <comment>Author who wrote the lyrics of a song</comment>
         <translation>Szöveg</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/db.py" line="149"/>
+        <location filename="../../openlp/plugins/songs/lib/db.py" line="162"/>
         <source>Music</source>
         <comment>Author who wrote the music of a song</comment>
         <translation>Zene</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/db.py" line="150"/>
+        <location filename="../../openlp/plugins/songs/lib/db.py" line="165"/>
         <source>Words and Music</source>
         <comment>Author who wrote both lyrics and music of a song</comment>
         <translation>Zene és szöveg</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/db.py" line="152"/>
+        <location filename="../../openlp/plugins/songs/lib/db.py" line="168"/>
         <source>Translation</source>
         <comment>Author who translated the song</comment>
         <translation>Fordítás</translation>
@@ -10341,7 +10341,7 @@ Javítani kell a címkéket a továbblépéshez.</translation>
 <context>
     <name>SongsPlugin.MediaItem</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="724"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="728"/>
         <source>CCLI License</source>
         <translation>CCLI licenc</translation>
     </message>
@@ -10432,12 +10432,12 @@ Javítani kell a címkéket a továbblépéshez.</translation>
         <translation>Média</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="677"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="681"/>
         <source>CCLI License: </source>
         <translation>CCLI licenc:</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="737"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="741"/>
         <source>Failed to render Song footer html.
 See log for details</source>
         <translation>Dal lábléc HTML megjelenítése meghiúsult.</translation>
@@ -10788,47 +10788,47 @@ See log for details</source>
         <translation>Ez a könyv már létezik: {original} A dal – melynek könyve: „{new}” –  kerüljön rögzítésre a már létező „{original}” könyvben?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="520"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="526"/>
         <source>Delete Author</source>
         <translation>Szerző törlése</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="520"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="526"/>
         <source>Are you sure you want to delete the selected author?</source>
         <translation>Valóban törölhető a kijelölt szerző?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="520"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="526"/>
         <source>This author cannot be deleted, they are currently assigned to at least one song.</source>
         <translation>Ezt a szerzőt nem lehet törölni, mivel jelenleg legalább egy dalhoz hozzá van rendelve.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="532"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="538"/>
         <source>Delete Topic</source>
         <translation>Témakör törlése</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="532"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="538"/>
         <source>Are you sure you want to delete the selected topic?</source>
         <translation>Valóban törölhető a kijelölt témakör?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="532"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="538"/>
         <source>This topic cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Ezt a témakört nem lehet törölni, mivel jelenleg legalább egy dalhoz hozzá van rendelve.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="543"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="549"/>
         <source>Delete Book</source>
         <translation>Könyv törlése</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="543"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="549"/>
         <source>Are you sure you want to delete the selected book?</source>
         <translation>Valóban törölhető a kijelölt könyv?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="543"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="549"/>
         <source>This book cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Ezt a könyvet nem lehet törölni, mivel jelenleg legalább egy dalhoz hozzá van rendelve.</translation>
     </message>
@@ -11080,102 +11080,102 @@ Valóban importálható ez a dal?</translation>
         <translation>Szerzők („zene” típus)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="202"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="203"/>
         <source>Authors (Type &quot;Words and Music&quot;)</source>
         <translation>Szerzők („zene és szöveg” típus)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="204"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="206"/>
         <source>Authors (Type &quot;Translation&quot;)</source>
         <translation>Szerzők („fordító” típus)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="205"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="207"/>
         <source>Authors (Type &quot;Words&quot; &amp; &quot;Words and Music&quot;)</source>
         <translation>Szerzők („szöveg”, valamint &quot;zene és szöveg” típus)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="207"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="209"/>
         <source>Authors (Type &quot;Music&quot; &amp; &quot;Words and Music&quot;)</source>
         <translation>Szerzők („zene”, valamint &quot;zene és szöveg” típus)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="209"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="211"/>
         <source>Copyright information</source>
         <translation>Szerzői jogi információ</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="210"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="212"/>
         <source>Songbook Entries</source>
         <translation>Énekeskönyv bejegyzés</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="212"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="214"/>
         <source>CCLI License</source>
         <translation>CCLI licenc</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="213"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="215"/>
         <source>Song CCLI Number</source>
         <translation>Dal CCLI-száma</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="214"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="216"/>
         <source>Topics</source>
         <translation>Témakörök</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="215"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="217"/>
         <source>Where rendering on first (cover) slide</source>
         <translation>Megjelenítése pozíció az első (borító) dián</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="217"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="219"/>
         <source>Placeholder</source>
         <translation>Helykitöltő</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="217"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="219"/>
         <source>Description</source>
         <translation>Leírás</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="224"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="226"/>
         <source>can be empty</source>
         <translation>lehet üres</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="225"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="227"/>
         <source>list of entries, can be empty</source>
         <translation>bejegyzések listája, lehet üres</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="230"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="232"/>
         <source>How to Use</source>
         <translation>Alkalmazási mód</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="231"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="233"/>
         <source>Template</source>
         <translation>Sablon</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="232"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="234"/>
         <source>Mako Syntax</source>
         <translation>Mako szintaxis</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="234"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="236"/>
         <source>Reset Template</source>
         <translation>Sablon alapállapotba</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="321"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="323"/>
         <source>Save Username and Password</source>
         <translation>Felhasználói név és jelszó mentése</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="321"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="323"/>
         <source>WARNING: Saving your SongSelect password is INSECURE, your password is stored in PLAIN TEXT. Click Yes to save your password or No to cancel this.</source>
         <translation>FIGYELMEZTETÉS: A SongSelect jelszó mentése NEM BIZTONSÁGOS, mivel a jelszó EGYSZERŰ SZÖVEGKÉNT lesz mentve. Az „Igen”-nel a jelszó mentésre kerül, a „Nem”-mel megszakad a mentés.</translation>
     </message>

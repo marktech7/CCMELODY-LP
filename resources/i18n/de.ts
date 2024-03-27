@@ -1002,12 +1002,12 @@ minimum of {count} characters and a space for performance reasons)</source>
 <context>
     <name>BiblesPlugin.CSVBible</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/csvbible.py" line="147"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/csvbible.py" line="166"/>
         <source>Importing books... {book}</source>
         <translation>Importiere Bücher... {book}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/csvbible.py" line="169"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/csvbible.py" line="188"/>
         <source>Importing verses from {book}...</source>
         <comment>Importing verses from &lt;book name&gt;...</comment>
         <translation>Importiere Verse aus der {book}...</translation>
@@ -2420,12 +2420,12 @@ Möchten Sie die anderen Bilder trotzdem hinzufügen?</translation>
 <context>
     <name>OpenLP</name>
     <message>
-        <location filename="../../openlp/core/app.py" line="171"/>
+        <location filename="../../openlp/core/app.py" line="174"/>
         <source>Data Directory Error</source>
         <translation>Fehler im Daten Ordner</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="171"/>
+        <location filename="../../openlp/core/app.py" line="174"/>
         <source>OpenLP data folder was not found in:
 
 {path}
@@ -2437,7 +2437,7 @@ You may reset the data location back to the default location, or you can try to 
 Do you want to reset to the default data location? If not, OpenLP will be closed so you can try to fix the problem.</source>
         <translation>OpenLP-Datenordner wurde nicht gefunden in: 
 
-{Weg} 
+{path} 
 
 Der Speicherort des Datenordners wurde zuvor vom Standardspeicherort von OpenLP geändert. Wenn die Daten auf einem Wechseldatenträger gespeichert wurden, muss dieser Datenträger verfügbar gemacht werden. 
 
@@ -2446,24 +2446,24 @@ Sie können den Datenspeicherort auf den Standardspeicherort zurücksetzen oder 
 Möchten Sie auf den Standarddatenspeicherort zurücksetzen? Wenn nicht, wird OpenLP geschlossen, damit Sie versuchen können, das Problem zu beheben.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="247"/>
+        <location filename="../../openlp/core/app.py" line="250"/>
         <source>Backup</source>
         <translation>Sicherung</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="230"/>
+        <location filename="../../openlp/core/app.py" line="233"/>
         <source>OpenLP has been upgraded, do you want to create
 a backup of the old data folder?</source>
         <translation>OpenLP wurde aktualisiert.
 Soll eine Sicherung des OpenLP Daten Ordners angelegt werden?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="241"/>
+        <location filename="../../openlp/core/app.py" line="244"/>
         <source>Backup of the data folder failed!</source>
         <translation>Sicherung des Daten Ordners fehlgeschlagen!</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="244"/>
+        <location filename="../../openlp/core/app.py" line="247"/>
         <source>A backup of the data folder has been created at:
 
 {text}</source>
@@ -2472,12 +2472,12 @@ Soll eine Sicherung des OpenLP Daten Ordners angelegt werden?</translation>
 {text}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="353"/>
+        <location filename="../../openlp/core/app.py" line="356"/>
         <source>Downgrade</source>
         <translation>Downgrade</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="353"/>
+        <location filename="../../openlp/core/app.py" line="356"/>
         <source>OpenLP has found a configuration file created by a newer version of OpenLP. OpenLP will start with a fresh install as downgrading data is not supported. Any existing data will be backed up to:
 
 {data_folder_backup_path}
@@ -2490,17 +2490,17 @@ Do you want to continue?</source>
 Möchten Sie weiter machen?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="378"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>Settings Backup</source>
         <translation>Einstellungen-Backup</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="370"/>
+        <location filename="../../openlp/core/app.py" line="373"/>
         <source>Your settings are about to be upgraded. A backup will be created at {settings_back_up_path}</source>
-        <translation>Ihre Einstellungen werden in Kürze aktualisiert. Es wird eine Sicherung unter {back_up_path} angelegt.</translation>
+        <translation>Ihre Einstellungen werden in Kürze aktualisiert. Es wird eine Sicherung unter {settings_back_up_path} angelegt.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="378"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>Settings back up failed.
 
 OpenLP will attempt to continue.</source>
@@ -2509,17 +2509,17 @@ OpenLP will attempt to continue.</source>
 OpenLP versucht, fortzufahren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="389"/>
+        <location filename="../../openlp/core/app.py" line="392"/>
         <source>OpenLP Backup</source>
         <translation>OpenLP Sicherung</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="389"/>
+        <location filename="../../openlp/core/app.py" line="392"/>
         <source>Backup of the data folder failed during downgrade.</source>
         <translation>Sicherung des Datenordners während des Downgrades fehlgeschlagen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/__init__.py" line="406"/>
+        <location filename="../../openlp/core/common/__init__.py" line="414"/>
         <source>Image Files</source>
         <translation>Bilddateien</translation>
     </message>
@@ -2549,7 +2549,7 @@ OpenLP versucht, fortzufahren.</translation>
         <translation>Videodateien</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="667"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="673"/>
         <source>Open</source>
         <translation>Öffnen</translation>
     </message>
@@ -5651,157 +5651,157 @@ Dateiendung wird nicht unterstützt</translation>
         <translation>&amp;Lösche Projektor</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="500"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="506"/>
         <source>Delete projector ({projector.link.ip}) {projector.link.name}?</source>
         <translation>Projektor ({projector.link.ip}) {projector.link.name} löschen?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="502"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="508"/>
         <source>Are you sure you want to delete this projector?</source>
         <translation>Soll dieser Projektor wirklich gelöscht werden?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="628"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="634"/>
         <source>Name</source>
         <translation>Name</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="630"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="636"/>
         <source>IP</source>
         <translation>IP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="632"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="638"/>
         <source>Port</source>
         <translation>Port</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="634"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="640"/>
         <source>Notes</source>
         <translation>Notizen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="638"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="644"/>
         <source>Projector information not available at this time.</source>
         <translation>Derzeit keine Projektorinformation verfügbar.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="640"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="646"/>
         <source>Projector Name</source>
         <translation>Projektor Name</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="643"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="649"/>
         <source>Manufacturer</source>
         <translation>Hersteller</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="645"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="651"/>
         <source>Model</source>
         <translation>Modell</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="647"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="653"/>
         <source>PJLink Class</source>
         <translation>PJLink Klasse</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="650"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="656"/>
         <source>Software Version</source>
         <translation>Software Version</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="653"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="659"/>
         <source>Serial Number</source>
         <translation>Seriennummer</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="656"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="662"/>
         <source>Lamp Model Number</source>
         <translation>Modellnummer der Lampe</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="659"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="665"/>
         <source>Filter Model Number</source>
         <translation>Modellnummer des Filters</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="662"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="668"/>
         <source>Other info</source>
         <translation>Andere Informationen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="665"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="671"/>
         <source>Power status</source>
         <translation>Stromversorgungsstatus</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="667"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="673"/>
         <source>Shutter is</source>
         <translation>Rolladen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="667"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="673"/>
         <source>Closed</source>
         <translation>Geschlossen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="671"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="677"/>
         <source>Current source input is</source>
         <translation>Aktuelle Quelle ist</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="678"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="684"/>
         <source>Unavailable</source>
         <translation>Nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="680"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="686"/>
         <source>ON</source>
         <translation>AN</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="682"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="688"/>
         <source>OFF</source>
         <translation>AUS</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="683"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="689"/>
         <source>Lamp</source>
         <translation>Lampe</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="688"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="694"/>
         <source>Hours</source>
         <translation>Stunden</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="693"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="699"/>
         <source>No current errors or warnings</source>
         <translation>Keine aktuellen Fehler oder Warnungen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="695"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="701"/>
         <source>Current errors/warnings</source>
         <translation>Aktuelle Fehler/Warnungen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="698"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="704"/>
         <source>Projector Information</source>
         <translation>Projektorinformation</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="934"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="968"/>
         <source>Authentication Error</source>
         <translation>Authentifizierungsfehler</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="949"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="983"/>
         <source>No Authentication Error</source>
         <translation>Kein Authentifikationsfehler</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/projectors/manager.py" line="998"/>
+        <location filename="../../openlp/core/projectors/manager.py" line="1032"/>
         <source>Not Implemented Yet</source>
         <translation>Derzeit nicht implementiert</translation>
     </message>
@@ -6227,7 +6227,7 @@ Dateiendung wird nicht unterstützt</translation>
         <translation>Folien automatisch abspielen (&amp;einmalig)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="954"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="955"/>
         <source>&amp;Delay between slides</source>
         <translation>&amp;Pause zwischen Folien</translation>
     </message>
@@ -6325,67 +6325,67 @@ Diese Dateien werden entfernt, wenn Sie mit dem Speichervorgang fortfahren.</tra
         <translation>Der Ablauf {file_path} konnte nicht geladen werden. Entweder die Datei ist beschädigt, lesegeschützt, oder sie ist kein gültiger OpenLP 2 oder OpenLP 3 Ablauf.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="965"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="966"/>
         <source>&amp;Auto Start - active</source>
         <translation>&amp;Autostart – aktiv</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="969"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="970"/>
         <source>&amp;Auto Start - inactive</source>
         <translation>&amp;Autostart – inaktiv</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1046"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1047"/>
         <source>Input delay</source>
         <translation>Verzögerung</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1046"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1047"/>
         <source>Delay between slides in seconds.</source>
         <translation>Verzögerung zwischen den Folien (in Sekunden)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1424"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1425"/>
         <source>Edit</source>
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1425"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1426"/>
         <source>Service copy only</source>
         <translation>Ablaufkopie (nicht in der Datenbank)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1428"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1429"/>
         <source>Slide theme</source>
         <translation>Element-Design</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1432"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1433"/>
         <source>Notes</source>
         <translation>Notizen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1686"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1687"/>
         <source>Missing Display Handler</source>
         <translation>Fehlende Anzeigesteuerung</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1619"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1620"/>
         <source>Your item cannot be displayed as there is no handler to display it</source>
         <translation>Dieses Element kann nicht angezeigt werden, da es keine Steuerung dafür gibt.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1686"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1687"/>
         <source>Your item cannot be displayed as the plugin required to display it is missing or inactive</source>
         <translation>Dieses Element kann nicht angezeigt werden, da die zugehörige Erweiterung fehlt oder inaktiv ist.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1711"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1712"/>
         <source>Rename item title</source>
         <translation>Eintragstitel bearbeiten</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1711"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1712"/>
         <source>Title:</source>
         <translation>Titel:</translation>
     </message>
@@ -8238,7 +8238,7 @@ Diese Instanz wird geschlossen</translation>
         <translation>Die Namen der Bücher werden eventuell gekürzt (z.B.: Ps 23 = Psalm 23).</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="709"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="713"/>
         <source>Written by</source>
         <translation>Geschrieben von</translation>
     </message>
@@ -9405,25 +9405,25 @@ Diese ist für die korrekte Darstellung der Sonderzeichen verantwortlich.</trans
 <context>
     <name>SongsPlugin.AuthorType</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/db.py" line="148"/>
+        <location filename="../../openlp/plugins/songs/lib/db.py" line="159"/>
         <source>Words</source>
         <comment>Author who wrote the lyrics of a song</comment>
         <translation>Text</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/db.py" line="149"/>
+        <location filename="../../openlp/plugins/songs/lib/db.py" line="162"/>
         <source>Music</source>
         <comment>Author who wrote the music of a song</comment>
         <translation>Musik</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/db.py" line="150"/>
+        <location filename="../../openlp/plugins/songs/lib/db.py" line="165"/>
         <source>Words and Music</source>
         <comment>Author who wrote both lyrics and music of a song</comment>
         <translation>Text und Musik</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/db.py" line="152"/>
+        <location filename="../../openlp/plugins/songs/lib/db.py" line="168"/>
         <source>Translation</source>
         <comment>Author who translated the song</comment>
         <translation>Übersetzung</translation>
@@ -10347,7 +10347,7 @@ Er wurde wegen einem fehlenden Python-Modul deaktiviert. Wenn Sie diesen Importe
 <context>
     <name>SongsPlugin.MediaItem</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="724"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="728"/>
         <source>CCLI License</source>
         <translation>CCLI Lizenz</translation>
     </message>
@@ -10438,12 +10438,12 @@ Er wurde wegen einem fehlenden Python-Modul deaktiviert. Wenn Sie diesen Importe
         <translation>Medien</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="677"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="681"/>
         <source>CCLI License: </source>
         <translation>CCLI-Lizenz: </translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="737"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="741"/>
         <source>Failed to render Song footer html.
 See log for details</source>
         <translation>Das HTML der Lied-Fußzeile konnte nicht gerendert werden. 
@@ -10795,47 +10795,47 @@ Details in der Logdatei</translation>
         <translation>Das Liederbuch {original} existiert bereits. Sollen Lieder aus {new} dem Buch {original} zugeordnet werden?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="520"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="526"/>
         <source>Delete Author</source>
         <translation>Autor löschen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="520"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="526"/>
         <source>Are you sure you want to delete the selected author?</source>
         <translation>Soll der ausgewählte Autor wirklich gelöscht werden?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="520"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="526"/>
         <source>This author cannot be deleted, they are currently assigned to at least one song.</source>
         <translation>Der Autor konnte nicht gelöscht werden, da er mindestens einem Lied zugeordnet ist.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="532"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="538"/>
         <source>Delete Topic</source>
         <translation>Thema löschen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="532"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="538"/>
         <source>Are you sure you want to delete the selected topic?</source>
         <translation>Soll das ausgewählte Thema wirklich gelöscht werden?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="532"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="538"/>
         <source>This topic cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Das Thema konnte nicht gelöscht werden, da es mindestens einem Lied zugeordnet ist.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="543"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="549"/>
         <source>Delete Book</source>
         <translation>Liederbuch löschen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="543"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="549"/>
         <source>Are you sure you want to delete the selected book?</source>
         <translation>Soll das ausgewählte Liederbuch wirklich gelöscht werden?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="543"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="549"/>
         <source>This book cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Das Liederbuch konnte nicht gelöscht werden, da es mindestens einem Lied zugeordnet ist.</translation>
     </message>
@@ -11087,102 +11087,102 @@ Sind Sie sicher, dass Sie dieses Lied importieren möchten?</translation>
         <translation>Autoren (Musik)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="202"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="203"/>
         <source>Authors (Type &quot;Words and Music&quot;)</source>
         <translation>Autoren (Text und Musik)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="204"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="206"/>
         <source>Authors (Type &quot;Translation&quot;)</source>
         <translation>Autoren (Übersetzung)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="205"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="207"/>
         <source>Authors (Type &quot;Words&quot; &amp; &quot;Words and Music&quot;)</source>
         <translation>Autoren (&quot;Text&quot; und &quot;Text und Musik&quot;)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="207"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="209"/>
         <source>Authors (Type &quot;Music&quot; &amp; &quot;Words and Music&quot;)</source>
         <translation>Autoren (&quot;Musik&quot; und &quot;Text und Musik&quot;)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="209"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="211"/>
         <source>Copyright information</source>
         <translation>Copyright Information</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="210"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="212"/>
         <source>Songbook Entries</source>
         <translation>Infos zum Liedbuch</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="212"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="214"/>
         <source>CCLI License</source>
         <translation>CCLI Lizenz</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="213"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="215"/>
         <source>Song CCLI Number</source>
         <translation>CCLI Nummer des Liedes</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="214"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="216"/>
         <source>Topics</source>
         <translation>Themen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="215"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="217"/>
         <source>Where rendering on first (cover) slide</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="217"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="219"/>
         <source>Placeholder</source>
         <translation>Platzhalter</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="217"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="219"/>
         <source>Description</source>
         <translation>Beschreibung</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="224"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="226"/>
         <source>can be empty</source>
         <translation>darf leer sein</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="225"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="227"/>
         <source>list of entries, can be empty</source>
         <translation>Liste von Einträgen, darf leer sein</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="230"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="232"/>
         <source>How to Use</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="231"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="233"/>
         <source>Template</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="232"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="234"/>
         <source>Mako Syntax</source>
         <translation>Makro Syntay</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="234"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="236"/>
         <source>Reset Template</source>
         <translation>Template zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="321"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="323"/>
         <source>Save Username and Password</source>
         <translation>Benutzername und Passwort speichern</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="321"/>
+        <location filename="../../openlp/plugins/songs/lib/songstab.py" line="323"/>
         <source>WARNING: Saving your SongSelect password is INSECURE, your password is stored in PLAIN TEXT. Click Yes to save your password or No to cancel this.</source>
         <translation>WARNUNG: Das Speichern Ihres SongSelect-Passworts ist UNSICHER, Ihr Passwort wird im KLARTEXT gespeichert. Klicken Sie auf Ja, um Ihr Passwort zu speichern, oder auf Nein, um dies abzubrechen.</translation>
     </message>

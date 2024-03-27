@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -129,7 +129,7 @@ class OpenSongImport(SongImport):
         try:
             tree = objectify.parse(file)
         except (etree.Error, etree.LxmlError):
-            self.log_error(file.name, SongStrings.XMLSyntaxError)
+            self.log_error(file.name, SongStrings().XMLSyntaxError)
             log.exception('Error parsing XML')
             return
         root = tree.getroot()

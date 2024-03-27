@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,16 +21,33 @@
 """
 This module contains tests for the lib submodule of the Songs plugin.
 """
+import logging
 import pytest
 from unittest.mock import MagicMock, patch
+from PyQt5 import QtCore, QtWidgets
 
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.songs.forms.editsongform import EditSongForm
+from openlp.plugins.songs.lib import VerseType
+from openlp.plugins.songs.lib.db import Author
 
 
 @pytest.fixture()
 def edit_song_form():
     with patch('openlp.plugins.songs.forms.editsongform.EditSongForm.__init__', return_value=None):
         return EditSongForm(None, MagicMock(), MagicMock())
+
+
+@pytest.fixture()
+def edit_song_form_with_ui(settings: Settings) -> EditSongForm:
+    main_window = QtWidgets.QMainWindow()
+    Registry().register('main_window', main_window)
+    Registry().register('theme_manager', MagicMock())
+    form = EditSongForm(None, main_window, MagicMock())
+    yield form
+    del form
+    del main_window
 
 
 def test_validate_matching_tags(edit_song_form):
@@ -86,3 +103,104 @@ def test_load_objects(mocked_set_case_insensitive_completer, edit_song_form, set
     mocked_set_case_insensitive_completer.assert_called_once_with(mocked_cache, mocked_combo)
     mocked_combo.setCurrentIndex.assert_called_once_with(-1)
     mocked_combo.setCurrentText.assert_called_once_with('')
+
+
+def test_add_multiple_audio_from_file(edit_song_form_with_ui: EditSongForm):
+    """
+    Test that not more than one Linked Audio item can be added
+    """
+    # GIVEN: A Linked Audio list with 1 item and mocked error message handler
+    item = QtWidgets.QListWidgetItem('Audio file')
+    edit_song_form_with_ui.audio_list_widget.addItem(item)
+    mocked_error_message = MagicMock()
+    Registry().get('main_window').error_message = mocked_error_message
+
+    # WHEN: Add File is clicked
+    edit_song_form_with_ui.on_audio_add_from_file_button_clicked()
+
+    # THEN: A call to show an error message should have been made and no items should have been added
+    mocked_error_message.assert_called_once()
+    assert edit_song_form_with_ui.audio_list_widget.count() == 1
+
+
+def test_add_multiple_audio_from_media(edit_song_form_with_ui: EditSongForm):
+    """
+    Test that not more than one Linked Audio item can be added
+    """
+    # GIVEN: A Linked Audio list with 1 item and mocked error message handler
+    item = QtWidgets.QListWidgetItem('Audio file')
+    edit_song_form_with_ui.audio_list_widget.addItem(item)
+    mocked_error_message = MagicMock()
+    Registry().get('main_window').error_message = mocked_error_message
+
+    # WHEN: Add Media is clicked
+    edit_song_form_with_ui.on_audio_add_from_media_button_clicked()
+
+    # THEN: A call to show an error message should have been made and no items should have been added
+    mocked_error_message.assert_called_once()
+    assert edit_song_form_with_ui.audio_list_widget.count() == 1
+
+
+def test_validate_song_multiple_audio(edit_song_form_with_ui: EditSongForm):
+    """
+    Test that a form with multiple Linked Audio items does not pass validation
+    """
+    # GIVEN: A form with title, lyrics, an author, and 2 Linked Audio items
+    edit_song_form_with_ui.title_edit.setText('Song Title')
+    verse_def = '{tag}{number}'.format(tag=VerseType.tags[0], number=1)
+    song_lyrics = 'Song Lyrics'
+    verse_item = QtWidgets.QTableWidgetItem(song_lyrics)
+    verse_item.setData(QtCore.Qt.UserRole, verse_def)
+    verse_item.setText(song_lyrics)
+    edit_song_form_with_ui.verse_list_widget.setRowCount(1)
+    edit_song_form_with_ui.verse_list_widget.setItem(0, 0, verse_item)
+    item_1 = QtWidgets.QListWidgetItem('Audio file 1')
+    item_2 = QtWidgets.QListWidgetItem('Audio file 2')
+    edit_song_form_with_ui.audio_list_widget.addItem(item_1)
+    edit_song_form_with_ui.audio_list_widget.addItem(item_2)
+    author = Author(first_name='', last_name='', display_name='Author')
+    author_type = edit_song_form_with_ui.author_types_combo_box.itemData(0)
+    edit_song_form_with_ui._add_author_to_list(author, author_type)
+    mocked_error_message = MagicMock()
+    Registry().get('main_window').error_message = mocked_error_message
+
+    # WHEN: Song is validated
+    song_valid = edit_song_form_with_ui._validate_song()
+
+    # THEN: It should not be valid
+    assert song_valid is False
+
+
+def test_validate_song_one_audio(edit_song_form_with_ui: EditSongForm):
+    """
+    Test that a form with one Linked Audio item passes validation
+    """
+    # GIVEN: A form with title, lyrics, an author, and 1 Linked Audio item
+    edit_song_form_with_ui.title_edit.setText('Song Title')
+    verse_def = '{tag}{number}'.format(tag=VerseType.tags[0], number=1)
+    song_lyrics = 'Song Lyrics'
+    verse_item = QtWidgets.QTableWidgetItem(song_lyrics)
+    verse_item.setData(QtCore.Qt.UserRole, verse_def)
+    verse_item.setText(song_lyrics)
+    edit_song_form_with_ui.verse_list_widget.setRowCount(1)
+    edit_song_form_with_ui.verse_list_widget.setItem(0, 0, verse_item)
+    item_1 = QtWidgets.QListWidgetItem('Audio file 1')
+    edit_song_form_with_ui.audio_list_widget.addItem(item_1)
+    author = Author(first_name='', last_name='', display_name='Author')
+    author_type = edit_song_form_with_ui.author_types_combo_box.itemData(0)
+    edit_song_form_with_ui._add_author_to_list(author, author_type)
+    # If the validation does fail for some reason it will likely try to display an error message,
+    # so make sure error_message exists to avoid an error
+    mocked_error_message = MagicMock()
+    Registry().get('main_window').error_message = mocked_error_message
+
+    # WHEN: Song is validated
+    song_valid = edit_song_form_with_ui._validate_song()
+
+    # Log the error message to help determine the cause in the case validation failed
+    if mocked_error_message.called:
+        _title, message = mocked_error_message.call_args.args
+        logging.error('Validation error message: {message}'.format(message=message))
+
+    # THEN: It should be valid
+    assert song_valid is True

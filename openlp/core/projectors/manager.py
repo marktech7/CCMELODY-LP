@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,8 +23,8 @@
 
 Provides the functions for the display/control of Projectors.
 """
-
 import logging
+from typing import Optional
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
@@ -305,6 +305,12 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
             E_UNKNOWN_SOCKET_ERROR: UiIcons().error,
             E_NOT_CONNECTED: UiIcons().projector_disconnect
         }
+        # update_status debouncer
+        self.update_status_timer = QtCore.QTimer(self)
+        self.update_status_timer.setInterval(100)
+        self.update_status_timer.timeout.connect(self._try_update_status)
+        self.is_updating_status = False
+        self.ip_status_to_update = (None, None, None)
 
     def bootstrap_initialise(self):
         """
@@ -810,7 +816,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         return self.projector_list
 
     @QtCore.Slot(str, int, str)
-    def update_status(self, ip, status=None, msg=None):
+    def update_status(self, ip: str, status: Optional[int] = None, msg: Optional[str] = None):
         """
         Update the status information/icon for selected list item
 
@@ -820,23 +826,51 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         """
         if status is None:
             return
-        item = None
-        for list_item in self.projector_list:
-            if ip == list_item.link.ip:
-                item = list_item
-                break
-        if item is None:
-            log.error(f'ProjectorManager: Unknown item "{ip}" - not updating status')
-            return
-        elif item.status == status:
-            log.debug(f'ProjectorManager: No status change for "{ip}" - not updating status')
-            return
+        self._try_update_status(ip, status, msg)
 
-        item.status = status
-        item.icon = self.status_icons[status]
-        log.debug(f'({item.link.name}) Updating icon with {STATUS_CODE[status]}')
-        item.widget.setIcon(item.icon)
-        return self.update_icons()
+    def _try_update_status(self, ip: str, status: int, msg: Optional[str] = None):
+        """
+        Try to update the status of a projector
+        """
+        if not self.is_updating_status:
+            self.update_status_timer.stop()
+            self._update_status(ip, status, msg)
+        else:
+            self.update_status_timer.stop()
+            self.update_status_timer.start()
+
+    def _update_status(self, ip: str, status: int, msg: Optional[str] = None):
+        """
+        Actually update the status of the projector
+        """
+        self.is_updating_status = True
+        try:
+            item = None
+            for list_item in self.projector_list:
+                if ip == list_item.link.ip:
+                    item = list_item
+                    break
+            if item is None:
+                log.error(f'ProjectorManager: Unknown item "{ip}" - not updating status')
+                self.is_updating_status = False
+                return
+            elif item.status == status:
+                log.debug(f'ProjectorManager: No status change for "{ip}" - not updating status')
+                self.is_updating_status = False
+                return
+
+            item.status = status
+            item.icon = self.status_icons[status]
+            log.debug(f'({item.link.name}) Updating icon with {STATUS_CODE[status]}')
+            item.widget.setIcon(item.icon)
+            self.is_updating_status = False
+            return self.update_icons()
+        except RuntimeError:
+            # it's probably a "wrapped C/C++ object of type QTreeWidgetItem has been deleted" due to
+            # consecutive/parallel repaint_service_list execution. We've added some mitigation to avoid this
+            # to happen, but it for any reason it happens again, we'll silent it and try to repaint the list
+            # again (to avoid a broken list presented to the user).
+            self.is_updating_status = False
 
     def get_toolbar_item(self, name, enabled=False, hidden=False):
         item = self.one_toolbar.findChild(QtGui.QAction, name)

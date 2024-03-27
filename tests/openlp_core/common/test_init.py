@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,15 +22,17 @@
 Functional tests to test the :mod:`~openlp.core.common` module
 """
 import os
+import pytest
+import sys
+
 from io import BytesIO
 from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, call, patch
 
-import pytest
-
 from openlp.core.common import Singleton, add_actions, clean_filename, clean_button_text, de_hump, delete_file, \
     extension_loader, get_file_encoding, get_filesystem_encoding, get_uno_command, get_uno_instance, md5_hash, \
     normalize_str, path_to_module, qmd5_hash, sha256_file_hash, trace_error_handler, verify_ip_address
+from openlp.core.common.platform import is_win
 
 from tests.resources.projector.data import TEST_HASH, TEST_PIN, TEST_SALT
 from tests.utils.constants import TEST_RESOURCES_PATH
@@ -46,6 +48,12 @@ ip4_bad = '192.168.1.256'
 ip6_loopback = '::1'
 ip6_link_local = 'fe80::223:14ff:fe99:d315'
 ip6_bad = 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff'
+
+
+if is_win():
+    p_prefix = 'C:\\'
+else:
+    p_prefix = '/'
 
 
 def test_extension_loader_no_files_found():
@@ -86,6 +94,32 @@ def test_extension_loader_files_found():
         #       files listed in the `excluded_files` argument
         mocked_import_module.assert_has_calls([call('openlp.import_dir.file1'),
                                                call('openlp.import_dir.file4')])
+        assert "/app/dir/community" not in sys.path, "Community path has been added to the application sys.path"
+
+
+def test_extension_loader_files_found_community():
+    """
+    Test the `extension_loader` function when it successfully finds and loads some files
+    """
+    # GIVEN: A mocked `Path.glob` method which returns a list of files
+    with patch('openlp.core.common.applocation.AppLocation.get_directory',
+               return_value=Path(p_prefix, 'app', 'dir')), \
+            patch.object(Path, 'glob', return_value=[
+                Path(p_prefix, 'app', 'dir', 'contrib', 'import_dir', 'file1.py'),
+                Path(p_prefix, 'app', 'dir', 'contrib', 'import_dir', 'file2.py'),
+                Path(p_prefix, 'app', 'dir', 'contrib', 'import_dir', 'file3.py'),
+                Path(p_prefix, 'app', 'dir', 'contrib', 'import_dir', 'file4.py')]), \
+            patch('openlp.core.common.import_openlp_module') as mocked_import_module:
+
+        # WHEN: Calling `extension_loader` with a list of files to exclude
+        extension_loader('glob', ['file2.py', 'file3.py'], True)
+
+        # THEN: `extension_loader` should only try to import the files that are matched by the blob, excluding the
+        #       files listed in the `excluded_files` argument
+        mocked_import_module.assert_has_calls([call('contrib.import_dir.file1'),
+                                               call('contrib.import_dir.file4')])
+        expected_path = p_prefix + 'app' + os.path.sep + 'dir'
+        assert expected_path in sys.path, expected_path + ' path has not been added to the application sys.path'
 
 
 def test_extension_loader_import_error():
@@ -94,9 +128,9 @@ def test_extension_loader_import_error():
     """
     # GIVEN: A mocked `import_module` which raises an `ImportError`
     with patch('openlp.core.common.applocation.AppLocation.get_directory',
-               return_value=Path('/', 'app', 'dir', 'openlp')), \
+               return_value=Path(p_prefix, 'app', 'dir', 'openlp')), \
             patch.object(Path, 'glob', return_value=[
-                Path('/', 'app', 'dir', 'openlp', 'import_dir', 'file1.py')]), \
+                Path(p_prefix, 'app', 'dir', 'openlp', 'import_dir', 'file1.py')]), \
             patch('openlp.core.common.import_openlp_module', side_effect=ImportError()), \
             patch('openlp.core.common.log') as mocked_logger:
 
@@ -166,6 +200,20 @@ def test_path_to_module():
 
     # THEN: path_to_module should return the module name
     assert result == 'openlp.core.ui.media.vlcplayer'
+
+
+def test_path_to_module_community():
+    """
+    Test `path_to_module` when supplied with a `Path` object
+    """
+    # GIVEN: A `Path` object
+    path = Path('core', 'ui', 'media', 'vlcplayer.py')
+
+    # WHEN: Calling path_to_module with the `Path` object
+    result = path_to_module(path, True)
+
+    # THEN: path_to_module should return the module name
+    assert result == 'contrib.core.ui.media.vlcplayer'
 
 
 def test_trace_error_handler():

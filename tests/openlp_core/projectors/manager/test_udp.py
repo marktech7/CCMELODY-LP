@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -67,8 +67,7 @@ def test_udp_listen_add_new(mock_registry, mock_udp, projector_manager, caplog):
     # THEN: Appropriate listener and log entries
     assert 20 in projector_manager.pjlink_udp, "Port not added"
     assert 2 == len(projector_manager.pjlink_udp), "Invalid ports in list"
-    assert type(projector_manager.pjlink_udp[20]) is FakePJLinkUDP, \
-        'PJLinkUDP instance should have been added'
+    assert isinstance(projector_manager.pjlink_udp[20], FakePJLinkUDP), 'PJLinkUDP instance should have been added'
     assert mocked_registry.execute.has_call('udp_broadcast_add', port=20)
     assert caplog.messages == log_entries, 'Invalid log entries'
 

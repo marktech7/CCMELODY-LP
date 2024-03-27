@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -27,6 +27,7 @@ import sys
 from collections import OrderedDict
 from datetime import date
 
+from packaging.version import parse
 from PySide6 import QtCore
 
 from openlp.core.common.applocation import AppLocation
@@ -114,8 +115,7 @@ class VersionWorker(ThreadWorker):
                 retries += 1
         else:
             self.no_internet.emit()
-        if remote_version and (QtCore.QVersionNumber.fromString(remote_version) >
-                               QtCore.QVersionNumber.fromString(self.current_version['full'])):
+        if remote_version and (parse(remote_version) > parse(self.current_version['full'])):
             self.new_version.emit(remote_version)
         self.quit.emit()
 

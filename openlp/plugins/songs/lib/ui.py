@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -32,18 +32,19 @@ class SongStrings(object):
     """
     Provide standard strings for use throughout the songs plugin.
     """
-    # These strings should need a good reason to be retranslated elsewhere.
-    Author = translate('OpenLP.Ui', 'Author', 'Singular')
-    Authors = translate('OpenLP.Ui', 'Authors', 'Plural')
-    AuthorUnknown = translate('OpenLP.Ui', 'Author Unknown')  # Used to populate the database.
-    CopyrightSymbol = '\xa9'
-    SongBook = translate('OpenLP.Ui', 'Songbook', 'Singular')
-    SongBooks = translate('OpenLP.Ui', 'Songbooks', 'Plural')
-    SongIncomplete = translate('OpenLP.Ui', 'Title and/or verses not found')
-    SongMaintenance = translate('OpenLP.Ui', 'Song Maintenance')
-    Topic = translate('OpenLP.Ui', 'Topic', 'Singular')
-    Topics = translate('OpenLP.Ui', 'Topics', 'Plural')
-    XMLSyntaxError = translate('OpenLP.Ui', 'XML syntax error')
+    def __init__(self):
+        # These strings should need a good reason to be retranslated elsewhere.
+        self.Author = translate('OpenLP.Ui', 'Author', 'Singular')
+        self.Authors = translate('OpenLP.Ui', 'Authors', 'Plural')
+        self.AuthorUnknown = translate('OpenLP.Ui', 'Author Unknown')  # Used to populate the database.
+        self.CopyrightSymbol = '\xa9'
+        self.SongBook = translate('OpenLP.Ui', 'Songbook', 'Singular')
+        self.SongBooks = translate('OpenLP.Ui', 'Songbooks', 'Plural')
+        self.SongIncomplete = translate('OpenLP.Ui', 'Title and/or verses not found')
+        self.SongMaintenance = translate('OpenLP.Ui', 'Song Maintenance')
+        self.Topic = translate('OpenLP.Ui', 'Topic', 'Singular')
+        self.Topics = translate('OpenLP.Ui', 'Topics', 'Plural')
+        self.XMLSyntaxError = translate('OpenLP.Ui', 'XML syntax error')
 
 
 def show_key_warning(parent):

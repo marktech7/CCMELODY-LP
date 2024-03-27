@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -25,7 +25,7 @@ from unittest.mock import MagicMock, call, patch
 
 import openlp.core.projectors.pjlink
 from openlp.core.projectors.pjlinkcommands import process_command
-from openlp.core.projectors.constants import E_NOT_CONNECTED, E_PARAMETER, E_UNKNOWN_SOCKET_ERROR, QSOCKET_STATE, \
+from openlp.core.projectors.constants import E_NOT_CONNECTED, E_UNKNOWN_SOCKET_ERROR, QSOCKET_STATE, \
     S_CONNECTED, S_CONNECTING, S_OK, S_ON, STATUS_CODE, STATUS_MSG
 
 
@@ -38,11 +38,8 @@ def test_status_change(mock_changeStatus, pjlink):
     # WHEN: process_command is called with "ERR2" status from projector
     process_command(projector=pjlink, cmd='POWR', data='ERR2')
 
-    # THEN: change_status should have called change_status with E_UNDEFINED
-    #       as first parameter
-    mock_changeStatus.called_with(E_PARAMETER,
-                                  'change_status should have been called '
-                                  'with "{}"'.format(STATUS_CODE[E_PARAMETER]))
+    # THEN: change_status should not have been called
+    mock_changeStatus.assert_not_called()
 
 
 @patch.object(openlp.core.projectors.pjlink.PJLink, 'disconnect_from_host')

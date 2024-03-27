@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2024 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -29,7 +29,7 @@ from openlp.core.state import State
 from openlp.core.lib.plugin import PluginStatus, StringContent
 
 
-def test_plugins_returns_list(flask_client: FlaskClient, registry: Registry, settings: Settings):
+def test_plugins_returns_list(flask_client: FlaskClient):
     State().load_settings()
     res = flask_client.get('/api/v2/core/plugins').get_json()
     assert len(res) == 0
@@ -52,14 +52,24 @@ def test_plugins_returns_list(flask_client: FlaskClient, registry: Registry, set
     assert res[0]['name'] == plugin.text_strings[StringContent.Name]['plural']
 
 
-def test_system_information(flask_client: FlaskClient, registry: Registry, settings: Settings):
+def test_system_information(flask_client: FlaskClient, settings: Settings):
     Registry().get('settings_thread').setValue('api/authentication enabled', False)
     res = flask_client.get('/api/v2/core/system').get_json()
     assert res['websocket_port'] > 0
     assert not res['login_required']
 
 
-def test_poll_backend(registry: Registry, settings: Settings):
+def test_shortcuts(flask_client: FlaskClient, settings: Settings):
+    action = 'shortcuts/aboutItem'
+    shortcut = 'Ctrl+F1'
+    Registry().get('settings_thread').setValue(action, shortcut)
+    res = flask_client.get('/api/v2/core/shortcuts')
+    assert res.status_code == 200
+    assert res.get_json()[0]['action'] == action.removeprefix('shortcuts/')
+    assert res.get_json()[0]['shortcut'] == shortcut
+
+
+def test_poll_backend(settings: Settings):
     """
     Test the raw poll function returns the correct JSON
     """
@@ -100,12 +110,12 @@ def test_login_without_data_returns_400(flask_client: FlaskClient):
     assert res.status_code == 400
 
 
-def test_login_with_invalid_credetials_returns_401(flask_client: FlaskClient, registry: Registry, settings: Settings):
+def test_login_with_invalid_credetials_returns_401(flask_client: FlaskClient, settings: Settings):
     res = flask_client.post('/api/v2/core/login', json=dict(username='openlp', password='invalid'))
     assert res.status_code == 401
 
 
-def test_login_with_valid_credetials_returns_token(flask_client: FlaskClient, registry: Registry, settings: Settings):
+def test_login_with_valid_credetials_returns_token(flask_client: FlaskClient, settings: Settings):
     Registry().register('authentication_token', 'foobar')
     res = flask_client.post('/api/v2/core/login', json=dict(username='openlp', password='password'))
     assert res.status_code == 200
@@ -125,7 +135,7 @@ def test_retrieving_image(flask_client: FlaskClient):
     assert res['binary_image'] != ''
 
 
-def test_toggle_display_requires_login(flask_client: FlaskClient, registry: Registry, settings: Settings):
+def test_toggle_display_requires_login(flask_client: FlaskClient, settings: Settings):
     settings.setValue('api/authentication enabled', True)
     Registry().register('authentication_token', 'foobar')
     res = flask_client.post('/api/v2/core/display')
@@ -138,18 +148,17 @@ def test_toggle_display_does_not_allow_get(flask_client: FlaskClient):
     assert res.status_code == 405
 
 
-def test_toggle_display_invalid_action(flask_client: FlaskClient, registry: Registry, settings: Settings):
+def test_toggle_display_invalid_action(flask_client: FlaskClient, settings: Settings):
     res = flask_client.post('/api/v2/core/display', json={'display': 'foo'})
     assert res.status_code == 400
 
 
-def test_toggle_display_no_data(flask_client: FlaskClient, registry: Registry, settings: Settings):
+def test_toggle_display_no_data(flask_client: FlaskClient, settings: Settings):
     res = flask_client.post('/api/v2/core/display', json={})
     assert res.status_code == 400
 
 
-def test_toggle_display_valid_action_updates_controller(flask_client: FlaskClient, registry: Registry,
-                                                        settings: Settings):
+def test_toggle_display_valid_action_updates_controller(flask_client: FlaskClient, settings: Settings):
     class FakeController:
         class Emitter:
             def emit(self, value):
@@ -162,7 +171,7 @@ def test_toggle_display_valid_action_updates_controller(flask_client: FlaskClien
     assert controller.slidecontroller_toggle_display.set == 'show'
 
 
-def test_cors_headers_are_present(flask_client: FlaskClient, registry: Registry, settings: Settings):
+def test_cors_headers_are_present(flask_client: FlaskClient, settings: Settings):
     res = flask_client.get('/api/v2/core/system')
     assert 'Access-Control-Allow-Origin' in res.headers
     assert res.headers['Access-Control-Allow-Origin'] == '*'
