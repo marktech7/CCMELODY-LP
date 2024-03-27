@@ -56,13 +56,29 @@ def plugin_list():
     return jsonify(searches)
 
 
+@core.route('/shortcuts')
+def shortcuts():
+    data = []
+    settings = Registry().get('settings_thread')
+    shortcut_prefix = 'shortcuts/'
+    for key in settings.allKeys():
+        if key.startswith(shortcut_prefix):
+            data.append(
+                {
+                    'action': key.removeprefix(shortcut_prefix),
+                    'shortcut': settings.value(key)
+                }
+            )
+    return jsonify(data)
+
+
 @core.route('/system')
 def system_information():
     data = {}
     data['websocket_port'] = Registry().get('settings_thread').value('api/websocket port')
     data['login_required'] = Registry().get('settings_thread').value('api/authentication enabled')
     data['api_version'] = 2
-    data['api_revision'] = 4
+    data['api_revision'] = 5
     return jsonify(data)
 
 

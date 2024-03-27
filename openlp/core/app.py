@@ -502,9 +502,11 @@ def main():
     app = OpenLP()
     Registry.create()
     QtWidgets.QApplication.setOrganizationName('OpenLP')
+    QtWidgets.QApplication.setApplicationName('OpenLP')
     QtWidgets.QApplication.setOrganizationDomain('openlp.org')
     if args.portable:
         # This has to be done here so that we can load the settings before instantiating the application object
+        QtWidgets.QApplication.setApplicationName('OpenLPPortable')
         portable_path, settings = setup_portable_settings(args.portablepath)
     else:
         settings = Settings()
@@ -529,7 +531,6 @@ def main():
         font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
         application.setFont(font)
     if args.portable:
-        application.setApplicationName('OpenLPPortable')
         data_path = portable_path / 'Data'
         set_up_logging(portable_path / 'Other')
         set_up_web_engine_cache(portable_path / 'Other' / 'web_cache')
@@ -540,7 +541,6 @@ def main():
         settings.setValue('advanced/is portable', True)
         settings.sync()
     else:
-        application.setApplicationName('OpenLP')
         set_up_logging(AppLocation.get_directory(AppLocation.CacheDir))
         set_up_web_engine_cache(AppLocation.get_directory(AppLocation.CacheDir) / 'web_cache')
     settings.init_default_shortcuts()
