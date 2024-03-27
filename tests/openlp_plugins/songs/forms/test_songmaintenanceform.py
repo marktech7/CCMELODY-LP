@@ -214,13 +214,8 @@ def test_delete_book_assigned(mocked_critical_error_message_box: MagicMock, main
     mocked_item = create_autospec(SongBook, spec_set=True)
     mocked_item.id = 1
     mocked_item.songs = [MagicMock(title='Amazing Grace')]
-<<<<<<< HEAD
-    mocked_manager.get_object.return_value = mocked_item
-    mocked_critical_error_message_box.return_value = QtWidgets.QMessageBox.StandardButton.Yes
-=======
     maintenance_form.manager.get_object.return_value = mocked_item
-    mocked_critical_error_message_box.return_value = QtWidgets.QMessageBox.Yes
->>>>>>> master
+    mocked_critical_error_message_box.return_value = QtWidgets.QMessageBox.StandardButton.Yes
     mocked_list_widget = MagicMock()
     mocked_reset_func = MagicMock()
     dialog_title = 'Delete Book'

@@ -35,7 +35,7 @@ from pathlib import Path
 from shutil import copytree, move
 from traceback import format_exception
 
-from PySide6 import QtCore, QtWebEngineCore, QtWidgets  # noqa
+from PySide6 import QtCore, QtGui, QtWebEngineCore, QtWidgets  # noqa
 
 from openlp.core.api.deploy import check_for_remote_update
 from openlp.core.common.applocation import AppLocation
