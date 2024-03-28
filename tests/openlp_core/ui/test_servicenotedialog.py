@@ -48,7 +48,7 @@ def test_basic_display(form: ServiceNoteForm):
     # WHEN displaying the UI and pressing enter
     with patch('openlp.core.ui.servicenoteform.QtWidgets.QDialog.exec'):
         form.exec()
-    ok_widget = form.button_box.button(form.button_box.Save)
+    ok_widget = form.button_box.button(form.button_box.StandardButton.Save)
     QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN the following input text is returned
@@ -59,7 +59,7 @@ def test_basic_display(form: ServiceNoteForm):
     form.text_edit.setPlainText(text)
     with patch('openlp.core.ui.servicenoteform.QtWidgets.QDialog.exec'):
         form.exec()
-    ok_widget = form.button_box.button(form.button_box.Save)
+    ok_widget = form.button_box.button(form.button_box.StandardButton.Save)
     QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN the following text is returned
@@ -70,7 +70,7 @@ def test_basic_display(form: ServiceNoteForm):
     with patch('openlp.core.ui.servicenoteform.QtWidgets.QDialog.exec'):
         form.exec()
         form.text_edit.setPlainText(text)
-    ok_widget = form.button_box.button(form.button_box.Save)
+    ok_widget = form.button_box.button(form.button_box.StandardButton.Save)
     QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN the following text is returned

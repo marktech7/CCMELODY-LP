@@ -44,7 +44,7 @@ def test_basic_display(form: ServiceItemEditForm):
     # WHEN: Displaying the UI
     with patch('openlp.core.ui.serviceitemeditform.QtWidgets.QDialog.exec'):
         form.exec()
-    ok_widget = form.button_box.button(form.button_box.Save)
+    ok_widget = form.button_box.button(form.button_box.StandardButton.Save)
     QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN: Everything should be fine

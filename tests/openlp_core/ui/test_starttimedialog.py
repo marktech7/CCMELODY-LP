@@ -75,7 +75,7 @@ def test_time_display(form: StartTimeForm):
     form.item = {'service_item': mocked_serviceitem}
     with patch('PySide6.QtWidgets.QDialog.exec'):
         form.exec()
-    ok_widget = form.button_box.button(form.button_box.Ok)
+    ok_widget = form.button_box.button(form.button_box.StandardButton.Ok)
     QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN the following input values are returned
@@ -90,7 +90,7 @@ def test_time_display(form: StartTimeForm):
         form.exec()
     form.minute_spin_box.setValue(2)
     form.second_spin_box.setValue(3)
-    ok_widget = form.button_box.button(form.button_box.Ok)
+    ok_widget = form.button_box.button(form.button_box.StandardButton.Ok)
     QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN the following values are returned

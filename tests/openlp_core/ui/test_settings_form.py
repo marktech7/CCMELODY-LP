@@ -48,7 +48,7 @@ def test_basic_cancel(form):
 
     # WHEN displaying the UI and pressing cancel
     with patch('PySide6.QtWidgets.QDialog.reject') as mocked_reject:
-        cancel_widget = form.button_box.button(form.button_box.Cancel)
+        cancel_widget = form.button_box.button(form.button_box.StandardButton.Cancel)
         QtTest.QTest.mouseClick(cancel_widget, QtCore.Qt.MouseButton.LeftButton)
 
         # THEN the dialog reject should have been called
@@ -63,7 +63,7 @@ def test_basic_accept(form):
 
     # WHEN displaying the UI and pressing Ok
     with patch('PySide6.QtWidgets.QDialog.accept') as mocked_accept:
-        ok_widget = form.button_box.button(form.button_box.Ok)
+        ok_widget = form.button_box.button(form.button_box.StandardButton.Ok)
         QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
         # THEN the dialog reject should have been called
@@ -79,7 +79,7 @@ def test_basic_register(form):
 
     # WHEN displaying the UI and pressing Ok
     with patch('PySide6.QtWidgets.QDialog.accept'):
-        ok_widget = form.button_box.button(form.button_box.Ok)
+        ok_widget = form.button_box.button(form.button_box.StandardButton.Ok)
         QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
         # THEN the processing stack should be empty
