@@ -474,12 +474,10 @@ def main():
         qt_args.extend(['-platform', 'windows:darkmode=1'])
     elif is_macosx() and getattr(sys, 'frozen', False) and not os.environ.get('QTWEBENGINEPROCESS_PATH'):
         # Set the location to the QtWebEngineProcess binary, normally set by PyInstaller, but it moves around...
-        os.environ['QTWEBENGINEPROCESS_PATH'] = str((AppLocation.get_directory(AppLocation.AppDir) / 'PySide6' / 'Qt6' /
-                                                    'lib' / 'QtWebEngineCore.framework' / 'Versions' / '6' /
-                                                    'Helpers' / 'QtWebEngineProcess.app' / 'Contents' / 'MacOS' /
-                                                    'QtWebEngineProcess').resolve())
-    no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
-                                     and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
+        os.environ['QTWEBENGINEPROCESS_PATH'] = str((AppLocation.get_directory(AppLocation.AppDir) / 'PySide6' /
+                                                     'Qt6' / 'lib' / 'QtWebEngineCore.framework' / 'Versions' /
+                                                     '6' / 'Helpers' / 'QtWebEngineProcess.app' / 'Contents' /
+                                                     'MacOS' / 'QtWebEngineProcess').resolve())
     # Prevent the use of wayland, use xcb instead
     if is_wayland_compositor():
         qt_args.extend(['-platform', 'xcb'])
