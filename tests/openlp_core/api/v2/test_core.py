@@ -69,6 +69,12 @@ def test_shortcuts(flask_client: FlaskClient, settings: Settings):
     assert res.get_json()[0]['shortcut'] == shortcut
 
 
+def test_language(flask_client: FlaskClient, settings: Settings):
+    res = flask_client.get('/api/v2/core/language')
+    assert res.status_code == 200
+    assert res.get_json()['language']
+
+
 def test_poll_backend(settings: Settings):
     """
     Test the raw poll function returns the correct JSON
