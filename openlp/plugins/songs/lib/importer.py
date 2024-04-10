@@ -166,28 +166,29 @@ class SongFormat(object):
     EasyWorshipDB = 7
     EasyWorshipSqliteDB = 8
     EasyWorshipService = 9
-    FoilPresenter = 10
-    LiveWorship = 11
-    Lyrix = 12
-    MediaShout = 13
-    OpenSong = 14
-    OPSPro = 15
-    PowerPraise = 16
-    PowerSong = 17
-    PresentationManager = 18
-    ProPresenter = 19
-    SingingTheFaith = 20
-    SongBeamer = 21
-    SongPro = 22
-    SongShowPlus = 23
-    SongsOfFellowship = 24
-    SundayPlus = 25
-    VideoPsalm = 26
-    WordsOfWorship = 27
-    WorshipAssistant = 28
-    WorshipCenterPro = 29
-    ZionWorx = 30
-    Datasoul = 31
+    EasyWorshipServiceSqliteDB = 10
+    FoilPresenter = 11
+    LiveWorship = 12
+    Lyrix = 13
+    MediaShout = 14
+    OpenSong = 15
+    OPSPro = 16
+    PowerPraise = 17
+    PowerSong = 18
+    PresentationManager = 19
+    ProPresenter = 20
+    SingingTheFaith = 21
+    SongBeamer = 22
+    SongPro = 23
+    SongShowPlus = 24
+    SongsOfFellowship = 25
+    SundayPlus = 26
+    VideoPsalm = 27
+    WordsOfWorship = 28
+    WorshipAssistant = 29
+    WorshipCenterPro = 30
+    ZionWorx = 31
+    Datasoul = 32
 
     # Set optional attribute defaults
     __defaults__ = {
@@ -277,6 +278,14 @@ class SongFormat(object):
             'selectMode': SongFormatSelect.SingleFile,
             'filter': '{text} (*.ews)'.format(text=translate('SongsPlugin.ImportWizardForm',
                                                              'EasyWorship 2007/2009 Service File'))
+        },
+        EasyWorshipServiceSqliteDB: {
+            'class': EasyWorshipSongImport,
+            'name': 'EasyWorship 6/7 Service File',
+            'prefix': 'ew',
+            'selectMode': SongFormatSelect.SingleFile,
+            'filter': '{text} (*.ewsx)'.format(text=translate('SongsPlugin.ImportWizardForm',
+                                                              'EasyWorship 6/7 Service File'))
         },
         FoilPresenter: {
             'class': FoilPresenterImport,
@@ -487,6 +496,7 @@ class SongFormat(object):
             SongFormat.EasyWorshipDB,
             SongFormat.EasyWorshipSqliteDB,
             SongFormat.EasyWorshipService,
+            SongFormat.EasyWorshipServiceSqliteDB,
             SongFormat.FoilPresenter,
             SongFormat.LiveWorship,
             SongFormat.Lyrix,

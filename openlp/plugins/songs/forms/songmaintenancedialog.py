@@ -141,10 +141,10 @@ class Ui_SongMaintenanceDialog(object):
         """
         Translate the UI on the fly.
         """
-        song_maintenance_dialog.setWindowTitle(SongStrings.SongMaintenance)
-        self.authors_list_item.setText(SongStrings.Authors)
-        self.topics_list_item.setText(SongStrings.Topics)
-        self.books_list_item.setText(SongStrings.SongBooks)
+        song_maintenance_dialog.setWindowTitle(SongStrings().SongMaintenance)
+        self.authors_list_item.setText(SongStrings().Authors)
+        self.topics_list_item.setText(SongStrings().Topics)
+        self.books_list_item.setText(SongStrings().SongBooks)
         self.add_author_button.setText(UiStrings().Add)
         self.edit_author_button.setText(UiStrings().Edit)
         self.delete_author_button.setText(UiStrings().Delete)
@@ -154,7 +154,7 @@ class Ui_SongMaintenanceDialog(object):
         self.add_book_button.setText(UiStrings().Add)
         self.edit_book_button.setText(UiStrings().Edit)
         self.delete_book_button.setText(UiStrings().Delete)
-        type_list_width = max(self.fontMetrics().width(SongStrings.Authors),
-                              self.fontMetrics().width(SongStrings.Topics),
-                              self.fontMetrics().width(SongStrings.SongBooks))
+        type_list_width = max(self.fontMetrics().width(SongStrings().Authors),
+                              self.fontMetrics().width(SongStrings().Topics),
+                              self.fontMetrics().width(SongStrings().SongBooks))
         self.type_list_widget.setFixedWidth(type_list_width + self.type_list_widget.iconSize().width() + 32)

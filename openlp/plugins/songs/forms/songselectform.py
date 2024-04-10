@@ -125,7 +125,7 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
                 self.song_progress_bar.setValue(2)
                 song_filename = self.current_download_item.downloadDirectory() + '/' \
                     + self.current_download_item.downloadFileName()
-                song_file = open(song_filename, 'rt')
+                song_file = open(song_filename, 'rt', encoding='utf-8')
                 song_content = song_file.read()
                 song_file.seek(0)
                 if self.check_for_duplicate(song_content):

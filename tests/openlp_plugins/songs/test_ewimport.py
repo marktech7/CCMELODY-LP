@@ -499,6 +499,48 @@ def test_ews_file_import(mocked_retrieve_windows_encoding: MagicMock, MockSongIm
 
 
 @patch('openlp.plugins.songs.lib.importers.easyworship.SongImport')
+@patch('openlp.plugins.songs.lib.importers.easyworship.retrieve_windows_encoding')
+def test_ewsx_file_import(mocked_retrieve_windows_encoding: MagicMock, MockSongImport: MagicMock,
+                          registry: Registry, settings: Settings):
+    """
+    Test the actual import of song from ewsx file and check that the imported data is correct.
+    """
+
+    # GIVEN: Test files with a mocked out SongImport class, a mocked out "manager", a mocked out "import_wizard",
+    #       and mocked out "author", "add_copyright", "add_verse", "finish" methods.
+    mocked_retrieve_windows_encoding.return_value = 'cp1252'
+    mocked_manager = MagicMock()
+    mocked_import_wizard = MagicMock()
+    mocked_add_author = MagicMock()
+    mocked_add_verse = MagicMock()
+    mocked_finish = MagicMock()
+    mocked_title = MagicMock()
+    mocked_finish.return_value = True
+    importer = EasyWorshipSongImportLogger(mocked_manager)
+    importer.import_wizard = mocked_import_wizard
+    importer.stop_import_flag = False
+    importer.add_author = mocked_add_author
+    importer.add_verse = mocked_add_verse
+    importer.title = mocked_title
+    importer.finish = mocked_finish
+    importer.topics = []
+
+    # WHEN: Importing ews file
+    importer.import_source = str(TEST_PATH / 'test1.ewsx')
+    import_result = importer.do_import()
+
+    # THEN: do_import should return none, the song data should be as expected, and finish should have been
+    #       called.
+    title = EWS_SONG_TEST_DATA['title']
+    assert import_result is None, 'do_import should return None when it has completed'
+    assert title in importer._title_assignment_list, 'title for should be "%s"' % title
+    mocked_add_author.assert_any_call(EWS_SONG_TEST_DATA['authors'][0])
+    for verse_text, verse_tag in EWS_SONG_TEST_DATA['verses']:
+        mocked_add_verse.assert_any_call(verse_text, verse_tag)
+    mocked_finish.assert_called_with()
+
+
+@patch('openlp.plugins.songs.lib.importers.easyworship.SongImport')
 def test_import_rtf_unescaped_unicode(MockSongImport: MagicMock, registry: Registry, settings: Settings):
     """
     Test import of rtf without the expected escaping of unicode

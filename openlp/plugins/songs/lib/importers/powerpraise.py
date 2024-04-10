@@ -50,11 +50,11 @@ class PowerPraiseImport(SongImport):
                     root = objectify.parse(xml_file).getroot()
                 except etree.XMLSyntaxError:
                     log.exception('XML syntax error in file {name}'.format(name=file_path))
-                    self.log_error(file_path, SongStrings.XMLSyntaxError)
+                    self.log_error(file_path, SongStrings().XMLSyntaxError)
                     continue
                 except UnicodeDecodeError:
                     log.exception('Unreadable characters in {name}'.format(name=file_path))
-                    self.log_error(file_path, SongStrings.XMLSyntaxError)
+                    self.log_error(file_path, SongStrings().XMLSyntaxError)
                     continue
                 self.process_song(root, file_path)
 

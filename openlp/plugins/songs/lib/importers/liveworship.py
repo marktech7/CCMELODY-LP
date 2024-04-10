@@ -72,7 +72,7 @@ class LiveWorshipImport(SongImport):
         try:
             self.root = etree.fromstring(xml_content, parser)
         except etree.XMLSyntaxError:
-            self.log_error(self.dump_file, SongStrings.XMLSyntaxError)
+            self.log_error(self.dump_file, SongStrings().XMLSyntaxError)
             log.exception('XML syntax error in file {path}'.format(path=str(self.dump_file)))
 
     def extract_songs(self):

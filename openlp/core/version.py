@@ -27,6 +27,7 @@ import sys
 from collections import OrderedDict
 from datetime import date
 
+from packaging.version import parse
 from PyQt5 import QtCore
 
 from openlp.core.common.applocation import AppLocation
@@ -114,8 +115,7 @@ class VersionWorker(ThreadWorker):
                 retries += 1
         else:
             self.no_internet.emit()
-        if remote_version and (QtCore.QVersionNumber.fromString(remote_version) >
-                               QtCore.QVersionNumber.fromString(self.current_version['full'])):
+        if remote_version and (parse(remote_version) > parse(self.current_version['full'])):
             self.new_version.emit(remote_version)
         self.quit.emit()
 

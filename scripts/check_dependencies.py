@@ -95,6 +95,7 @@ MODULES = [
     'pymediainfo',
     'vlc',
     'qrcode',
+    'packaging',
 ]
 
 

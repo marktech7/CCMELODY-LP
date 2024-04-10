@@ -104,7 +104,7 @@ class SongImport(QtCore.QObject):
         self.verse_counts = {}
         self.copyright_string = translate('SongsPlugin.SongImport', 'copyright')
 
-    def log_error(self, file_path, reason=SongStrings.SongIncomplete):
+    def log_error(self, file_path, reason=SongStrings().SongIncomplete):
         """
         This should be called, when a song could not be imported.
 
@@ -151,11 +151,11 @@ class SongImport(QtCore.QObject):
         :param text: Some text
         """
         lines = text.split('\n')
-        if text.lower().find(self.copyright_string) >= 0 or text.find(str(SongStrings.CopyrightSymbol)) >= 0:
+        if text.lower().find(self.copyright_string) >= 0 or text.find(str(SongStrings().CopyrightSymbol)) >= 0:
             copyright_found = False
             for line in lines:
                 if (copyright_found or line.lower().find(self.copyright_string) >= 0 or
-                        line.find(str(SongStrings.CopyrightSymbol)) >= 0):
+                        line.find(str(SongStrings().CopyrightSymbol)) >= 0):
                     copyright_found = True
                     self.add_copyright(line)
                 else:

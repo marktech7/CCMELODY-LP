@@ -28,6 +28,8 @@ import sqlite3
 import struct
 import zlib
 from pathlib import Path
+from tempfile import NamedTemporaryFile
+from zipfile import ZipFile
 
 from openlp.core.common.i18n import translate
 from openlp.plugins.songs.lib import VerseType, retrieve_windows_encoding, strip_rtf
@@ -83,6 +85,8 @@ class EasyWorshipSongImport(SongImport):
                 self.import_ews()
             elif ext == '.db':
                 self.import_db()
+            elif ext == '.ewsx':
+                self.import_ewsx()
             else:
                 self.import_sqlite_db()
         except Exception:
@@ -345,6 +349,65 @@ class EasyWorshipSongImport(SongImport):
                                                                                                 error=e))
         db_file.close()
         self.memo_file.close()
+
+    def import_ewsx(self):
+        """
+        Imports songs from an EasyWorship 6/7 service file, which is just a zip file with an Sqlite DB with text
+        resources. Non-text recources is also in the zip file, but is ignored.
+        """
+        invalid_ewsx_msg = translate('SongsPlugin.EasyWorshipSongImport',
+                                     'This is not a valid Easy Worship 6/7 service file.')
+        # Open ewsx file if it exists
+        if not self.import_source.is_file():
+            log.debug('Given ewsx file does not exists.')
+            return
+        tmp_db_file = NamedTemporaryFile(delete=False)
+        with ZipFile(self.import_source, 'r') as eswx_file:
+            db_zfile = eswx_file.open('main.db')
+            # eswx has bad CRC for the database for some reason (custom CRC?), so skip the CRC
+            db_zfile._expected_crc = None
+            db_data = db_zfile.read()
+            tmp_db_file.write(db_data)
+            tmp_db_file.close()
+        ewsx_conn = sqlite3.connect(tmp_db_file.file.name)
+        if ewsx_conn is None:
+            self.log_error(self.import_source, invalid_ewsx_msg)
+            return
+        ewsx_db = ewsx_conn.cursor()
+        # Take a stab at how text is encoded
+        self.encoding = 'cp1252'
+        self.encoding = retrieve_windows_encoding(self.encoding)
+        if not self.encoding:
+            log.debug('No encoding set.')
+            return
+        # get list of songs in service file, presentation_type=6 means songs
+        songs_exec = ewsx_db.execute('SELECT rowid, title, author, copyright, reference_number '
+                                     'FROM presentation WHERE presentation_type=6;')
+        songs = songs_exec.fetchall()
+        for song in songs:
+            self.title = title = song[1]
+            self.author = song[2]
+            self.copyright = song[3]
+            self.ccli_number = song[4]
+            # get slides for the song, element_type=6 means songs, element_style_type=4 means song text
+            slides = ewsx_db.execute('SELECT rt.rtf '
+                                     'FROM element as e '
+                                     'JOIN slide as s ON e.slide_id = s.rowid '
+                                     'JOIN resource_text as rt ON rt.resource_id = e.foreground_resource_id '
+                                     'WHERE e.element_type=6 AND e.element_style_type=4 AND s.presentation_id = ? '
+                                     'ORDER BY s.order_index;', (song[0],))
+            for slide in slides:
+                if slide:
+                    self.set_song_import_object(self.author, slide[0].encode())
+            # save song
+            if not self.finish():
+                self.log_error(self.import_source,
+                               translate('SongsPlugin.EasyWorshipSongImport',
+                                         '"{title}" could not be imported. {entry}').
+                               format(title=title, entry=self.entry_error_log))
+        # close database handles
+        ewsx_conn.close()
+        Path(tmp_db_file.file.name).unlink()
 
     def import_sqlite_db(self):
         """

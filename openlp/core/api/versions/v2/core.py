@@ -24,6 +24,7 @@ from flask import jsonify, request, abort, Blueprint
 from PyQt5 import QtCore
 
 from openlp.core.api.lib import login_required
+from openlp.core.common.i18n import LanguageManager
 from openlp.core.common.registry import Registry
 from openlp.core.lib.plugin import PluginStatus, StringContent
 from openlp.core.state import State
@@ -56,14 +57,36 @@ def plugin_list():
     return jsonify(searches)
 
 
+@core.route('/shortcuts')
+def shortcuts():
+    data = []
+    settings = Registry().get('settings_thread')
+    shortcut_prefix = 'shortcuts/'
+    for key in settings.allKeys():
+        if key.startswith(shortcut_prefix):
+            data.append(
+                {
+                    'action': key.removeprefix(shortcut_prefix),
+                    'shortcut': settings.value(key)
+                }
+            )
+    return jsonify(data)
+
+
 @core.route('/system')
 def system_information():
     data = {}
     data['websocket_port'] = Registry().get('settings_thread').value('api/websocket port')
     data['login_required'] = Registry().get('settings_thread').value('api/authentication enabled')
     data['api_version'] = 2
-    data['api_revision'] = 4
+    data['api_revision'] = 5
     return jsonify(data)
+
+
+@core.route('/language')
+def language():
+    language = LanguageManager.get_language()
+    return jsonify({'language': language})
 
 
 @core.route('/login', methods=['POST'])
