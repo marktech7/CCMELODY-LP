@@ -23,9 +23,9 @@
 The :mod:`db` module provides the database and schema that is the backend for
 the Custom plugin
 """
-from sqlalchemy import Column, ForeignKey, Table
-from sqlalchemy.orm import Session, declarative_base, reconstructor, relationship
-from sqlalchemy.types import Boolean, DateTime, Integer, Unicode
+from sqlalchemy import Column
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.types import DateTime, Integer, Unicode
 
 from openlp.core.db.helpers import init_db
 

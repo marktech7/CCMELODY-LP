@@ -24,7 +24,9 @@ import shutil
 import logging
 from pathlib import Path
 
+from openlp.core.common.registry import Registry
 from openlp.plugins.custom.lib.customxmlhandler import CustomXML
+from openlp.plugins.custom.lib.db import CustomSlide
 from openlp.plugins.remotesync.lib.backends.synchronizer import Synchronizer, SyncItemType, ConflictException, \
     LockException, ConflictReason
 from openlp.plugins.remotesync.lib.db import RemoteSyncItem
@@ -81,7 +83,7 @@ class FolderSynchronizer(Synchronizer):
     def check_connection(self):
         return self.base_folder_path.exists() and self.song_history_folder_path.exists() and \
             self.song_deleted_folder_path.exists() and self.custom_folder_path.exists() and \
-            self.custom_history_folder_path.exists() and custom_deleted_folder_path.exists() and \
+            self.custom_history_folder_path.exists() and self.custom_deleted_folder_path.exists() and \
             self.service_folder_path.exists()
 
     def initialize_remote(self):
@@ -182,7 +184,7 @@ class FolderSynchronizer(Synchronizer):
 
     def fetch_song(self, song_uuid, song_id):
         """
-        Fetch a specific song from the shared folder
+        Fetch a specific song from the shared folder and stores it in the song db
         :param song_uuid: uuid of the song
         :param song_id: song db id, None if song does not yet exists in the song db
         :return: The song object
@@ -190,6 +192,7 @@ class FolderSynchronizer(Synchronizer):
         version, item_content = self._fetch_item(SyncItemType.Song, song_uuid)
         if not version:
             return None
+        # this also stores the song in the song database
         song = self.open_lyrics.xml_to_song(item_content, update_song_id=song_id)
         sync_item = self.manager.get_object_filtered(RemoteSyncItem, RemoteSyncItem.uuid == song_uuid)
         if not sync_item:
@@ -230,7 +233,7 @@ class FolderSynchronizer(Synchronizer):
     def send_custom(self, custom, custom_uuid, last_known_version, first_sync_attempt, prev_lock_id):
         """
         Sends a custom slide to the shared folder.
-        :param custom: The sutom object to synchronize
+        :param custom: The custom object to synchronize
         :param custom_uuid: The uuid of the custom slide
         :param last_known_version: The last known version of the custom slide
         :param first_sync_attempt: If the custom slide has been attempted synchronized before,
@@ -245,7 +248,7 @@ class FolderSynchronizer(Synchronizer):
             counter = 0
         version = '{counter}={computer_id}'.format(counter=counter, computer_id=self.pc_id)
         custom_xml = CustomXML(custom.text)
-        #custom_xml.set_version(version)
+        custom_xml.add_title_and_credit(custom.title, custom.credits)
         content = str(custom_xml.extract_xml(True), 'utf-8')
         self._send_item(SyncItemType.Custom, content, custom_uuid, version, last_known_version, first_sync_attempt,
                         prev_lock_id)
@@ -253,7 +256,7 @@ class FolderSynchronizer(Synchronizer):
 
     def fetch_custom(self, custom_uuid, custom_id):
         """
-        Fetch a specific custom slide from the shared folder
+        Fetch a specific custom slide from the shared folder and stores it in the custom db
         :param custom_uuid: uuid of the custom slide
         :param custom_id: custom db id, None if the custom slide does not yet exists in the custom db
         :return: The custom object
@@ -262,11 +265,24 @@ class FolderSynchronizer(Synchronizer):
         if not version:
             return None
         custom = CustomXML(item_content)
+        # save the slide in the custom db
+        custom_manager = Registry().get('custom_manager')
+        log.debug('fetched custom item: %s' % (custom_id))
+        if custom_id:
+            custom_slide = custom_manager.get_object(CustomSlide, custom_id)
+        else:
+            custom_slide = CustomSlide()
+        custom_slide.title = custom.get_title()
+        custom_slide.text = str(custom.extract_xml(), 'utf-8')
+        custom_slide.credits = custom.get_credit()
+        # custom_slide.theme_name =
+        custom_manager.save_object(custom_slide)
+        # save to the sync map
         sync_item = self.manager.get_object_filtered(RemoteSyncItem, RemoteSyncItem.uuid == custom_uuid)
         if not sync_item:
             sync_item = RemoteSyncItem()
             sync_item.type = SyncItemType.Custom
-            sync_item.item_id = custom.id
+            sync_item.item_id = custom_slide.id
             sync_item.uuid = custom_uuid
         sync_item.version = version
         self.manager.save_object(sync_item, True)
@@ -332,9 +348,12 @@ class FolderSynchronizer(Synchronizer):
             item_id = existing_item.item_id if existing_item else None
             # If we do not have a local version or if the remote version is different, then we update
             if not existing_item or existing_item.version != file_version:
-                log.debug('Local version (%s) and file version (%s) mismatch - updated triggered!' % (
-                    existing_item.version, file_version))
-                log.debug('About to fetch item: %s %d' % (uuid, item_id))
+                if existing_item:
+                    log.debug('Local version (%s) and file version (%s) mismatch - updated triggered!' % (
+                        existing_item.version, file_version))
+                    log.debug('About to fetch item: %s %d' % (uuid, item_id))
+                else:
+                    log.debug('About to fetch new item: %s' % (uuid))
                 try:
                     if item_type == SyncItemType.Song:
                         self.fetch_song(uuid, item_id)
@@ -438,7 +457,7 @@ class FolderSynchronizer(Synchronizer):
                 raise ConflictException(item_type, item_uuid, ConflictReason.MultipleRemoteEntries)
             existing_file = existing_item_files[0].name
             filename_elements = existing_file.split('=', 1)
-            version = filename_elements[1]
+            version = filename_elements[1].replace('.xml', '')
             item_content = self._read_file(existing_item_files[0])
             return version, item_content
         else:

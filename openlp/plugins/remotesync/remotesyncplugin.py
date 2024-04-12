@@ -38,7 +38,6 @@ from PyQt5 import QtWidgets, QtCore
 from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
 from openlp.core.common.i18n import translate
-from openlp.core.lib import build_icon
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.ui.icons import UiIcons
 from openlp.core.db.manager import DBManager
@@ -139,6 +138,7 @@ class RemoteSyncPlugin(Plugin):
         if self.synchronizer:
             # Set a timer to start the processing of the queue in 2 seconds
             self.sync_timer.start(2000)
+        log.debug('remotesync init done')
 
     def finalise(self):
         log.debug('finalise')
@@ -202,8 +202,8 @@ class RemoteSyncPlugin(Plugin):
             self.pull_from_remote()
             self.push_to_remote()
             self.synchronizer.disconnect()
-            # Set a timer to start the synchronization again in 10 minutes.
-            self.sync_timer.start(60000)
+            # Set a timer to start the synchronization again in 1 minutes.
+            self.sync_timer.start(6000)
 
     def push_to_remote(self):
         """
@@ -222,8 +222,8 @@ class RemoteSyncPlugin(Plugin):
                     item_type = SyncItemType.Custom
                 # If item has not been sync'ed before we generate a uuid
                 sync_item = self.manager.get_object_filtered(RemoteSyncItem,
-                                                                and_(RemoteSyncItem.type == item_type,
-                                                                    RemoteSyncItem.item_id == item.id))
+                                                             and_(RemoteSyncItem.type == item_type,
+                                                                  RemoteSyncItem.item_id == item.id))
                 if not sync_item:
                     sync_item = RemoteSyncItem()
                     sync_item.type = item_type
@@ -233,7 +233,7 @@ class RemoteSyncPlugin(Plugin):
                 try:
                     if queue_item.type == SyncItemType.Song:
                         version = self.synchronizer.send_song(item, sync_item.uuid, sync_item.version,
-                                                                queue_item.first_attempt, queue_item.lock_id)
+                                                              queue_item.first_attempt, queue_item.lock_id)
                     else:
                         version = self.synchronizer.send_custom(item, sync_item.uuid, sync_item.version,
                                                                 queue_item.first_attempt, queue_item.lock_id)

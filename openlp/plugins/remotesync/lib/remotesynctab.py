@@ -25,7 +25,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from openlp.core.common.enum import FtpType, SyncType
 from openlp.core.common.registry import Registry
 from openlp.core.common.i18n import translate
-from openlp.core.lib import build_icon
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.widgets.edits import PathEdit
 from openlp.core.widgets.enums import PathEditType
