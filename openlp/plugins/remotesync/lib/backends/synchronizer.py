@@ -183,13 +183,39 @@ class Synchronizer(object):
         """
         pass
 
-    def send_custom(self, custom):
+    def send_custom(self, custom, custom_uuid, last_known_version, first_sync_attempt, prev_lock_id):
+        """
+        Sends a custom slide to the remote location.
+        :param custom: The custom object to synchronize
+        :param custom_uuid: The uuid of the custom slide
+        :param last_known_version: The last known version of the custom slide
+        :param first_sync_attempt: If the custom slide has been attempted synchronized before,
+                                  this is the timestamp of the first sync attempt.
+        :param prev_lock_id: If the custom slide has been attempted synchronized before, this is the id of the lock
+                             that prevented the synchronization.
+        :return: The new version.
+        """
         pass
 
-    def fetch_custom(self):
+    def fetch_custom(self, custom_uuid, custom_id):
+        """
+        Fetch a specific custom slide from the remote location and stores it in the custom db
+        :param custom_uuid: uuid of the custom slide
+        :param custom_id: custom db id, None if the custom slide does not yet exists in the custom db
+        :return: The custom object
+        """
         pass
 
-    def delete_custom(self):
+    def delete_custom(self, custom_uuid, first_del_attempt, prev_lock_id):
+        """
+        Delete custom slide from the remote location.
+        :param custom_uuid:
+        :type str:
+        :param first_del_attempt:
+        :type DateTime:
+        :param prev_lock_id:
+        :type str:
+        """
         pass
 
     def send_service(self, service):
@@ -197,7 +223,3 @@ class Synchronizer(object):
 
     def fetch_service(self):
         pass
-
-    def serialize_custom(custom):
-        j_data = dict()
-        return j_data
