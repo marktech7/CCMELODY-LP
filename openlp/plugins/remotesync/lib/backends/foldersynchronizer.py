@@ -27,6 +27,7 @@ from pathlib import Path
 from openlp.core.common.registry import Registry
 from openlp.plugins.custom.lib.customxmlhandler import CustomXML
 from openlp.plugins.custom.lib.db import CustomSlide
+from openlp.plugins.songs.lib import delete_song as delete_in_song_plugin
 from openlp.plugins.remotesync.lib.backends.synchronizer import Synchronizer, SyncItemType, ConflictException, \
     LockException, ConflictReason
 from openlp.plugins.remotesync.lib.db import RemoteSyncItem
@@ -315,25 +316,26 @@ class FolderSynchronizer(Synchronizer):
         Check for changes in the remote/shared folder. If a changed/new item is found it is fetched using the
         fetch_song method, and if a conflict is detected the mark_item_for_conflict is used. If items has been deleted
         remotely, they are also deleted locally.
-        :return: True if one or more songs was updated, otherwise False
+        :return: True if one or more songs was updated or deleted, otherwise False
         """
+        updated = False
+        # Check for updated or new files
         if item_type == SyncItemType.Song:
             folder_path = self.song_folder_path
         else:
             folder_path = self.custom_folder_path
-        updated = False
         item_files = self._get_file_list(folder_path, '*.xml')
         conflicts = []
         for item_file in item_files:
             # skip conflicting files
             if item_file in conflicts:
                 continue
-            # Check if this song is already sync'ed
+            # Check if this item is already sync'ed
             filename = item_file.name
             filename_elements = filename.split('=', 1)
             uuid = filename_elements[0]
             file_version = filename_elements[1].replace('.xml', '')
-            # Detect if there are multiple files for the same song, which would mean that we have a conflict
+            # Detect if there are multiple files for the same item, which would mean that we have a conflict
             files = []
             for item_file2 in item_files:
                 if uuid in str(item_file2):
@@ -364,7 +366,19 @@ class FolderSynchronizer(Synchronizer):
                     self.mark_item_for_conflict(item_type, uuid, ce.reason)
                     continue
                 updated = True
-            # TODO: Check for deleted files
+        # Check for deleted files
+        if item_type == SyncItemType.Song:
+            deleted_folder_path = self.custom_deleted_folder_path
+        else:
+            deleted_folder_path = self.song_deleted_folder_path
+        deleted_item_files = self._get_file_list(deleted_folder_path, '*')
+        for deleted_item_file in deleted_item_files:
+            # if the a deleted item exists in the local database it means it must be deleted locally
+            sync_item = self.manager.get_object_filtered(RemoteSyncItem, RemoteSyncItem.uuid == deleted_item_file.name)
+            if sync_item:
+                updated = True
+                delete_in_song_plugin(sync_item.item_id, False)
+                self.manager.delete_all_objects(RemoteSyncItem, RemoteSyncItem.item_id == sync_item.item_id)
         return updated
 
     def _send_item(self, item_type, item_content, item_uuid, version, last_known_version, first_sync_attempt,

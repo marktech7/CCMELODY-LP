@@ -213,6 +213,9 @@ class RemoteSyncPlugin(Plugin):
         song_manager = Registry().get('songs_manager')
         custom_manager = Registry().get('custom_manager')
         for queue_item in queue_items:
+            sync_item = self.manager.get_object_filtered(RemoteSyncItem,
+                                                         and_(RemoteSyncItem.type == queue_item.type,
+                                                              RemoteSyncItem.item_id == queue_item.item_id))
             if queue_item.action == SyncItemAction.Update:
                 if queue_item.type == SyncItemType.Song:
                     item = song_manager.get_object(Song, queue_item.item_id)
@@ -221,9 +224,6 @@ class RemoteSyncPlugin(Plugin):
                     item = custom_manager.get_object(CustomSlide, queue_item.item_id)
                     item_type = SyncItemType.Custom
                 # If item has not been sync'ed before we generate a uuid
-                sync_item = self.manager.get_object_filtered(RemoteSyncItem,
-                                                             and_(RemoteSyncItem.type == item_type,
-                                                                  RemoteSyncItem.item_id == item.id))
                 if not sync_item:
                     sync_item = RemoteSyncItem()
                     sync_item.type = item_type
@@ -255,18 +255,18 @@ class RemoteSyncPlugin(Plugin):
                 # Delete the item
                 try:
                     if queue_item.type == SyncItemType.Song:
-                        version = self.synchronizer.delete_song(sync_item.uuid, sync_item.version,
+                        version = self.synchronizer.delete_song(sync_item.uuid,
                                                                 queue_item.first_attempt, queue_item.lock_id)
                     else:
-                        version = self.synchronizer.delete_custom(sync_item.uuid, sync_item.version,
+                        version = self.synchronizer.delete_custom(sync_item.uuid,
                                                                   queue_item.first_attempt, queue_item.lock_id)
                 except ConflictException:
-                    log.debug('Conflict detected for item %d / %s' % (sync_item.item_id, sync_item.uuid))
+                    log.debug('Conflict detected for item %d / %s' % (item.item_id, item.uuid))
                     # TODO: Store the conflict in the DB and turn on the conflict icon
                     continue
                 except LockException as le:
                     # Store the lock time in the DB and keep it in the queue
-                    log.debug('Lock detected for item %d / %s' % (sync_item.item_id, sync_item.uuid))
+                    log.debug('Lock detected for item %d / %s' % (item.item_id, item.uuid))
                     queue_item.first_attempt = le.first_attempt
                     queue_item.lock_id = le.lock_id
                     self.manager.save_object(queue_item)

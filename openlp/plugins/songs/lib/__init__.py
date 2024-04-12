@@ -524,28 +524,30 @@ def strip_rtf(text, default_encoding=None):
     return text, default_encoding
 
 
-def delete_song(song_id, song_plugin):
+def delete_song(song_id, trigger_event=True):
     """
     Deletes a song from the database. Media files associated to the song are removed prior to the deletion of the song.
 
     :param song_id: The ID of the song to delete.
-    :param song_plugin: The song plugin instance.
+    :param trigger_event: If True the song_deleted event is triggered through the registry
     """
     save_path = ''
-    media_files = song_plugin.manager.get_all_objects(MediaFile, MediaFile.song_id == song_id)
+    songs_manager = Registry().get('songs_manager')
+    media_files = songs_manager.get_all_objects(MediaFile, MediaFile.song_id == song_id)
     for media_file in media_files:
         try:
             media_file.file_path.unlink()
         except OSError:
             log.exception('Could not remove file: {name}'.format(name=media_file.file_path))
     try:
-        save_path = AppLocation.get_section_data_path(song_plugin.name) / 'audio' / str(song_id)
+        save_path = AppLocation.get_section_data_path('songs') / 'audio' / str(song_id)
         if save_path.exists():
             save_path.rmdir()
     except OSError:
         log.exception('Could not remove directory: {path}'.format(path=save_path))
-    song_plugin.manager.delete_object(Song, song_id)
-    Registry().execute('song_deleted', song_id)
+    songs_manager.delete_object(Song, song_id)
+    if trigger_event:
+        Registry().execute('song_deleted', song_id)
 
 
 def transpose_lyrics(lyrics, transpose_value):
