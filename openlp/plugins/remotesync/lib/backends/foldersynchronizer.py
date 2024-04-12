@@ -377,7 +377,13 @@ class FolderSynchronizer(Synchronizer):
             sync_item = self.manager.get_object_filtered(RemoteSyncItem, RemoteSyncItem.uuid == deleted_item_file.name)
             if sync_item:
                 updated = True
-                delete_in_song_plugin(sync_item.item_id, False)
+                # delete the item from its plugin db
+                if item_type == SyncItemType.Song:
+                    delete_in_song_plugin(sync_item.item_id, False)
+                else:
+                    custom_manager = Registry().get('custom_manager')
+                    custom_manager.delete_object(CustomSlide, sync_item.item_id)
+                # remove the item from the remotesync db
                 self.manager.delete_all_objects(RemoteSyncItem, RemoteSyncItem.item_id == sync_item.item_id)
         return updated
 
