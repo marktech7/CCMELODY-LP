@@ -40,6 +40,130 @@ class WebServiceSynchronizer(Synchronizer):
         self.manager = registry.Registry().get('songs_manager')
         registry.Registry().register('remote_synchronizer', self)
 
+    def connect(self):
+        pass
+
+    def disconnect(self):
+        pass
+
+    def check_configuration(self):
+        return False
+
+    def check_connection(self):
+        """
+        Check that it is possible to connect to the remote server/folder.
+        """
+        return False
+
+    def initialize_remote(self):
+        """
+        Setup connection to the remote server and do remote initialization.
+        """
+        pass
+
+    def get_remote_song_changes(self):
+        """
+        Check for changes in the remote/shared folder. If a changed/new item is found it is fetched using the
+        fetch_song method, and if a conflict is detected the mark_item_for_conflict is used. If items has been deleted
+        remotely, they are also deleted locally.
+        :return: True if one or more songs was updated, otherwise False
+        """
+        # GET song/list
+        pass
+
+    def send_song(self, song, song_uuid, last_known_version, first_sync_attempt, prev_lock_id):
+        """
+        Sends a song to the remote location
+        :param song: The song object to synchronize
+        :param song_uuid: The uuid of the song
+        :param last_known_version: The last known version of the song
+        :param first_sync_attempt: If the song has been attempted synchronized before,
+                                  this is the timestamp of the first sync attempt.
+        :param prev_lock_id: If the song has been attempted synchronized before, this is the id of the lock that
+                             prevented the synchronization.
+        :return: The new version.
+        """
+        # PUT song/<uuid>
+        pass
+
+    def fetch_song(self, song_uuid, song_id):
+        """
+        Fetch a specific song from the remote location and saves it to the song db.
+        :param song_uuid: uuid of the song
+        :param song_id: song db id, None if song does not yet exists in the song db
+        :return: The song object
+        """
+        # GET song/<uuid>
+        pass
+
+    def delete_song(self, song_uuid, first_del_attempt, prev_lock_id):
+        """
+        Delete song from the remote location
+        :param song_uuid:
+        :type str:
+        :param first_del_attempt:
+        :type DateTime:
+        :param prev_lock_id:
+        :type str:
+        """
+        # DELETE song/<uuid>
+        pass
+
+    def get_remote_custom_changes(self):
+        """
+        Check for changes in the remote/shared folder. If a changed/new item is found it is fetched using the
+        fetch_song method, and if a conflict is detected the mark_item_for_conflict is used. If items has been deleted
+        remotely, they are also deleted locally.
+        :return: True if one or more songs was updated, otherwise False
+        """
+        # GET custom/list
+        pass
+
+    def send_custom(self, custom, custom_uuid, last_known_version, first_sync_attempt, prev_lock_id):
+        """
+        Sends a custom slide to the remote location.
+        :param custom: The custom object to synchronize
+        :param custom_uuid: The uuid of the custom slide
+        :param last_known_version: The last known version of the custom slide
+        :param first_sync_attempt: If the custom slide has been attempted synchronized before,
+                                  this is the timestamp of the first sync attempt.
+        :param prev_lock_id: If the custom slide has been attempted synchronized before, this is the id of the lock
+                             that prevented the synchronization.
+        :return: The new version.
+        """
+        # PUT custom/<uuid>
+        pass
+
+    def fetch_custom(self, custom_uuid, custom_id):
+        """
+        Fetch a specific custom slide from the remote location and stores it in the custom db
+        :param custom_uuid: uuid of the custom slide
+        :param custom_id: custom db id, None if the custom slide does not yet exists in the custom db
+        :return: The custom object
+        """
+        # GET custom/<uuid>
+        pass
+
+    def delete_custom(self, custom_uuid, first_del_attempt, prev_lock_id):
+        """
+        Delete custom slide from the remote location.
+        :param custom_uuid:
+        :type str:
+        :param first_del_attempt:
+        :type DateTime:
+        :param prev_lock_id:
+        :type str:
+        """
+        # DELETE custom/<uuid>
+        pass
+
+    def send_service(self, service):
+        pass
+
+    def fetch_service(self):
+        pass
+
+
     @staticmethod
     def _handle(response, expected_status_code=200):
         if response.status_code != expected_status_code:
