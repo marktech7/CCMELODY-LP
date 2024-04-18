@@ -35,6 +35,9 @@ from openlp.core.common.i18n import UiStrings, translate
 log = logging.getLogger(__name__ + '.__init__')
 
 
+DEFAULT_THUMBNAIL_HEIGHT = 88
+
+
 class DataType(IntEnum):
     U8 = 1
     U16 = 2
@@ -301,8 +304,8 @@ def create_thumb(image_path, thumb_path, return_icon=True, size=None):
     :param Path image_path: The image file to create the icon from.
     :param Path thumb_path: The filename to save the thumbnail to.
     :param return_icon: States if an icon should be build and returned from the thumb. Defaults to ``True``.
-    :param size: Allows to state a own size (QtCore.QSize) to use. Defaults to ``None``, which means that a default
-     height of 88 is used.
+    :param size: Allows to state a own size (QtCore.QSize) to use. Defaults to ``None``, which means it uses the value
+                 from DEFAULT_THUMBNAIL_HEIGHT.
     :return: The final icon.
     """
     reader = QtGui.QImageReader(str(image_path))
@@ -312,7 +315,7 @@ def create_thumb(image_path, thumb_path, return_icon=True, size=None):
             ratio = 1
         else:
             ratio = reader.size().width() / reader.size().height()
-        reader.setScaledSize(QtCore.QSize(int(ratio * 88), 88))
+        reader.setScaledSize(QtCore.QSize(int(ratio * DEFAULT_THUMBNAIL_HEIGHT), DEFAULT_THUMBNAIL_HEIGHT))
     elif size.isValid():
         # Complete size given
         reader.setScaledSize(size)
@@ -330,7 +333,7 @@ def create_thumb(image_path, thumb_path, return_icon=True, size=None):
             reader.setScaledSize(QtCore.QSize(int(ratio * size.height()), size.height()))
         else:
             # Invalid; use default height of 88
-            reader.setScaledSize(QtCore.QSize(int(ratio * 88), 88))
+            reader.setScaledSize(QtCore.QSize(int(ratio * DEFAULT_THUMBNAIL_HEIGHT), DEFAULT_THUMBNAIL_HEIGHT))
     thumb = reader.read()
     thumb.save(str(thumb_path), thumb_path.suffix[1:].lower())
     if not return_icon:

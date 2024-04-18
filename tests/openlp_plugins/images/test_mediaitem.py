@@ -22,17 +22,20 @@
 This module contains tests for the lib submodule of the Images plugin.
 """
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import ANY, MagicMock, patch
 
 import pytest
 from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common.registry import Registry
 from openlp.core.common.enum import ImageThemeMode
+from openlp.core.common.registry import Registry
 from openlp.core.db.manager import DBManager
+from openlp.core.lib import build_icon, create_thumb
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.widgets.views import TreeWidgetWithDnD
 from openlp.plugins.images.lib.mediaitem import ImageMediaItem
+from tests.utils.constants import TEST_RESOURCES_PATH
 
 
 @pytest.fixture
@@ -258,3 +261,64 @@ def test_generate_thumbnail_path_filename(media_item):
 
     # THEN: The path should be correct
     assert result == Path('.') / 'myimage.jpg'
+
+
+@patch('openlp.plugins.images.lib.mediaitem.create_thumb')
+def test_load_item_file_not_exist(mocked_create_thumb: MagicMock, media_item: ImageMediaItem):
+    """Test the load_item method when the file does not exist"""
+    # GIVEN: A media item and an Item to load
+    item = MagicMock(file_path=Path('myimage.jpg'), file_hash=None)
+
+    # WHEN load_item() is called with the Item
+    result = media_item.load_item(item)
+
+    # THEN: A QTreeWidgetItem with a "delete" icon should be returned
+    assert isinstance(result, QtWidgets.QTreeWidgetItem)
+    assert result.text(0) == 'myimage.jpg'
+    mocked_create_thumb.assert_not_called()
+
+
+@patch('openlp.plugins.images.lib.mediaitem.validate_thumb')
+@patch('openlp.plugins.images.lib.mediaitem.create_thumb', wraps=create_thumb)
+@patch('openlp.plugins.images.lib.mediaitem.build_icon', wraps=build_icon)
+def test_load_item_valid_thumbnail(mocked_build_icon: MagicMock, mocked_create_thumb: MagicMock,
+                                   mocked_validate_thumb: MagicMock, media_item: ImageMediaItem, registry: Registry):
+    """Test the load_item method with an existing thumbnail"""
+    # GIVEN: A media item and an Item to load
+    media_item.service_path = Path(TEST_RESOURCES_PATH) / 'images'
+    mocked_validate_thumb.return_value = True
+    image_path = Path(TEST_RESOURCES_PATH) / 'images' / 'tractor.jpg'
+    item = MagicMock(file_path=image_path, file_hash=None)
+
+    # WHEN load_item() is called with the Item
+    result = media_item.load_item(item)
+
+    # THEN: A QTreeWidgetItem with a "delete" icon should be returned
+    assert isinstance(result, QtWidgets.QTreeWidgetItem)
+    assert result.text(0) == 'tractor.jpg'
+    assert result.toolTip(0) == str(image_path)
+    mocked_create_thumb.assert_not_called()
+    mocked_build_icon.assert_called_once_with(image_path)
+
+
+@patch('openlp.plugins.images.lib.mediaitem.validate_thumb')
+@patch('openlp.plugins.images.lib.mediaitem.create_thumb', wraps=create_thumb)
+def test_load_item_missing_thumbnail(mocked_create_thumb: MagicMock, mocked_validate_thumb: MagicMock,
+                                     media_item: ImageMediaItem, registry: Registry):
+    """Test the load_item method with no valid thumbnails"""
+    # GIVEN: A media item and an Item to load
+    with TemporaryDirectory() as tmpdir:
+        media_item.service_path = Path(tmpdir)
+        mocked_validate_thumb.return_value = False
+        image_path = Path(TEST_RESOURCES_PATH) / 'images' / 'tractor.jpg'
+        item = MagicMock(file_path=image_path, file_hash=None)
+        registry.get('settings').value.return_value = 400
+
+        # WHEN load_item() is called with the Item
+        result = media_item.load_item(item)
+
+        # THEN: A QTreeWidgetItem with a "delete" icon should be returned
+        assert isinstance(result, QtWidgets.QTreeWidgetItem)
+        assert result.text(0) == 'tractor.jpg'
+        assert result.toolTip(0) == str(image_path)
+        mocked_create_thumb.assert_called_once_with(image_path, Path(tmpdir, 'tractor.jpg'), size=QtCore.QSize(-1, 400))

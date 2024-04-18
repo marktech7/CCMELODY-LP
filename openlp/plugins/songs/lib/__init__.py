@@ -144,17 +144,8 @@ class VerseType(object):
 
     names = ['Verse', 'Chorus', 'Bridge', 'Pre-Chorus', 'Intro', 'Ending', 'Other']
     tags = [name[0].lower() for name in names]
-
-    translated_names = [
-        translate('SongsPlugin.VerseType', 'Verse'),
-        translate('SongsPlugin.VerseType', 'Chorus'),
-        translate('SongsPlugin.VerseType', 'Bridge'),
-        translate('SongsPlugin.VerseType', 'Pre-Chorus'),
-        translate('SongsPlugin.VerseType', 'Intro'),
-        translate('SongsPlugin.VerseType', 'Ending'),
-        translate('SongsPlugin.VerseType', 'Other')]
-
-    translated_tags = [name[0].lower() for name in translated_names]
+    translated_names = names
+    translated_tags = tags
 
     @staticmethod
     def translated_tag(verse_tag, default=Other):

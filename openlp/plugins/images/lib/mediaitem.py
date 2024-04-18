@@ -21,6 +21,7 @@
 
 import logging
 from pathlib import Path
+from typing import Union
 
 from PyQt5 import QtCore, QtWidgets
 
@@ -159,7 +160,11 @@ class ImageMediaItem(FolderLibraryItem):
             if validate_thumb(file_path, thumbnail_path):
                 icon = build_icon(thumbnail_path)
             else:
-                icon = create_thumb(file_path, thumbnail_path)
+                size: Union[QtCore.QSize, None] = None
+                slide_height: Union[int, None] = self.settings.value('advanced/slide max height')
+                if slide_height and slide_height > 0:
+                    size = QtCore.QSize(-1, slide_height)
+                icon = create_thumb(file_path, thumbnail_path, size=size)
             tree_item = QtWidgets.QTreeWidgetItem([file_name])
             tree_item.setData(0, QtCore.Qt.UserRole, item)
             tree_item.setIcon(0, icon)
