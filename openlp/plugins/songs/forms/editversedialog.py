@@ -21,7 +21,7 @@
 
 from PyQt5 import QtWidgets
 
-from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.i18n import UiStrings
 from openlp.core.lib.ui import create_button_box
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.edits import SpellTextEdit
@@ -87,8 +87,18 @@ class Ui_EditVerseDialog(object):
         self.retranslate_ui(edit_verse_dialog)
 
     def retranslate_ui(self, edit_verse_dialog):
-        edit_verse_dialog.setWindowTitle(translate('SongsPlugin.EditVerseForm', 'Edit Verse'))
-        self.verse_type_label.setText(translate('SongsPlugin.EditVerseForm', '&Verse type:'))
+        VerseType.translated_names = [
+            UiStrings().Verse,
+            UiStrings().Chorus,
+            UiStrings().Bridge,
+            UiStrings().PreChorus,
+            UiStrings().Intro,
+            UiStrings().Ending,
+            UiStrings().Other
+        ]
+        VerseType.translated_tags = [name[0].lower() for name in VerseType.translated_names]
+        edit_verse_dialog.setWindowTitle(UiStrings().EditVerse)
+        self.verse_type_label.setText(UiStrings().VerseType)
         self.verse_type_combo_box.setItemText(VerseType.Verse, VerseType.translated_names[VerseType.Verse])
         self.verse_type_combo_box.setItemText(VerseType.Chorus, VerseType.translated_names[VerseType.Chorus])
         self.verse_type_combo_box.setItemText(VerseType.Bridge, VerseType.translated_names[VerseType.Bridge])
@@ -98,12 +108,10 @@ class Ui_EditVerseDialog(object):
         self.verse_type_combo_box.setItemText(VerseType.Other, VerseType.translated_names[VerseType.Other])
         self.overflow_split_button.setText(UiStrings().Split)
         self.overflow_split_button.setToolTip(UiStrings().SplitToolTip)
-        self.forced_split_button.setText(translate('SongsPlugin.EditVerseForm', '&Forced Split'))
-        self.forced_split_button.setToolTip(translate('SongsPlugin.EditVerseForm', 'Split the verse when displayed '
-                                                                                   'regardless of the screen size.'))
-        self.insert_button.setText(translate('SongsPlugin.EditVerseForm', '&Insert'))
-        self.insert_button.setToolTip(translate('SongsPlugin.EditVerseForm',
-                                      'Split a slide into two by inserting a verse splitter.'))
-        self.transpose_label.setText(translate('SongsPlugin.EditVerseForm', 'Transpose:'))
-        self.transpose_up_button.setText(translate('SongsPlugin.EditVerseForm', 'Up'))
-        self.transpose_down_button.setText(translate('SongsPlugin.EditVerseForm', 'Down'))
+        self.forced_split_button.setText(UiStrings().ForcedSplit)
+        self.forced_split_button.setToolTip(UiStrings().ForcedSplitToolTip)
+        self.insert_button.setText(UiStrings().Insert)
+        self.insert_button.setToolTip(UiStrings().InsertToolTip)
+        self.transpose_label.setText(UiStrings().Transpose)
+        self.transpose_up_button.setText(UiStrings().Up)
+        self.transpose_down_button.setText(UiStrings().Down)
