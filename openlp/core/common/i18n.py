@@ -445,6 +445,11 @@ class UiStrings(metaclass=Singleton):
         self.Seconds = translate('OpenLP.Ui', 's', 'The abbreviated unit for seconds')
         self.SaveAndClose = translate('OpenLP.ui', translate('SongsPlugin.EditSongForm', '&Save && Close'))
         self.SaveAndPreview = translate('OpenLP.Ui', 'Save && Preview')
+        self.ScreenSetupHasChangedTitle = translate('OpenLP.MainWindow', 'Screen setup has changed')
+        self.ScreenSetupHasChanged = translate('OpenLP.MainWindow',
+                                               'The screen setup has changed. OpenLP will try to '
+                                               'automatically select a display screen, but '
+                                               'you should consider updating the screen settings.')
         self.Search = translate('OpenLP.Ui', 'Search')
         self.SearchThemes = translate('OpenLP.Ui', 'Search Themes...', 'Search bar place holder text ')
         self.SelectDelete = translate('OpenLP.Ui', 'You must select an item to delete.')
