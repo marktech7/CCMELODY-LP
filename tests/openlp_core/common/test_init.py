@@ -428,11 +428,25 @@ def test_sha256_file_hash_no_exist():
 
 def test_sha256_file_hash_permission_error():
     """
-    Test SHA256 file hash when there is a permission error
+    Test that SHA256 file hash re-raises a permission error
     """
     # GIVEN: A mocked Path object
     mocked_path = MagicMock()
     mocked_path.open.side_effect = PermissionError
+
+    # WHEN: Generating a hash for the file
+    # THEN: The PermissionError should be bubbled up
+    with pytest.raises(PermissionError):
+        sha256_file_hash(mocked_path)
+
+
+def test_sha256_file_hash_other_error():
+    """
+    Test SHA256 file hash when there is an error other than permission error
+    """
+    # GIVEN: A mocked Path object
+    mocked_path = MagicMock()
+    mocked_path.open.side_effect = NotADirectoryError
 
     # WHEN: Generating a hash for the file
     result = sha256_file_hash(mocked_path)

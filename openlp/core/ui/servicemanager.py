@@ -668,7 +668,12 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         missing_list = []
 
         if not self._save_lite:
-            write_list, missing_list = self.get_write_file_list()
+            try:
+                write_list, missing_list = self.get_write_file_list()
+            except PermissionError as pe:
+                self.main_window.error_message(UiStrings.PermissionError,
+                                               UiStrings.UnableToRead + '\n\n' + pe.filename)
+                return False
             if missing_list:
                 self.application.set_normal_cursor()
                 title = translate('OpenLP.ServiceManager', 'Service File(s) Missing')

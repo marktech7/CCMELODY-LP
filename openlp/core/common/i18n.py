@@ -427,6 +427,7 @@ class UiStrings(metaclass=Singleton):
         self.OptionalShowInFooter = translate('OpenLP.Ui', 'Optional, this will be displayed in footer.')
         self.OptionalHideInFooter = translate('OpenLP.Ui', 'Optional, this won\'t be displayed in footer.')
         self.Other = translate('SongsPlugin.VerseType', 'Other')
+        self.PermissionError = translate('OpenLP.Ui', 'Permission Error')
         self.PlaySlidesInLoop = translate('OpenLP.Ui', 'Play Slides in Loop')
         self.PlaySlidesToEnd = translate('OpenLP.Ui', 'Play Slides to End')
         self.PreChorus = translate('SongsPlugin.VerseType', 'Pre-Chorus')
@@ -469,6 +470,9 @@ class UiStrings(metaclass=Singleton):
         self.Tools = translate('OpenLP.Ui', 'Tools')
         self.Top = translate('OpenLP.Ui', 'Top')
         self.Transpose = translate('SongsPlugin.EditVerseForm', 'Transpose:')
+        self.UnableToRead = translate('OpenLP.Ui', 'Unable to read the file(s) listed below, please check that '
+                                                   'your user has permission to read the file(s) or that the '
+                                                   'file(s) are not using cloud storage (e.g. Dropbox, OneDrive).')
         self.UnsupportedFile = translate('OpenLP.Ui', 'Unsupported File')
         self.Up = translate('SongsPlugin.EditVerseForm', 'Up')
         self.Verse = translate('SongsPlugin.VerseType', 'Verse')

@@ -162,11 +162,23 @@ def get_version():
     except OSError:
         log.exception('Error in version file.')
         full_version = '0.0.0'
-    bits = full_version.split('.dev')
+
+    if '.dev' in full_version:
+        # Old way of doing build numbers, but also how hatch does them
+        version_number, build_number = full_version.split('.dev', 1)
+        build_number = build_number.split('+', 1)[1]
+    elif '+' in full_version:
+        # Current way of doing build numbers, may be replaced by hatch later
+        version_number, build_number = full_version.split('+', 1)
+    else:
+        # If this is a release, there is no build number
+        version_number = full_version
+        build_number = None
+
     APPLICATION_VERSION = {
         'full': full_version,
-        'version': bits[0],
-        'build': full_version.split('+')[1] if '+' in full_version else None
+        'version': version_number,
+        'build': build_number
     }
     if APPLICATION_VERSION['build']:
         log.info('OpenLP version {version} build {build}'.format(version=APPLICATION_VERSION['version'],
