@@ -1,124 +1,122 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/pipeline/#customization
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-  - test
-  - deploy
-
+- test
+- deploy
 variables:
-  IMAGE_BASE: $CI_REGISTRY/openlp/runners
-
+  IMAGE_BASE: "$CI_REGISTRY/openlp/runners"
 lint-python:
   stage: test
-  image: $IMAGE_BASE/debian
+  image: "$IMAGE_BASE/debian"
   script:
-    - sh scripts/generate_resources.sh
-    - flake8
-
+  - sh scripts/generate_resources.sh
+  - flake8
 lint-javascript:
   stage: test
-  image: $IMAGE_BASE/angular
+  image: "$IMAGE_BASE/angular"
   script:
-    - yarn install
-    - yarn lint
-
+  - yarn install
+  - yarn lint
 test-debian:
   stage: test
-  image: $IMAGE_BASE/debian
+  image: "$IMAGE_BASE/debian"
   script:
-    - sh scripts/generate_resources.sh
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --cov openlp --cov-report term --cov-report xml:coverage.xml
-    - mv .coverage linux.coverage
-  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  - sh scripts/generate_resources.sh
+  - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --cov
+    openlp --cov-report term --cov-report xml:coverage.xml
+  - mv .coverage linux.coverage
+  coverage: "/(?i)total.*? (100(?:\\.0+)?\\%|[1-9]?\\d(?:\\.\\d+)?\\%)$/"
   artifacts:
     paths:
-      - linux.coverage
+    - linux.coverage
     reports:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
-
 test-ubuntu:
   stage: test
-  image: $IMAGE_BASE/ubuntu
+  image: "$IMAGE_BASE/ubuntu"
   script:
-    - sh scripts/generate_resources.sh
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings
-
+  - sh scripts/generate_resources.sh
+  - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings
 test-fedora:
   stage: test
-  image: $IMAGE_BASE/fedora
+  image: "$IMAGE_BASE/fedora"
   script:
-    - sh scripts/generate_resources.sh
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings
-
+  - sh scripts/generate_resources.sh
+  - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings
 test-arch:
   stage: test
-  image: $IMAGE_BASE/arch
+  image: "$IMAGE_BASE/arch"
   script:
-    - sh scripts/generate_resources.sh
-    - xvfb-run -s '-screen 0 1024x768x24' pytest --color=no --disable-warnings
-
+  - sh scripts/generate_resources.sh
+  - xvfb-run -s '-screen 0 1024x768x24' pytest --color=no --disable-warnings
 test-macos-intel:
   stage: test
   tags:
-    - apple-amd64
+  - apple-amd64
   script:
-    - export PATH=/opt/local/bin:$PATH
-    - sh scripts/generate_resources.sh
-    - python3 -m pytest --color=no --disable-warnings --cov openlp
-    - mv .coverage macos.coverage
+  - export PATH=/opt/local/bin:$PATH
+  - sh scripts/generate_resources.sh
+  - python3 -m pytest --color=no --disable-warnings --cov openlp
+  - mv .coverage macos.coverage
   artifacts:
     paths:
-      - macos.coverage
+    - macos.coverage
   only:
-    - master@openlp/openlp
-
+  - master@openlp/openlp
 test-macos-arm:
   stage: test
   tags:
-    - apple-arm
+  - apple-arm
   script:
-    - export PATH=/opt/local/bin:$PATH
-    - sh scripts/generate_resources.sh
-    - python3 -m pytest --color=no --disable-warnings
+  - export PATH=/opt/local/bin:$PATH
+  - sh scripts/generate_resources.sh
+  - python3 -m pytest --color=no --disable-warnings
   only:
-    - master@openlp/openlp
-
+  - master@openlp/openlp
 test-display:
   stage: test
-  image: $IMAGE_BASE/angular
+  image: "$IMAGE_BASE/angular"
   script:
-    - yarn install
-    - yarn test --browsers ChromiumHeadlessCI
-
+  - yarn install
+  - yarn test --browsers ChromiumHeadlessCI
 upload-pypi:
   stage: deploy
-  image: $IMAGE_BASE/debian
+  image: "$IMAGE_BASE/debian"
   script:
-    - python3 setup.py sdist bdist_wheel
-    - twine upload dist/*
+  - python3 setup.py sdist bdist_wheel
+  - twine upload dist/*
   only:
-    - tags
-
+  - tags
 pages:
   stage: deploy
-  image: $IMAGE_BASE/debian
+  image: "$IMAGE_BASE/debian"
   script:
-    - fixpaths linux.coverage
-    - fixpaths macos.coverage
-    - python3-coverage combine linux.coverage macos.coverage
-    - python3-coverage html
-    - mv htmlcov public
-    - python3-coverage xml
-  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  - fixpaths linux.coverage
+  - fixpaths macos.coverage
+  - python3-coverage combine linux.coverage macos.coverage
+  - python3-coverage html
+  - mv htmlcov public
+  - python3-coverage xml
+  coverage: "/(?i)total.*? (100(?:\\.0+)?\\%|[1-9]?\\d(?:\\.\\d+)?\\%)$/"
   artifacts:
     paths:
-      - public
+    - public
     expire_in: 30 days
     reports:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
   dependencies:
-    - test-debian
-    - test-macos-intel
+  - test-debian
+  - test-macos-intel
   only:
-    - master@openlp/openlp
+  - master@openlp/openlp
+include:
+- template: Security/Dependency-Scanning.gitlab-ci.yml
