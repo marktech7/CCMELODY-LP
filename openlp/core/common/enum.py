@@ -156,6 +156,7 @@ class SyncType(IntEnum):
     Disabled = 0
     Folder = 1
     Ftp = 2
+    WebService = 3
 
 
 @unique

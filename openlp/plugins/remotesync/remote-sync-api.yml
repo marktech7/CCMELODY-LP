@@ -6,13 +6,12 @@ info:
 
     Some useful links:
     - [The OpenLP remotesync MR](https://gitlab.com/openlp/openlp/-/merge_requests/9)
-  termsOfService: http://swagger.io/terms/
   contact:
     email: dev@openlp.io
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.11
+  version: 0.9.1
 externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
@@ -21,6 +20,8 @@ servers:
 tags:
   - name: song
     description: Operations about songs
+  - name: custom
+    description: Operations about custom slides
 paths:
   /{churchId}/song-list:
     get:
@@ -50,12 +51,55 @@ paths:
           description: Invalid uuid supplied
         '404':
           description: Song not found
+      security:
+        - openlp_auth:
+            - write:song
+            - read:song
+  /{churchId}/song-list/changes/{sinceDateTime}:
+    get:
+      tags:
+        - song
+      summary: Get list of songs changed since given timestamp
+      description: ''
+      operationId: getSongListChangesSince
+      parameters:
+        - name: churchId
+          in: path
+          description: The id of the church.
+          required: true
+          schema:
+            type: string
+        - name: sinceDateTime
+          in: path
+          description: The timestamp to look for changes after
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemList'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ItemList'
+        '400':
+          description: Invalid uuid supplied
+        '404':
+          description: Song not found
+      security:
+        - openlp_auth:
+            - write:song
+            - read:song
   /{churchId}/song/{uuid}:
     get:
       tags:
         - song
       summary: Get song by uuid
-      description: fwef
+      description: Get song by uuid
       operationId: getSong
       parameters:
         - name: churchId
@@ -84,6 +128,10 @@ paths:
           description: Invalid uuid supplied
         '404':
           description: Song not found
+      security:
+        - openlp_auth:
+            - write:song
+            - read:song
     put:
       tags:
         - song
@@ -116,8 +164,14 @@ paths:
             schema:
               $ref: '#/components/schemas/TextItem'
       responses:
-        default:
+        '200':
           description: successful operation
+        '409':
+          description: A conflict occured. The version requested to be saved is not the newest.
+      security:
+        - openlp_auth:
+            - write:song
+            - read:song
     delete:
       tags:
         - song
@@ -142,6 +196,10 @@ paths:
           description: Invalid uuid supplied
         '404':
           description: Song not found
+      security:
+        - openlp_auth:
+            - write:song
+            - read:song
   /{churchId}/song/{uuid}/{version}:
     get:
       tags:
@@ -182,6 +240,10 @@ paths:
           description: Invalid uuid supplied
         '404':
           description: Song not found
+      security:
+        - openlp_auth:
+            - write:song
+            - read:song
   /{churchId}/song-history/{uuid}:
     get:
       tags:
@@ -216,6 +278,10 @@ paths:
           description: Invalid uuid supplied
         '404':
           description: Song not found
+      security:
+        - openlp_auth:
+            - write:song
+            - read:song
   /{churchId}/custom-list:
     get:
       tags:
@@ -244,6 +310,49 @@ paths:
           description: Invalid uuid supplied
         '404':
           description: Custom slide not found
+      security:
+        - openlp_auth:
+            - write:custom
+            - read:custom
+  /{churchId}/custom-list/changes/{sinceDateTime}:
+    get:
+      tags:
+        - song
+      summary: Get list of custom slides changed since given timestamp
+      description: ''
+      operationId: getCustomSlideListChangesSince
+      parameters:
+        - name: churchId
+          in: path
+          description: The id of the church.
+          required: true
+          schema:
+            type: string
+        - name: sinceDateTime
+          in: path
+          description: The timestamp to look for changes after
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemList'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ItemList'
+        '400':
+          description: Invalid uuid supplied
+        '404':
+          description: Song not found
+      security:
+        - openlp_auth:
+            - write:song
+            - read:song
   /{churchId}/custom/{uuid}:
     get:
       tags:
@@ -278,6 +387,10 @@ paths:
           description: Invalid uuid supplied
         '404':
           description: Custom slide not found
+      security:
+        - openlp_auth:
+            - write:custom
+            - read:custom
     put:
       tags:
         - custom
@@ -310,8 +423,14 @@ paths:
             schema:
               $ref: '#/components/schemas/TextItem'
       responses:
-        default:
+        '200':
           description: successful operation
+        '409':
+          description: A conflict occured. The version requested to be saved is not the newest.
+      security:
+        - openlp_auth:
+            - write:custom
+            - read:custom
     delete:
       tags:
         - custom
@@ -336,6 +455,10 @@ paths:
           description: Invalid uuid supplied
         '404':
           description: Custom slide not found
+      security:
+        - openlp_auth:
+            - write:custom
+            - read:custom
   /{churchId}/custom/{uuid}/{version}:
     get:
       tags:
@@ -376,6 +499,10 @@ paths:
           description: Invalid uuid supplied
         '404':
           description: Custom slide not found
+      security:
+        - openlp_auth:
+            - write:custom
+            - read:custom
   /{churchId}/custom-history/{uuid}:
     get:
       tags:
@@ -410,6 +537,10 @@ paths:
           description: Invalid uuid supplied
         '404':
           description: Custom slide not found
+      security:
+        - openlp_auth:
+            - write:custom
+            - read:custom
 components:
   schemas:
     TextItem:
@@ -422,10 +553,10 @@ components:
           type: integer
           format: int32
           examples: [2]
-        created:
+        user:
           type: string
-          format: date-time
-        updated:
+          examples: ['user1', '354364']
+        timestamp:
           type: string
           format: date-time
         title:
@@ -454,12 +585,15 @@ components:
           type: integer
           format: int32
           examples: [2]
-        created:
+        user:
+          type: string
+          examples: ['user1', '354364']
+        timestamp:
           type: string
           format: date-time
-        updated:
+        title:
           type: string
-          format: date-time
+          examples: ['Text item title']
     ApiResponse:
       type: object
       properties:
@@ -483,14 +617,16 @@ components:
           schema:
             $ref: '#/components/schemas/TextItem'
   securitySchemes:
-    petstore_auth:
+    openlp_auth:
       type: oauth2
       flows:
         implicit:
-          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          authorizationUrl: http://localhost:8888/oauth/authorize
           scopes:
-            write:pets: modify pets in your account
-            read:pets: read your pets
+            write:songs: modify songs in your account
+            read:songs: read your songs
+            write:customs: modify custom slides in your account
+            read:customs: read your custom slides
     api_key:
       type: apiKey
       name: api_key

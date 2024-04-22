@@ -26,6 +26,7 @@ from openlp.core.common import Settings, registry
 from openlp.core.lib.db import Manager
 from openlp.plugins.remotesync.lib.backends.synchronizer import Synchronizer
 from openlp.plugins.songs.lib.db import init_schema, Song
+from openlp.plugins.remotesync.lib.backends.restclient.services import song_service, custom_service
 
 
 class WebServiceSynchronizer(Synchronizer):

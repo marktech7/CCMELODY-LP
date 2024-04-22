@@ -117,6 +117,8 @@ class RemoteSyncPlugin(Plugin):
                                                 Settings().value('remotesync/ftp server'),
                                                 Settings().value('remotesync/ftp username'),
                                                 Settings().value('remotesync/ftp password'))
+        elif sync_type == SyncType.WebService:
+            self.synchronizer = WebServiceSynchronizer()
         else:
             self.synchronizer = None
         if self.synchronizer and not self.synchronizer.check_connection():
