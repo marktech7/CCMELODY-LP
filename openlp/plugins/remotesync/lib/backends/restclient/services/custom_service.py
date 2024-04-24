@@ -7,11 +7,11 @@ from ..api_config import APIConfig, HTTPException
 from ..models import *
 
 
-def getCustomslideList(churchId: str, api_config_override: Optional[APIConfig] = None) -> ItemList:
+def getCustomslideList(api_config_override: Optional[APIConfig] = None) -> ItemList:
     api_config = api_config_override if api_config_override else APIConfig()
 
     base_path = api_config.base_path
-    path = f"/{churchId}/custom-list"
+    path = f"/custom-list"
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
@@ -34,11 +34,11 @@ def getCustomslideList(churchId: str, api_config_override: Optional[APIConfig] =
     return ItemList(**response.json()) if response.json() is not None else ItemList()
 
 
-def getCustomslide(churchId: str, uuid: str, api_config_override: Optional[APIConfig] = None) -> TextItem:
+def getCustomslide(uuid: str, api_config_override: Optional[APIConfig] = None) -> TextItem:
     api_config = api_config_override if api_config_override else APIConfig()
 
     base_path = api_config.base_path
-    path = f"/{churchId}/custom/{uuid}"
+    path = f"/custom/{uuid}"
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
@@ -61,13 +61,11 @@ def getCustomslide(churchId: str, uuid: str, api_config_override: Optional[APICo
     return TextItem(**response.json()) if response.json() is not None else TextItem()
 
 
-def updateCustomslide(
-    churchId: str, uuid: str, data: TextItem, api_config_override: Optional[APIConfig] = None
-) -> None:
+def updateCustomslide(uuid: str, data: TextItem, api_config_override: Optional[APIConfig] = None) -> None:
     api_config = api_config_override if api_config_override else APIConfig()
 
     base_path = api_config.base_path
-    path = f"/{churchId}/custom/{uuid}"
+    path = f"/custom/{uuid}"
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
@@ -86,11 +84,11 @@ def updateCustomslide(
     return None
 
 
-def deleteCustomslide(churchId: str, uuid: str, api_config_override: Optional[APIConfig] = None) -> None:
+def deleteCustomslide(uuid: str, api_config_override: Optional[APIConfig] = None) -> None:
     api_config = api_config_override if api_config_override else APIConfig()
 
     base_path = api_config.base_path
-    path = f"/{churchId}/custom/{uuid}"
+    path = f"/custom/{uuid}"
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
@@ -113,13 +111,11 @@ def deleteCustomslide(churchId: str, uuid: str, api_config_override: Optional[AP
     return None
 
 
-def getCustomslideVersion(
-    churchId: str, uuid: str, version: int, api_config_override: Optional[APIConfig] = None
-) -> TextItem:
+def getCustomslideVersion(uuid: str, version: int, api_config_override: Optional[APIConfig] = None) -> TextItem:
     api_config = api_config_override if api_config_override else APIConfig()
 
     base_path = api_config.base_path
-    path = f"/{churchId}/custom/{uuid}/{version}"
+    path = f"/custom/{uuid}/{version}"
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
@@ -142,11 +138,11 @@ def getCustomslideVersion(
     return TextItem(**response.json()) if response.json() is not None else TextItem()
 
 
-def getCustomslideHistory(churchId: str, uuid: str, api_config_override: Optional[APIConfig] = None) -> TextItem:
+def getCustomslideHistory(uuid: str, api_config_override: Optional[APIConfig] = None) -> TextItem:
     api_config = api_config_override if api_config_override else APIConfig()
 
     base_path = api_config.base_path
-    path = f"/{churchId}/custom-history/{uuid}"
+    path = f"/custom-history/{uuid}"
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",

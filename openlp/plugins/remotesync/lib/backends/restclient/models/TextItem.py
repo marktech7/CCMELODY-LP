@@ -13,9 +13,9 @@ class TextItem(BaseModel):
 
     version: Optional[int] = Field(alias="version", default=None)
 
-    created: Optional[str] = Field(alias="created", default=None)
+    user: Optional[str] = Field(alias="user", default=None)
 
-    updated: Optional[str] = Field(alias="updated", default=None)
+    timestamp: Optional[str] = Field(alias="timestamp", default=None)
 
     title: Optional[str] = Field(alias="title", default=None)
 
