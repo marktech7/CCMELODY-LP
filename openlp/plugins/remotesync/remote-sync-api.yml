@@ -23,20 +23,13 @@ tags:
   - name: custom
     description: Operations about custom slides
 paths:
-  /{churchId}/song-list:
+  /song-list:
     get:
       tags:
         - song
       summary: Get list of songs
       description: ''
       operationId: getSongList
-      parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
       responses:
         '200':
           description: successful operation
@@ -55,7 +48,7 @@ paths:
         - openlp_auth:
             - write:song
             - read:song
-  /{churchId}/song-list/changes/{sinceDateTime}:
+  /song-list/changes/{sinceDateTime}:
     get:
       tags:
         - song
@@ -63,12 +56,6 @@ paths:
       description: ''
       operationId: getSongListChangesSince
       parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
         - name: sinceDateTime
           in: path
           description: The timestamp to look for changes after
@@ -94,7 +81,7 @@ paths:
         - openlp_auth:
             - write:song
             - read:song
-  /{churchId}/song/{uuid}:
+  /song/{uuid}:
     get:
       tags:
         - song
@@ -102,12 +89,6 @@ paths:
       description: Get song by uuid
       operationId: getSong
       parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
         - name: uuid
           in: path
           description: The uuid of the song that needs to be fetched.
@@ -139,12 +120,6 @@ paths:
       description: This can only be done by the logged in user.
       operationId: updateSong
       parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
         - name: uuid
           in: path
           description: uuid of song that need to be deleted
@@ -179,12 +154,6 @@ paths:
       description: This can only be done by the logged in user.
       operationId: deleteSong
       parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
         - name: uuid
           in: path
           description: The uuid of the song to delete
@@ -200,7 +169,7 @@ paths:
         - openlp_auth:
             - write:song
             - read:song
-  /{churchId}/song/{uuid}/{version}:
+  /song/{uuid}/{version}:
     get:
       tags:
         - song
@@ -208,12 +177,6 @@ paths:
       description: Get song by uuid and version
       operationId: getSongVersion
       parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
         - name: uuid
           in: path
           description: The uuid of the song that needs to be fetched.
@@ -244,7 +207,7 @@ paths:
         - openlp_auth:
             - write:song
             - read:song
-  /{churchId}/song-history/{uuid}:
+  /song-history/{uuid}:
     get:
       tags:
         - song
@@ -252,12 +215,6 @@ paths:
       description: fwef
       operationId: getSongHistory
       parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
         - name: uuid
           in: path
           description: The uuid of the song that needs to be fetched.
@@ -282,20 +239,13 @@ paths:
         - openlp_auth:
             - write:song
             - read:song
-  /{churchId}/custom-list:
+  /custom-list:
     get:
       tags:
         - custom
       summary: Get list of custom slides
       description: ''
       operationId: getCustomslideList
-      parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
       responses:
         '200':
           description: successful operation
@@ -314,7 +264,7 @@ paths:
         - openlp_auth:
             - write:custom
             - read:custom
-  /{churchId}/custom-list/changes/{sinceDateTime}:
+  /custom-list/changes/{sinceDateTime}:
     get:
       tags:
         - song
@@ -322,12 +272,6 @@ paths:
       description: ''
       operationId: getCustomSlideListChangesSince
       parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
         - name: sinceDateTime
           in: path
           description: The timestamp to look for changes after
@@ -353,7 +297,7 @@ paths:
         - openlp_auth:
             - write:song
             - read:song
-  /{churchId}/custom/{uuid}:
+  /custom/{uuid}:
     get:
       tags:
         - custom
@@ -361,12 +305,6 @@ paths:
       description: fwef
       operationId: getCustomslide
       parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
         - name: uuid
           in: path
           description: The uuid of the custom slide that needs to be fetched.
@@ -398,12 +336,6 @@ paths:
       description: This can only be done by the logged in user.
       operationId: updateCustomslide
       parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
         - name: uuid
           in: path
           description: uuid of custom slide that need to be deleted
@@ -438,12 +370,6 @@ paths:
       description: This can only be done by the logged in user.
       operationId: deleteCustomslide
       parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
         - name: uuid
           in: path
           description: The uuid of the custom slide to delete
@@ -459,7 +385,7 @@ paths:
         - openlp_auth:
             - write:custom
             - read:custom
-  /{churchId}/custom/{uuid}/{version}:
+  /custom/{uuid}/{version}:
     get:
       tags:
         - custom
@@ -467,12 +393,6 @@ paths:
       description: fwef
       operationId: getCustomslideVersion
       parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
         - name: uuid
           in: path
           description: The uuid of the custom slide that needs to be fetched.
@@ -503,7 +423,7 @@ paths:
         - openlp_auth:
             - write:custom
             - read:custom
-  /{churchId}/custom-history/{uuid}:
+  /custom-history/{uuid}:
     get:
       tags:
         - custom
@@ -511,12 +431,6 @@ paths:
       description: Get history of custom slide by uuid
       operationId: getCustomslideHistory
       parameters:
-        - name: churchId
-          in: path
-          description: The id of the church.
-          required: true
-          schema:
-            type: string
         - name: uuid
           in: path
           description: The uuid of the custom slide that needs to be fetched.
