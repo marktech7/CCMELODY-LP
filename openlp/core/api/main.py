@@ -39,7 +39,7 @@ def index(path):
                                    'index.html', mimetype='text/html')
 
 
-@main_views.route('/assets/<path>')
+@main_views.route('/assets/<path:path>')
 def assets(path):
     return send_from_directory(str(AppLocation.get_section_data_path('remotes') / 'assets'),
                                path, mimetype=get_mime_type(path))

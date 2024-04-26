@@ -30,7 +30,9 @@ from unittest.mock import MagicMock, patch
 from PySide6 import QtCore, QtGui
 
 from openlp.core.lib import DataType, build_icon, check_item_selected, create_separated_list, create_thumb, \
-    get_text_file_string, image_to_byte, read_or_fail, read_int, resize_image, seek_or_fail, str_to_bool, validate_thumb
+    get_text_file_string, image_to_byte, read_or_fail, read_int, resize_image, seek_or_fail, str_to_bool, \
+    validate_thumb
+from openlp.core.common.registry import Registry
 from tests.utils.constants import RESOURCE_PATH
 
 
@@ -275,7 +277,7 @@ def test_image_to_byte_base_64():
         assert 'byte_array base64ified' == result, 'The result should be the return value of the mocked base64 method'
 
 
-def test_create_thumb_with_size(registry):
+def test_create_thumb_with_size(registry: Registry):
     """
     Test the create_thumb() function with a given size.
     """
@@ -310,7 +312,7 @@ def test_create_thumb_with_size(registry):
         pass
 
 
-def test_create_thumb_no_size(registry):
+def test_create_thumb_no_size(registry: Registry):
     """
     Test the create_thumb() function with no size specified.
     """
@@ -345,7 +347,7 @@ def test_create_thumb_no_size(registry):
         pass
 
 
-def test_create_thumb_invalid_size(registry):
+def test_create_thumb_invalid_size(registry: Registry):
     """
     Test the create_thumb() function with invalid size specified.
     """
@@ -381,7 +383,7 @@ def test_create_thumb_invalid_size(registry):
         pass
 
 
-def test_create_thumb_width_only(registry):
+def test_create_thumb_width_only(registry: Registry):
     """
     Test the create_thumb() function with a size of only width specified.
     """
@@ -417,7 +419,7 @@ def test_create_thumb_width_only(registry):
         pass
 
 
-def test_create_thumb_height_only(registry):
+def test_create_thumb_height_only(registry: Registry):
     """
     Test the create_thumb() function with a size of only height specified.
     """
@@ -453,7 +455,7 @@ def test_create_thumb_height_only(registry):
         pass
 
 
-def test_create_thumb_empty_img(registry):
+def test_create_thumb_empty_img(registry: Registry):
     """
     Test the create_thumb() function with a size of only height specified.
     """
@@ -504,7 +506,7 @@ def test_create_thumb_empty_img(registry):
 
 @patch('openlp.core.lib.QtGui.QImageReader')
 @patch('openlp.core.lib.build_icon')
-def test_create_thumb_path_fails(mocked_build_icon, MockQImageReader, registry):
+def test_create_thumb_path_fails(mocked_build_icon: MagicMock, MockQImageReader: MagicMock, registry: Registry):
     """
     Test that build_icon() is run against the image_path when the thumbnail fails to be created
     """
@@ -539,7 +541,7 @@ def test_check_item_selected_true():
     assert result is True, 'The result should be True'
 
 
-def test_check_item_selected_false(registry):
+def test_check_item_selected_false(registry: Registry):
     """
     Test that the check_item_selected() function returns False when there are no selected indexes.
     """
@@ -610,7 +612,7 @@ def test_validate_thumb_file_exists_and_older():
     assert result is False, 'The result should be False'
 
 
-def test_resize_thumb(registry):
+def test_resize_thumb(registry: Registry):
     """
     Test the resize_thumb() function
     """
@@ -632,7 +634,7 @@ def test_resize_thumb(registry):
     assert image.pixel(0, 0) == wanted_background_rgb, 'The background should be white.'
 
 
-def test_resize_thumb_ignoring_aspect_ratio(registry):
+def test_resize_thumb_ignoring_aspect_ratio(registry: Registry):
     """
     Test the resize_thumb() function ignoring aspect ratio
     """
@@ -654,7 +656,7 @@ def test_resize_thumb_ignoring_aspect_ratio(registry):
     assert image.pixel(0, 0) == wanted_background_rgb, 'The background should be white.'
 
 
-def test_resize_thumb_width_aspect_ratio(registry):
+def test_resize_thumb_width_aspect_ratio(registry: Registry):
     """
     Test the resize_thumb() function using the image's width as the reference
     """
@@ -672,7 +674,7 @@ def test_resize_thumb_width_aspect_ratio(registry):
     assert wanted_width == result_size.width(), 'The image should have the requested width.'
 
 
-def test_resize_thumb_same_aspect_ratio(registry):
+def test_resize_thumb_same_aspect_ratio(registry: Registry):
     """
     Test the resize_thumb() function when the image and the wanted aspect ratio are the same
     """
@@ -691,7 +693,7 @@ def test_resize_thumb_same_aspect_ratio(registry):
 
 
 @patch('openlp.core.lib.QtCore.QLocale.createSeparatedList')
-def test_create_separated_list_qlocate(mocked_createSeparatedList):
+def test_create_separated_list_qlocate(mocked_createSeparatedList: MagicMock):
     """
     Test the create_separated_list function using the Qt provided method
     """

@@ -24,6 +24,7 @@ from flask import jsonify, request, abort, Blueprint
 from PySide6 import QtCore
 
 from openlp.core.api.lib import login_required
+from openlp.core.common.i18n import LanguageManager
 from openlp.core.common.registry import Registry
 from openlp.core.lib.plugin import PluginStatus, StringContent
 from openlp.core.state import State
@@ -80,6 +81,12 @@ def system_information():
     data['api_version'] = 2
     data['api_revision'] = 5
     return jsonify(data)
+
+
+@core.route('/language')
+def language():
+    language = LanguageManager.get_language()
+    return jsonify({'language': language})
 
 
 @core.route('/login', methods=['POST'])

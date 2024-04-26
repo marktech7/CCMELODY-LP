@@ -546,6 +546,7 @@ class SongMediaItem(MediaManagerItem):
                     new_song.media_files.append(new_media_file)
             self.plugin.manager.save_object(new_song)
             new_song.init_on_load()
+            Registry().execute('song_changed', new_song.id)
         self.on_song_list_load()
 
     def generate_slide_data(self, service_item, *, item=None, context=ServiceItemContext.Service, **kwargs):
@@ -627,9 +628,11 @@ class SongMediaItem(MediaManagerItem):
             if State().check_preconditions('media'):
                 service_item.add_capability(ItemCapabilities.HasBackgroundAudio)
                 total_length = 0
+                # We could have stored multiple files but only the first one will be played.
                 for m in song.media_files:
                     total_length += self.media_controller.media_length(m.file_path)
-                service_item.background_audio = [(m.file_path, m.file_hash) for m in song.media_files]
+                    service_item.background_audio = [(m.file_path, m.file_hash)]
+                    break
                 service_item.set_media_length(total_length)
                 service_item.metadata.append('<em>{label}:</em> {media}'.
                                              format(label=translate('SongsPlugin.MediaItem', 'Media'),

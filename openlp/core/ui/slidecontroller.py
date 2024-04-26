@@ -1268,8 +1268,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             fallback_to_windowed = display_above_horizontal or display_above_vertical \
                 or display_beyond_horizontal or display_beyond_vertical
         if fallback_to_windowed:
-            if self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or self.service_item.is_media() or \
-               self.service_item.is_command():
+            if self.service_item and (self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or
+                                      self.service_item.is_media() or self.service_item.is_command()):
                 if self.service_item.is_command():
                     # Attempting to get screenshot from command handler
                     service_item_name = self.service_item.name.lower()

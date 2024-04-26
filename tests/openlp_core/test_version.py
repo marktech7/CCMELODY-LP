@@ -21,10 +21,10 @@
 """
 Package to test the openlp.core.version package.
 """
-import sys
 from datetime import date
 from unittest.mock import MagicMock, patch
 
+import pytest
 from requests.exceptions import ConnectionError
 
 from openlp.core.version import VersionWorker, check_for_update, get_version, update_check_date
@@ -251,15 +251,25 @@ def test_check_for_update_skipped(mocked_run_thread, mock_settings):
     assert mocked_run_thread.call_count == 0
 
 
-def test_get_version_dev_version():
+@pytest.mark.parametrize('in_version, out_version', [
+    ('3.1.1', {'full': '3.1.1', 'version': '3.1.1', 'build': None}),
+    ('3.0.2+git.cb1db9f43', {'full': '3.0.2+git.cb1db9f43', 'version': '3.0.2', 'build': 'git.cb1db9f43'}),
+    ('3.1.2.dev15+gff6b05ed3', {'full': '3.1.2.dev15+gff6b05ed3', 'version': '3.1.2', 'build': 'gff6b05ed3'})
+])
+@patch('openlp.core.version.AppLocation.get_directory')
+def test_get_version(mocked_get_directory: MagicMock, in_version: str, out_version: dict):
     """
     Test the get_version() function
     """
-    # GIVEN: We're in dev mode
-    with patch.object(sys, 'argv', ['--dev-version']), \
-            patch('openlp.core.version.APPLICATION_VERSION', None):
-        # WHEN: get_version() is run
+    # GIVEN: Some mocks and predefined versions
+    mocked_path = MagicMock()
+    mocked_path.__truediv__.return_value = mocked_path
+    mocked_path.read_text.return_value = in_version
+    mocked_get_directory.return_value = mocked_path
+
+    # WHEN: get_version() is run
+    with patch('openlp.core.version.APPLICATION_VERSION', None):
         version = get_version()
 
     # THEN: version is something
-    assert version
+    assert version == out_version

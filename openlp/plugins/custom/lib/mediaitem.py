@@ -112,7 +112,7 @@ class CustomMediaItem(MediaManagerItem):
         self.load_list(self.plugin.db_manager.get_all_objects(CustomSlide, order_by_ref=CustomSlide.title))
         self.config_update()
 
-    def load_list(self, custom_slides, target_group=None):
+    def load_list(self, custom_slides=None, target_group=None):
         # Sort out what custom we want to select after loading the list.
         """
 
@@ -121,6 +121,8 @@ class CustomMediaItem(MediaManagerItem):
         """
         self.save_auto_select_id()
         self.list_view.clear()
+        if not custom_slides:
+            custom_slides = self.plugin.db_manager.get_all_objects(CustomSlide, order_by_ref=CustomSlide.title)
         custom_slides.sort()
         for custom_slide in custom_slides:
             custom_name = QtWidgets.QListWidgetItem(custom_slide.title)
@@ -201,6 +203,7 @@ class CustomMediaItem(MediaManagerItem):
             id_list = [(item.data(QtCore.Qt.ItemDataRole.UserRole)) for item in self.list_view.selectedIndexes()]
             for id in id_list:
                 self.plugin.db_manager.delete_object(CustomSlide, id)
+                Registry().execute('custom_deleted', id)
             self.on_search_text_button_clicked()
 
     def on_focus(self):
@@ -257,6 +260,7 @@ class CustomMediaItem(MediaManagerItem):
                                        credits=old_custom_slide.credits,
                                        theme_name=old_custom_slide.theme_name)
         self.plugin.db_manager.save_object(new_custom_slide)
+        Registry().execute('custom_changed', new_custom_slide.id)
         self.on_search_text_button_clicked()
 
     def on_search_text_button_clicked(self):
