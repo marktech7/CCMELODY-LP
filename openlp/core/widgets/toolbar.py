@@ -156,8 +156,13 @@ class MediaSlider(QtWidgets.QSlider):
 
         :param event: The triggering event
         """
-        time_value = QtWidgets.QStyle.sliderValueFromPosition(self.minimum(), self.maximum(), event.x(), self.width())
-        self.setToolTip('%s' % datetime.timedelta(seconds=int(time_value / 1000)))
+        if "seek_slider" in self.objectName():
+            time_value = QtWidgets.QStyle.sliderValueFromPosition(self.minimum(), self.maximum(), event.x(), self.width())
+            self.setToolTip('%s' % datetime.timedelta(seconds=int(time_value / 1000)))
+        else:
+            volume_value = QtWidgets.QStyle.sliderValueFromPosition(self.minimum(), self.maximum(),
+                                                                    event.x(), self.width())
+            self.setToolTip("%1.2f" % float((volume_value / 10)))
         QtWidgets.QSlider.mouseMoveEvent(self, event)
 
     def mousePressEvent(self, event):
