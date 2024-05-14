@@ -560,6 +560,7 @@ class SongMediaItem(MediaManagerItem):
         """
         log.debug('generate_slide_data: {service}, {item}, {remote}'.format(service=service_item, item=item,
                                                                             remote=self.remote_song))
+        uppercase = bool(self.settings.value('songs/uppercase songs'))
         item_id = self._get_id_of_item_to_generate(item, self.remote_song)
         service_item.add_capability(ItemCapabilities.CanEdit)
         service_item.add_capability(ItemCapabilities.CanPreview)
@@ -597,6 +598,8 @@ class SongMediaItem(MediaManagerItem):
                 verse_def = '{tag}{label}'.format(tag=verse_tag, label=verse[0]['label'])
                 force_verse = verse[1].split('[--}{--]\n')
                 for split_verse in force_verse:
+                    if uppercase:
+                        split_verse = "{uc}" + split_verse + "{/uc}"
                     service_item.add_from_text(split_verse, verse_def)
         else:
             # Loop through the verse list and expand the song accordingly.
@@ -614,6 +617,8 @@ class SongMediaItem(MediaManagerItem):
                         verse_def = '{tag}{label}'.format(tag=verse_tag, label=verse[0]['label'])
                         force_verse = verse[1].split('[--}{--]\n')
                         for split_verse in force_verse:
+                            if uppercase:
+                                split_verse = "{uc}" + split_verse + "{/uc}"
                             service_item.add_from_text(split_verse, verse_def)
         service_item.data_string = {
             'title': song.search_title,

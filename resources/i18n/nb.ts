@@ -1578,65 +1578,65 @@ Bare vers som finnes i begge bibler vil bli vist.
 <context>
     <name>CustomPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="62"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="64"/>
         <source>&lt;strong&gt;Custom Slide Plugin&lt;/strong&gt;&lt;br /&gt;The custom slide plugin provides the ability to set up custom text slides that can be displayed on the screen the same way songs are. This plugin provides greater freedom over the songs plugin.</source>
         <translation>&lt;strong&gt;Brukerdefinert lysbilde&lt;/strong&gt;&lt;br/&gt; Programtillegget for brukerdefinert lysbilde gir en sørre frihett til å lage egne tekst bilder som kan vises på samme vis som sanger. </translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="100"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="102"/>
         <source>Custom Slide</source>
         <comment>name singular</comment>
         <translation>Egendefinert lysbilde</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="101"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="103"/>
         <source>Custom Slides</source>
         <comment>name plural</comment>
         <translation>Egendefinerte lysbilder</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="105"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="107"/>
         <source>Custom Slides</source>
         <comment>container title</comment>
         <translation>Egendefinerte lysbilder</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="109"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="111"/>
         <source>Load a new custom slide.</source>
         <translation>Vis et nytt egendefinert lysbilde.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="110"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="112"/>
         <source>Import a custom slide.</source>
         <translation>Importer et egendefinert lysbilde.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="111"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="113"/>
         <source>Add a new custom slide.</source>
         <translation>Legg til et egendefinert lysbilde.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="112"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="114"/>
         <source>Edit the selected custom slide.</source>
         <translation>Rediger valgte lysbilde.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="113"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="115"/>
         <source>Delete the selected custom slide.</source>
         <translation>Slett valgte lysbilde.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="114"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="116"/>
         <source>Preview the selected custom slide.</source>
         <translation>Forhåndsvis valgte lysbilde.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="115"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="117"/>
         <source>Send the selected custom slide live.</source>
         <translation>Fremvis valgte lysbilde.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="116"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="118"/>
         <source>Add the selected custom slide to the service.</source>
         <translation>Legg valgte lysbilde til møteprogrammet.</translation>
     </message>
@@ -1702,12 +1702,12 @@ Bare vers som finnes i begge bibler vil bli vist.
         <translation>&amp;Credits:</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/forms/editcustomform.py" line="239"/>
+        <location filename="../../openlp/plugins/custom/forms/editcustomform.py" line="240"/>
         <source>You need to type in a title.</source>
         <translation>Du må skrive inn en tittel.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/forms/editcustomform.py" line="243"/>
+        <location filename="../../openlp/plugins/custom/forms/editcustomform.py" line="244"/>
         <source>You need to add at least one slide.</source>
         <translation>Du må legge til minst ett lysbilde.</translation>
     </message>
@@ -1733,12 +1733,12 @@ Bare vers som finnes i begge bibler vil bli vist.
 <context>
     <name>CustomPlugin.MediaItem</name>
     <message>
-        <location filename="../../openlp/plugins/custom/lib/mediaitem.py" line="192"/>
+        <location filename="../../openlp/plugins/custom/lib/mediaitem.py" line="194"/>
         <source>Are you sure you want to delete the &quot;{items:d}&quot; selected custom slide(s)?</source>
         <translation>Er du sikker på at du vil slette de &quot;{items:d}&quot; valgte egendefinerte bilde(ne)?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/lib/mediaitem.py" line="253"/>
+        <location filename="../../openlp/plugins/custom/lib/mediaitem.py" line="256"/>
         <source>copy</source>
         <comment>For item cloning</comment>
         <translation>kopi</translation>
@@ -1805,7 +1805,7 @@ Bare vers som finnes i begge bibler vil bli vist.
         <translation>Legg valgte bilde til møteprogrammet.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="114"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="115"/>
         <source>Add new image(s)</source>
         <translation>Legg til nytt(-e) bilde(r)</translation>
     </message>
@@ -1849,34 +1849,34 @@ Bare vers som finnes i begge bibler vil bli vist.
 <context>
     <name>ImagePlugin.MediaItem</name>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="74"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="75"/>
         <source>Select Image(s)</source>
         <translation>Velg bilde(r)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="251"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="256"/>
         <source>Missing Image(s)</source>
         <translation>Bilde(r) mangler</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="245"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="250"/>
         <source>The following image(s) no longer exist: {names}</source>
         <translation>De(t) følgende bilde(r) finnes ikke lenger: {names}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="251"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="256"/>
         <source>The following image(s) no longer exist: {names}
 Do you want to add the other images anyway?</source>
         <translation>De(t) følgende bilde(r) finnes ikke lenger: {names}
 Vil du likevel legge til de andre bildene?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="284"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="289"/>
         <source>You must select an image to replace the background with.</source>
         <translation>Du må velge et bilde å erstatte bakgrunnen med.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="297"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="302"/>
         <source>There was a problem replacing your background, the image file &quot;{name}&quot; no longer exists.</source>
         <translation>Det oppstod et problem ved erstatting av bakgrunnen, bildefilen &quot;{name}&quot; finnes ikke lenger.</translation>
     </message>
@@ -2519,7 +2519,7 @@ OpenLP vil forsøke å fortsette.</translation>
         <translation>Sikkerhetskopiering av datamappen mislyktes under nedgradering.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/__init__.py" line="414"/>
+        <location filename="../../openlp/core/common/__init__.py" line="418"/>
         <source>Image Files</source>
         <translation>Bildefiler</translation>
     </message>
@@ -4028,6 +4028,16 @@ Hvis du klikker på &apos;{finish_button}&apos;-knappen kan du laste ned dataene
         <translation>Norsk (bokmål)</translation>
     </message>
     <message>
+        <location filename="../../openlp/core/common/i18n.py" line="449"/>
+        <source>Screen setup has changed</source>
+        <translation>Skjermoppsettet er endret</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="450"/>
+        <source>The screen setup has changed. OpenLP will try to automatically select a display screen, but you should consider updating the screen settings.</source>
+        <translation>Skjermoppsettet er endret. OpenLP vil prøve å automatisk velge en skjerm, men du bør vurdere å oppdatere skjerminnstillingene.</translation>
+    </message>
+    <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="306"/>
         <source>General</source>
         <translation>Generell</translation>
@@ -4528,63 +4538,53 @@ Behandlingen er avsluttet og ingen endringer er gjort.</translation>
         <translation>Det oppstod en feil under eksport av innstillingene: {err}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1038"/>
-        <source>Screen setup has changed</source>
-        <translation>Skjermoppsettet er endret</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1038"/>
-        <source>The screen setup has changed. OpenLP will try to automatically select a display screen, but you should consider updating the screen settings.</source>
-        <translation>Skjermoppsettet er endret. OpenLP vil prøve å automatisk velge en skjerm, men du bør vurdere å oppdatere skjerminnstillingene.</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1082"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1081"/>
         <source>Exit OpenLP</source>
         <translation>Avslutt OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1082"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1081"/>
         <source>Are you sure you want to exit OpenLP?</source>
         <translation>Er du sikker på at du vil avslutte OpenLP?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1089"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1088"/>
         <source>&amp;Exit OpenLP</source>
         <translation>&amp;Avslutt OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1098"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1097"/>
         <source>Please Wait</source>
         <translation>Vent</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1098"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1097"/>
         <source>Waiting for some things to finish...</source>
         <translation>Venter på at noen ting skal fullføres...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1178"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1177"/>
         <source>Default Theme: {theme}</source>
         <translation>Standard tema: {theme}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1381"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1380"/>
         <source>Clear List</source>
         <comment>Clear List of recent files</comment>
         <translation>Tøm listen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1381"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1380"/>
         <source>Clear the list of recent files.</source>
         <translation>Tøm listen over siste brukte møteprogram.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1462"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1461"/>
         <source>Copying OpenLP data to new data directory location - {path} - Please wait for copy to finish</source>
         <translation>Kopierer OpenLP data til ny datakatalogplassering - {path} - Vent til kopieringen er ferdig</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1470"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1469"/>
         <source>OpenLP Data directory copy failed
 
 {err}</source>
@@ -4593,7 +4593,7 @@ Behandlingen er avsluttet og ingen endringer er gjort.</translation>
 {err}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1472"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1471"/>
         <source>New Data Directory Error</source>
         <translation>Ny datakatalog feil</translation>
     </message>
@@ -4650,7 +4650,7 @@ Database: {db_name}</translation>
 <context>
     <name>OpenLP.MediaManagerItem</name>
     <message>
-        <location filename="../../openlp/core/lib/__init__.py" line="409"/>
+        <location filename="../../openlp/core/lib/__init__.py" line="412"/>
         <source>No Items Selected</source>
         <translation>Ingen poster er valgt</translation>
     </message>
@@ -4728,12 +4728,12 @@ Filendelsen støttes ikke</translation>
 <context>
     <name>OpenLP.OpenLyricsImportError</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/openlyricsxml.py" line="726"/>
+        <location filename="../../openlp/plugins/songs/lib/openlyricsxml.py" line="732"/>
         <source>&lt;lyrics&gt; tag is missing.</source>
         <translation>&lt;lyrics&gt; tagg mangler.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/openlyricsxml.py" line="731"/>
+        <location filename="../../openlp/plugins/songs/lib/openlyricsxml.py" line="737"/>
         <source>&lt;verse&gt; tag is missing.</source>
         <translation>&lt;verse&gt; tagg mangler.</translation>
     </message>
@@ -6224,7 +6224,7 @@ Filendelsen støttes ikke</translation>
         <translation>Vis lysbilde &amp;en gang</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="955"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="960"/>
         <source>&amp;Delay between slides</source>
         <translation>&amp;Pause mellom lysbildene</translation>
     </message>
@@ -6279,12 +6279,12 @@ Filendelsen støttes ikke</translation>
         <translation>Gjeldende møteprogram er endret. Vil du lagre?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="674"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="679"/>
         <source>Service File(s) Missing</source>
         <translation>Møteprogramfil(er) mangler</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="675"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="680"/>
         <source>The following file(s) in the service are missing: {name}
 
 These files will be removed if you continue to save.</source>
@@ -6293,12 +6293,12 @@ These files will be removed if you continue to save.</source>
 Disse filene vil bli fjernet hvis du fortsetter til lagre.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="722"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="727"/>
         <source>Error Saving File</source>
         <translation>Feil under lagring av fil</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="722"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="727"/>
         <source>There was an error saving your file.
 
 {error}</source>
@@ -6307,82 +6307,82 @@ Disse filene vil bli fjernet hvis du fortsetter til lagre.</translation>
 {error}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="759"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="764"/>
         <source>OpenLP Service Files - lite (*.oszl)</source>
         <translation>OpenLP møteprogramfiler - lett (*.oszl)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="760"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="765"/>
         <source>OpenLP Service Files (*.osz)</source>
         <translation>OpenLP møteprogramfiler (*.osz)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="868"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="873"/>
         <source>The service file {file_path} could not be loaded because it is either corrupt, inaccessible, or not a valid OpenLP 2 or OpenLP 3 service file.</source>
         <translation>Møteprogramfilen {file_path} kunne ikke lastes fordi den enten er korrupt, utilgjengelig eller ikke er en gyldig OpenLP 2- eller OpenLP 3 møteprogramfil.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="966"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="971"/>
         <source>&amp;Auto Start - active</source>
         <translation>&amp;Autostart - aktiv</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="970"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="975"/>
         <source>&amp;Auto Start - inactive</source>
         <translation>&amp;Autostart - inaktiv</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1047"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1052"/>
         <source>Input delay</source>
         <translation>Inngangsforsinkelse</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1047"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1052"/>
         <source>Delay between slides in seconds.</source>
         <translation>Ventetid mellom bildene i sekunder.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1425"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1430"/>
         <source>Edit</source>
         <translation>Redigere</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1426"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1431"/>
         <source>Service copy only</source>
         <translation>Bare kopi i møteprogrammet</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1429"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1434"/>
         <source>Slide theme</source>
         <translation>Lysbildetema</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1433"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1438"/>
         <source>Notes</source>
         <translation>Notater</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1687"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1692"/>
         <source>Missing Display Handler</source>
         <translation>Visningsmodul mangler</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1620"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1625"/>
         <source>Your item cannot be displayed as there is no handler to display it</source>
         <translation>Posten kan ikke vises fordi visningsmodul mangler</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1687"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1692"/>
         <source>Your item cannot be displayed as the plugin required to display it is missing or inactive</source>
         <translation>Posten kan ikke vises fordi nødvendig programtillegg enten mangler eller er inaktiv</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1712"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1717"/>
         <source>Rename item title</source>
         <translation>Endre navn på møteprogrampost </translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1712"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1717"/>
         <source>Title:</source>
         <translation>Tittel:</translation>
     </message>
@@ -7701,22 +7701,22 @@ Filen er korrupt, utilgjengelig eller ikke et gyldig tema.</translation>
         <translation>Bunn</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="359"/>
+        <location filename="../../openlp/core/common/i18n.py" line="360"/>
         <source>Browse...</source>
         <translation>Bla...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="360"/>
+        <location filename="../../openlp/core/common/i18n.py" line="361"/>
         <source>Cancel</source>
         <translation>Avbryt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="361"/>
+        <location filename="../../openlp/core/common/i18n.py" line="362"/>
         <source>CCLI number:</source>
         <translation>CCLI nummer:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="362"/>
+        <location filename="../../openlp/core/common/i18n.py" line="363"/>
         <source>CCLI song number:</source>
         <translation>CCLI sang nummer:</translation>
     </message>
@@ -7726,400 +7726,405 @@ Filen er korrupt, utilgjengelig eller ikke et gyldig tema.</translation>
         <translation>Lag et nytt møteprogram.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="364"/>
+        <location filename="../../openlp/core/common/i18n.py" line="366"/>
         <source>Confirm Delete</source>
         <translation>Bekreft sletting</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="365"/>
+        <location filename="../../openlp/core/common/i18n.py" line="367"/>
         <source>Continuous</source>
         <translation>Kontinuerlig</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="366"/>
+        <location filename="../../openlp/core/common/i18n.py" line="368"/>
         <source>Default</source>
         <translation>Standard</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="367"/>
+        <location filename="../../openlp/core/common/i18n.py" line="369"/>
         <source>Default Color:</source>
         <translation>Standard farge:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="368"/>
+        <location filename="../../openlp/core/common/i18n.py" line="370"/>
         <source>Service %Y-%m-%d %H-%M</source>
         <comment>This may not contain any of the following characters: /\?*|&lt;&gt;[]&quot;:+
 See http://docs.python.org/library/datetime.html#strftime-strptime-behavior for more information.</comment>
         <translation>Møteprogram %Y-%m-%d %H-%M</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="372"/>
+        <location filename="../../openlp/core/common/i18n.py" line="374"/>
         <source>&amp;Delete</source>
         <translation>&amp;Slett</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="373"/>
+        <location filename="../../openlp/core/common/i18n.py" line="375"/>
         <source>Display style:</source>
         <translation>Visningsstil:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="374"/>
+        <location filename="../../openlp/core/common/i18n.py" line="377"/>
         <source>Duplicate Error</source>
         <translation>Duplikatfeil</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="375"/>
+        <location filename="../../openlp/core/common/i18n.py" line="378"/>
         <source>&amp;Edit</source>
         <translation>&amp;Rediger</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="376"/>
+        <location filename="../../openlp/core/common/i18n.py" line="380"/>
         <source>Empty Field</source>
         <translation>Tomt felt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="377"/>
+        <location filename="../../openlp/core/common/i18n.py" line="382"/>
         <source>Error</source>
         <translation>Feil</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="378"/>
+        <location filename="../../openlp/core/common/i18n.py" line="383"/>
         <source>Export</source>
         <translation>Eksporter</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="379"/>
+        <location filename="../../openlp/core/common/i18n.py" line="384"/>
         <source>File</source>
         <translation>Fil</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="380"/>
+        <location filename="../../openlp/core/common/i18n.py" line="385"/>
         <source>File appears to be corrupt.</source>
         <translation>Filen ser ut til å være skadet.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="381"/>
+        <location filename="../../openlp/core/common/i18n.py" line="386"/>
         <source>pt</source>
         <comment>Abbreviated font point size unit</comment>
         <translation>pt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="382"/>
+        <location filename="../../openlp/core/common/i18n.py" line="390"/>
         <source>Help</source>
         <translation>Hjelp</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="383"/>
+        <location filename="../../openlp/core/common/i18n.py" line="391"/>
         <source>h</source>
         <comment>The abbreviated unit for hours</comment>
         <translation>h</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="384"/>
+        <location filename="../../openlp/core/common/i18n.py" line="392"/>
         <source>Invalid Folder Selected</source>
         <comment>Singular</comment>
         <translation>Ugyldig mappe valgt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="385"/>
+        <location filename="../../openlp/core/common/i18n.py" line="393"/>
         <source>Invalid File Selected</source>
         <comment>Singular</comment>
         <translation>Ugyldig fil valgt </translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="386"/>
+        <location filename="../../openlp/core/common/i18n.py" line="394"/>
         <source>Invalid Files Selected</source>
         <comment>Plural</comment>
         <translation>Ugyldige filer valgt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="387"/>
+        <location filename="../../openlp/core/common/i18n.py" line="395"/>
         <source>Image</source>
         <translation>Bilde</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="388"/>
+        <location filename="../../openlp/core/common/i18n.py" line="396"/>
         <source>Import</source>
         <translation>Importere</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="389"/>
+        <location filename="../../openlp/core/common/i18n.py" line="401"/>
         <source>Layout style:</source>
         <translation>Layout stil:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="390"/>
+        <location filename="../../openlp/core/common/i18n.py" line="402"/>
         <source>Live</source>
         <translation>Fremvisning</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="391"/>
+        <location filename="../../openlp/core/common/i18n.py" line="403"/>
         <source>Live Stream</source>
         <translation>Direktestrømming</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="392"/>
+        <location filename="../../openlp/core/common/i18n.py" line="404"/>
         <source>Live Background Error</source>
         <translation>Feil i levende bakgrunn</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="393"/>
+        <location filename="../../openlp/core/common/i18n.py" line="405"/>
         <source>Live Toolbar</source>
         <translation>Fremvisning - verktøylinje</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="394"/>
+        <location filename="../../openlp/core/common/i18n.py" line="406"/>
         <source>Load</source>
         <translation>Laste</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="395"/>
+        <location filename="../../openlp/core/common/i18n.py" line="407"/>
         <source>Manufacturer</source>
         <comment>Singular</comment>
         <translation>Produsent</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="396"/>
+        <location filename="../../openlp/core/common/i18n.py" line="408"/>
         <source>Manufacturers</source>
         <comment>Plural</comment>
         <translation>Produsenter</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="397"/>
+        <location filename="../../openlp/core/common/i18n.py" line="409"/>
         <source>Model</source>
         <comment>Singular</comment>
         <translation>Modell</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="398"/>
+        <location filename="../../openlp/core/common/i18n.py" line="410"/>
         <source>Models</source>
         <comment>Plural</comment>
         <translation>Modeller</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="399"/>
+        <location filename="../../openlp/core/common/i18n.py" line="411"/>
         <source>m</source>
         <comment>The abbreviated unit for minutes</comment>
         <translation>m</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="400"/>
+        <location filename="../../openlp/core/common/i18n.py" line="412"/>
         <source>Middle</source>
         <translation>Midten</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="401"/>
+        <location filename="../../openlp/core/common/i18n.py" line="413"/>
         <source>New</source>
         <translation>Ny</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="402"/>
+        <location filename="../../openlp/core/common/i18n.py" line="414"/>
         <source>New Service</source>
         <translation>Nytt møteprogram</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="403"/>
+        <location filename="../../openlp/core/common/i18n.py" line="415"/>
         <source>New Theme</source>
         <translation>Nytt tema</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="404"/>
+        <location filename="../../openlp/core/common/i18n.py" line="416"/>
         <source>Next Track</source>
         <translation>Neste spor</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="405"/>
+        <location filename="../../openlp/core/common/i18n.py" line="417"/>
         <source>No Folder Selected</source>
         <comment>Singular</comment>
         <translation>Ingen mappe valgt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="406"/>
+        <location filename="../../openlp/core/common/i18n.py" line="418"/>
         <source>No File Selected</source>
         <comment>Singular</comment>
         <translation>Ingen fil er valgt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="407"/>
+        <location filename="../../openlp/core/common/i18n.py" line="419"/>
         <source>No Files Selected</source>
         <comment>Plural</comment>
         <translation>Inger filer er valgt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="408"/>
+        <location filename="../../openlp/core/common/i18n.py" line="420"/>
         <source>No Item Selected</source>
         <comment>Singular</comment>
         <translation>Ingen post er valgt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="409"/>
+        <location filename="../../openlp/core/common/i18n.py" line="421"/>
         <source>No Items Selected</source>
         <comment>Plural</comment>
         <translation>Ingen poster er valgt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="410"/>
+        <location filename="../../openlp/core/common/i18n.py" line="422"/>
         <source>No Search Results</source>
         <translation>Ingen søkeresultat</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="411"/>
+        <location filename="../../openlp/core/common/i18n.py" line="423"/>
         <source>OpenLP</source>
         <translation>OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="412"/>
+        <location filename="../../openlp/core/common/i18n.py" line="424"/>
         <source>OpenLP Song Database</source>
         <translation>OpenLP sangdatabase</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="413"/>
+        <location filename="../../openlp/core/common/i18n.py" line="425"/>
         <source>OpenLP is already running on this machine. 
 Closing this instance</source>
         <translation>OpenLP kjører allerede på denne maskinen.
 Lukker denne</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="414"/>
+        <location filename="../../openlp/core/common/i18n.py" line="426"/>
         <source>Open service.</source>
         <translation>Åpne møteprogram.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="415"/>
+        <location filename="../../openlp/core/common/i18n.py" line="427"/>
         <source>Optional, this will be displayed in footer.</source>
         <translation>Valgfritt, dette vil bli vist i bunntekst.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="416"/>
+        <location filename="../../openlp/core/common/i18n.py" line="428"/>
         <source>Optional, this won&apos;t be displayed in footer.</source>
         <translation>Valgfritt, dette vil ikke bli vist i bunntekst.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="417"/>
+        <location filename="../../openlp/core/common/i18n.py" line="430"/>
+        <source>Permission Error</source>
+        <translation>Tillatelsefeil</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="431"/>
         <source>Play Slides in Loop</source>
         <translation>Kontinuerlig visning av sider</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="418"/>
+        <location filename="../../openlp/core/common/i18n.py" line="432"/>
         <source>Play Slides to End</source>
         <translation>Vis sider til &quot;siste side&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="419"/>
+        <location filename="../../openlp/core/common/i18n.py" line="434"/>
         <source>Preview</source>
         <translation>Forhåndsvisning</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="420"/>
+        <location filename="../../openlp/core/common/i18n.py" line="435"/>
         <source>Preview Toolbar</source>
         <translation>Forhåndsvisning - verktøylinje</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="421"/>
+        <location filename="../../openlp/core/common/i18n.py" line="436"/>
         <source>Print Service</source>
         <translation>Skriv ut møteprogram</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="422"/>
+        <location filename="../../openlp/core/common/i18n.py" line="437"/>
         <source>Projector</source>
         <comment>Singular</comment>
         <translation>Projektor</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="423"/>
+        <location filename="../../openlp/core/common/i18n.py" line="438"/>
         <source>Projectors</source>
         <comment>Plural</comment>
         <translation>Projektorer</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="424"/>
+        <location filename="../../openlp/core/common/i18n.py" line="439"/>
         <source>Replace Background</source>
         <translation>Erstatt bakgrunn</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="425"/>
+        <location filename="../../openlp/core/common/i18n.py" line="440"/>
         <source>Replace live background.</source>
         <translation>Bytt fremvisningbakgrunn.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="426"/>
+        <location filename="../../openlp/core/common/i18n.py" line="441"/>
         <source>Replace live background is not available when the WebKit player is disabled.</source>
         <translation>En kan ikke bytte levende bakgrunn når WebKit spilleren er deaktivert.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="428"/>
+        <location filename="../../openlp/core/common/i18n.py" line="443"/>
         <source>Reset Background</source>
         <translation>Tilbakestill bakgrunn</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="429"/>
+        <location filename="../../openlp/core/common/i18n.py" line="444"/>
         <source>Reset live background.</source>
         <translation>Tilbakestill levende bakgrunn.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="430"/>
+        <location filename="../../openlp/core/common/i18n.py" line="445"/>
         <source>Required, this will be displayed in footer.</source>
         <translation>Påkrevd, dette vil bli vist i bunntekst.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="431"/>
+        <location filename="../../openlp/core/common/i18n.py" line="446"/>
         <source>s</source>
         <comment>The abbreviated unit for seconds</comment>
         <translation>s</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="433"/>
+        <location filename="../../openlp/core/common/i18n.py" line="448"/>
         <source>Save &amp;&amp; Preview</source>
         <translation>Lagre &amp;&amp; Forhåndsvisning</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="434"/>
+        <location filename="../../openlp/core/common/i18n.py" line="454"/>
         <source>Search</source>
         <translation>Søk</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="435"/>
+        <location filename="../../openlp/core/common/i18n.py" line="455"/>
         <source>Search Themes...</source>
         <comment>Search bar place holder text </comment>
         <translation>Søk tema...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="436"/>
+        <location filename="../../openlp/core/common/i18n.py" line="456"/>
         <source>You must select an item to delete.</source>
         <translation>Du må velge en post å slette.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="437"/>
+        <location filename="../../openlp/core/common/i18n.py" line="457"/>
         <source>You must select an item to edit.</source>
         <translation>Du må velge en post å redigere.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="438"/>
+        <location filename="../../openlp/core/common/i18n.py" line="458"/>
         <source>Settings</source>
         <translation>Innstillinger</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="439"/>
+        <location filename="../../openlp/core/common/i18n.py" line="459"/>
         <source>Save Service</source>
         <translation>Lagre møteprogram</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="440"/>
+        <location filename="../../openlp/core/common/i18n.py" line="460"/>
         <source>Service</source>
         <translation>Møteprogram</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="441"/>
+        <location filename="../../openlp/core/common/i18n.py" line="461"/>
         <source>Please type more text to use &apos;Search As You Type&apos;</source>
         <translation>Vennligst skriv mer tekst for å bruke &quot;Søk mens du skriver&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="442"/>
+        <location filename="../../openlp/core/common/i18n.py" line="462"/>
         <source>Optional &amp;Split</source>
         <translation>Valgfri &amp;deling</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="443"/>
+        <location filename="../../openlp/core/common/i18n.py" line="463"/>
         <source>Split a slide into two only if it does not fit on the screen as one slide.</source>
         <translation>Splitte et lysbilde i to bare hvis det ikke passer på skjermen som en side.</translation>
     </message>
@@ -8129,114 +8134,119 @@ Lukker denne</translation>
         <translation>Starter import...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="446"/>
+        <location filename="../../openlp/core/common/i18n.py" line="466"/>
         <source>Stop Play Slides in Loop</source>
         <translation>Stopp kontinuerlig visning</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="447"/>
+        <location filename="../../openlp/core/common/i18n.py" line="467"/>
         <source>Stop Play Slides to End</source>
         <translation>Stopp visning av sider til siste side</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="448"/>
+        <location filename="../../openlp/core/common/i18n.py" line="468"/>
         <source>Theme</source>
         <comment>Singular</comment>
         <translation>Tema</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="449"/>
+        <location filename="../../openlp/core/common/i18n.py" line="469"/>
         <source>Themes</source>
         <comment>Plural</comment>
         <translation>Temaer</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="450"/>
+        <location filename="../../openlp/core/common/i18n.py" line="470"/>
         <source>Tools</source>
         <translation>Verktøy</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="451"/>
+        <location filename="../../openlp/core/common/i18n.py" line="471"/>
         <source>Top</source>
         <translation>Topp</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="452"/>
+        <location filename="../../openlp/core/common/i18n.py" line="473"/>
+        <source>Unable to read the file(s) listed below, please check that your user has permission to read the file(s) or that the file(s) are not using cloud storage (e.g. Dropbox, OneDrive).</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="476"/>
         <source>Unsupported File</source>
         <translation>Filtypen støttes ikke</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="453"/>
+        <location filename="../../openlp/core/common/i18n.py" line="479"/>
         <source>Verse Per Slide</source>
         <translation>Vers pr side</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="454"/>
+        <location filename="../../openlp/core/common/i18n.py" line="480"/>
         <source>Verse Per Line</source>
         <translation>Vers pr linje</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="455"/>
+        <location filename="../../openlp/core/common/i18n.py" line="482"/>
         <source>Version</source>
         <translation>Versjon</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="456"/>
+        <location filename="../../openlp/core/common/i18n.py" line="483"/>
         <source>View</source>
         <translation>Vis</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="457"/>
+        <location filename="../../openlp/core/common/i18n.py" line="484"/>
         <source>View Mode</source>
         <translation>Visningsmodus</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="458"/>
+        <location filename="../../openlp/core/common/i18n.py" line="485"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="459"/>
+        <location filename="../../openlp/core/common/i18n.py" line="486"/>
         <source>Warning</source>
         <translation>Advarsel</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="460"/>
+        <location filename="../../openlp/core/common/i18n.py" line="487"/>
         <source>Web Interface, Download and Install Latest Version</source>
         <translation>Webgrensesnitt, last ned og installer siste versjon</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="461"/>
+        <location filename="../../openlp/core/common/i18n.py" line="488"/>
         <source>Continuous (whole verses)</source>
         <translation>Kontinuerlig (hele vers)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="462"/>
+        <location filename="../../openlp/core/common/i18n.py" line="489"/>
         <source>Book Chapter</source>
         <translation>Bok kapittel</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="463"/>
+        <location filename="../../openlp/core/common/i18n.py" line="490"/>
         <source>Chapter</source>
         <translation>Kapittel</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="464"/>
+        <location filename="../../openlp/core/common/i18n.py" line="491"/>
         <source>Verse</source>
         <translation>Vers</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="466"/>
+        <location filename="../../openlp/core/common/i18n.py" line="493"/>
         <source>Psalm</source>
         <translation>Salme</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="467"/>
+        <location filename="../../openlp/core/common/i18n.py" line="494"/>
         <source>Book names may be shortened from full names, for an example Ps 23 = Psalm 23</source>
         <translation>Boknavn kan forkortes fra fulle navn, f.eks. Sal 23 = Salme 23</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="713"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="716"/>
         <source>Written by</source>
         <translation>Skrevet av </translation>
     </message>
@@ -8381,58 +8391,58 @@ Legg til noen programposter og trykk så lagre</translation>
         <translation>Velkommen til sangimportveiviseren</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/ui.py" line="36"/>
+        <location filename="../../openlp/plugins/songs/lib/ui.py" line="37"/>
         <source>Author</source>
         <comment>Singular</comment>
         <translation>Forfatter</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/ui.py" line="37"/>
+        <location filename="../../openlp/plugins/songs/lib/ui.py" line="38"/>
         <source>Authors</source>
         <comment>Plural</comment>
         <translation>Forfattere</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/ui.py" line="38"/>
+        <location filename="../../openlp/plugins/songs/lib/ui.py" line="39"/>
         <source>Author Unknown</source>
         <translation>Ukjent forfatter</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/ui.py" line="40"/>
+        <location filename="../../openlp/plugins/songs/lib/ui.py" line="41"/>
         <source>Songbook</source>
         <comment>Singular</comment>
         <translation>Sangbok</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/ui.py" line="41"/>
+        <location filename="../../openlp/plugins/songs/lib/ui.py" line="42"/>
         <source>Songbooks</source>
         <comment>Plural</comment>
         <translation>Sangbøker</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/ui.py" line="42"/>
+        <location filename="../../openlp/plugins/songs/lib/ui.py" line="43"/>
         <source>Title and/or verses not found</source>
         <translation>Tittel og/eller vers ikke funnet</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/ui.py" line="43"/>
+        <location filename="../../openlp/plugins/songs/lib/ui.py" line="44"/>
         <source>Song Maintenance</source>
         <translation>Vedlikehold av sanger</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/ui.py" line="44"/>
+        <location filename="../../openlp/plugins/songs/lib/ui.py" line="45"/>
         <source>Topic</source>
         <comment>Singular</comment>
         <translation>Emne</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/ui.py" line="45"/>
+        <location filename="../../openlp/plugins/songs/lib/ui.py" line="46"/>
         <source>Topics</source>
         <comment>Plural</comment>
         <translation>Emner</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/ui.py" line="46"/>
+        <location filename="../../openlp/plugins/songs/lib/ui.py" line="47"/>
         <source>XML syntax error</source>
         <translation>XML syntaksfeil</translation>
     </message>
@@ -8440,12 +8450,12 @@ Legg til noen programposter og trykk så lagre</translation>
 <context>
     <name>OpenLP.core.lib</name>
     <message>
-        <location filename="../../openlp/core/lib/__init__.py" line="427"/>
+        <location filename="../../openlp/core/lib/__init__.py" line="430"/>
         <source>{one} and {two}</source>
         <translation>{one} og {two}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/__init__.py" line="429"/>
+        <location filename="../../openlp/core/lib/__init__.py" line="432"/>
         <source>{first} and {last}</source>
         <translation>{first} og {last}</translation>
     </message>
@@ -9181,82 +9191,82 @@ er opprettet uten problemer. </translation>
 <context>
     <name>SongsPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="301"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="292"/>
         <source>Arabic (CP-1256)</source>
         <translation>Arabisk (CP-1256)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="302"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="293"/>
         <source>Baltic (CP-1257)</source>
         <translation>Baltisk (CP-1257)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="303"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="294"/>
         <source>Central European (CP-1250)</source>
         <translation>Sentraleuropeisk (CP-1250)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="304"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="295"/>
         <source>Cyrillic (CP-1251)</source>
         <translation>Kyrillisk (CP-1251)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="305"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="296"/>
         <source>Greek (CP-1253)</source>
         <translation>Gresk (CP-1253)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="306"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="297"/>
         <source>Hebrew (CP-1255)</source>
         <translation>Hebraisk (CP-1255)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="307"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="298"/>
         <source>Japanese (CP-932)</source>
         <translation>Japansk (CP-932)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="308"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="299"/>
         <source>Korean (CP-949)</source>
         <translation>Koreansk (CP-949)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="309"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="300"/>
         <source>Simplified Chinese (CP-936)</source>
         <translation>Forenklet kinesisk (CP-936)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="310"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="301"/>
         <source>Thai (CP-874)</source>
         <translation>Thai (CP-874)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="311"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="302"/>
         <source>Traditional Chinese (CP-950)</source>
         <translation>Tradisjonell kinesisk (CP-950)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="312"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="303"/>
         <source>Turkish (CP-1254)</source>
         <translation>Tyrkisk (CP-1254)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="313"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="304"/>
         <source>Vietnam (CP-1258)</source>
         <translation>Vietnamesisk (CP-1258)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="314"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="305"/>
         <source>Western European (CP-1252)</source>
         <translation>Vesteuropeisk (CP-1252)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="331"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="322"/>
         <source>Character Encoding</source>
         <translation>Tegnkoding</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="323"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="314"/>
         <source>The codepage setting is responsible
 for the correct character representation.
 Usually you are fine with the preselected choice.</source>
@@ -9264,137 +9274,137 @@ Usually you are fine with the preselected choice.</source>
 Vanligvis fungerer forhåndsvalgt innstilling.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="331"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="322"/>
         <source>Please choose the character encoding.
 The encoding is responsible for the correct character representation.</source>
         <translation>Velg tegntabellinnstilling. 
 Innstillingen er avgjørende for riktige tegn.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="185"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="186"/>
         <source>&amp;Song</source>
         <translation>&amp;Sang</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="165"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="166"/>
         <source>Import songs using the import wizard.</source>
         <translation>Importere sanger med importveiviseren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="171"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="172"/>
         <source>CCLI SongSelect</source>
         <translation>CCLI SongSelect</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="171"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="172"/>
         <source>Import songs from CCLI&apos;s SongSelect service.</source>
         <translation>Importer sanger fra CCLI&apos;s SongSelect.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="185"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="186"/>
         <source>Exports songs using the export wizard.</source>
         <translation>Eksporter sanger ved hjelp av eksport-veiviseren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="202"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="203"/>
         <source>Songs</source>
         <translation>Sanger</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="203"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="204"/>
         <source>&amp;Re-index Songs</source>
         <translation>&amp;Oppdatere sangindeksen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="203"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="204"/>
         <source>Re-index the songs database to improve searching and ordering.</source>
         <translation>Reindekserer sangdatabasen for å oppnå bedre inndeling og søking.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="209"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="210"/>
         <source>Find &amp;Duplicate Songs</source>
         <translation>Finn sang&amp;duplikater</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="209"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="210"/>
         <source>Find and remove duplicate songs in the song database.</source>
         <translation>Finne og fjern sangduplikater fra sangdatabasen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="214"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="215"/>
         <source>Song List Report</source>
         <translation>Liste over sanger</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="214"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="215"/>
         <source>Produce a CSV file of all the songs in the database.</source>
         <translation>Lag en CSV-fil med alle sangene i databasen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="238"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="239"/>
         <source>Reindexing songs...</source>
         <translation>Indekserer sanger på nytt ...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="240"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="241"/>
         <source>Reindexing songs</source>
         <translation>Indekserer sanger på nytt</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="283"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="284"/>
         <source>&lt;strong&gt;Songs Plugin&lt;/strong&gt;&lt;br /&gt;The songs plugin provides the ability to display and manage songs.</source>
         <translation>&lt;strong&gt;Sangprogramtillegg&lt;/strong&gt;&lt;br/&gt; Dette tillegget gir mulighet til å vise og administrere sanger.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="326"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="327"/>
         <source>Song</source>
         <comment>name singular</comment>
         <translation>Sang</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="327"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="328"/>
         <source>Songs</source>
         <comment>name plural</comment>
         <translation>Sanger</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="331"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="332"/>
         <source>Songs</source>
         <comment>container title</comment>
         <translation>Sanger</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="337"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="338"/>
         <source>Add a new song.</source>
         <translation>Legg til en ny sang.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="338"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="339"/>
         <source>Edit the selected song.</source>
         <translation>Rediger valgte sang.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="339"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="340"/>
         <source>Delete the selected song.</source>
         <translation>Slett valgte sang.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="340"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="341"/>
         <source>Preview the selected song.</source>
         <translation>Forhåndsvis valgte sang.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="341"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="342"/>
         <source>Send the selected song live.</source>
         <translation>Send valgte sang til fremvisning.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="342"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="343"/>
         <source>Add the selected song to the service.</source>
         <translation>Legg valgte sang til møteprogrammet.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="365"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="366"/>
         <source>Importing Songs</source>
         <translation>Importerer sanger</translation>
     </message>
@@ -9512,62 +9522,67 @@ Innstillingen er avgjørende for riktige tegn.</translation>
 <context>
     <name>SongsPlugin.EasyWorshipSongImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="321"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="325"/>
         <source>Administered by {admin}</source>
         <translation>Administeres av {admin}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="400"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="463"/>
         <source>&quot;{title}&quot; could not be imported. {entry}</source>
         <translation>&quot;{title}&quot; kunne ikke importeres. {entry}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="211"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="215"/>
         <source>This file does not exist.</source>
         <translation>Denne filen eksisterer ikke.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="215"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="219"/>
         <source>Could not find the &quot;Songs.MB&quot; file. It must be in the same folder as the &quot;Songs.DB&quot; file.</source>
         <translation>Kunne ikke finne &quot;Songs.MB&quot; filen. Det må være i samme mappe som &quot;Songs.DB&quot; filen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="230"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="234"/>
         <source>This file is not a valid EasyWorship database.</source>
         <translation>Denne filen er ikke en gyldig EasyWorship database.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="259"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="263"/>
         <source>Could not retrieve encoding.</source>
         <translation>Kunne ikke hente koding.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="342"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="346"/>
         <source>&quot;{title}&quot; could not be imported. {error}</source>
         <translation>&quot;{title}&quot; kunne ikke importeres. {error}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="355"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="358"/>
+        <source>This is not a valid Easy Worship 6/7 service file.</source>
+        <translation>Dette er ikke en gyldig Easy Worship 6/7 møteprogramfil</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="418"/>
         <source>This does not appear to be a valid Easy Worship 6 database directory.</source>
         <translation>Dette ser ikke ut til å være en gyldig mappe for Easy Worship 6-database.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="357"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="420"/>
         <source>This is not a valid Easy Worship 6 database.</source>
         <translation>Dette er ikke en gyldig EasyWorship 6 database.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="433"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="496"/>
         <source>Unexpected data formatting.</source>
         <translation>Uventet dataformatering.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="438"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="501"/>
         <source>No song text found.</source>
         <translation>Ingen sangtekst funnet.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="541"/>
         <source>
 [above are Song Tags with notes imported from EasyWorship]</source>
         <translation>
@@ -9590,7 +9605,7 @@ Innstillingen er avgjørende for riktige tegn.</translation>
 <context>
     <name>SongsPlugin.EditSongForm</name>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="432"/>
+        <location filename="../../openlp/core/common/i18n.py" line="447"/>
         <source>&amp;Save &amp;&amp; Close</source>
         <translation>&amp;Lagre &amp;&amp; Lukk</translation>
     </message>
@@ -9777,77 +9792,87 @@ Vennligst korriger disse før du fortsetter.</translation>
         <translation>Du har {count} vers med navn {name} {number}. Du kan ha maksimalt 26 vers med samme navn</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="596"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="283"/>
+        <source>Cannot link more than one audio file. Remove items from Linked Audio other than the one you wish to keep.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="602"/>
         <source>Add Author</source>
         <translation>Legg til forfatter</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="596"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="602"/>
         <source>This author does not exist, do you want to add them?</source>
         <translation>Denne forfatteren eksisterer ikke, skal den opprettes?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="617"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="623"/>
         <source>This author is already in the list.</source>
         <translation>Denne forfatteren er allerede på listen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="624"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="630"/>
         <source>You have not selected a valid author. Either select an author from the list, or type in a new author and click the &quot;Add Author to Song&quot; button to add the new author.</source>
         <translation>Du har ikke valgt et gyldig forfatternavn. Enten velg en forfatter fra listen eller skriv inn en ny forfatter og klikk &quot;Legg til forfatter&quot; -knappen for å legge til en ny forfatter.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="648"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="654"/>
         <source>Edit Author Type</source>
         <translation>Rediger forfatterkategori</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="648"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="654"/>
         <source>Choose type for this author</source>
         <translation>Velg kategori for denne forfatteren</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="675"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="681"/>
         <source>Add Topic</source>
         <translation>Legg til emne</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="675"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="681"/>
         <source>This topic does not exist, do you want to add it?</source>
         <translation>Dette emnet eksisterer ikke, skal det opprettes?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="693"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="699"/>
         <source>This topic is already in the list.</source>
         <translation>Dette emnet eksisterer allerede i listen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="702"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="708"/>
         <source>You have not selected a valid topic. Either select a topic from the list, or type in a new topic and click the &quot;Add Topic to Song&quot; button to add the new topic.</source>
         <translation>Du har ikke valgt et gyldig emne. Enten velger du et emne fra listen, eller skriv inn et nytt emne og klikk på &quot;Legg til emne&quot;-knappen for å legge til det nye emnet.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="721"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="727"/>
         <source>Add Songbook</source>
         <translation>Legg til sangbok</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="721"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="727"/>
         <source>This Songbook does not exist, do you want to add it?</source>
         <translation>Denne sangboken eksisterer ikke, skal den opprettes?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="738"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="744"/>
         <source>This Songbook is already in the list.</source>
         <translation>Denne sangboken finnes allerede i listen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="746"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="752"/>
         <source>You have not selected a valid Songbook. Either select a Songbook from the list, or type in a new Songbook and click the &quot;Add to Song&quot; button to add the new Songbook.</source>
         <translation>Du har ikke valgt en gyldig sangbok. Du kan enten velge en sangbok fra listen, eller lag en ny sangbok og klikk på &quot;Tilføye sang&quot; knappen for å legge til den nye sangboken.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="946"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="968"/>
+        <source>Cannot link more than one audio file.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="956"/>
         <source>Open File(s)</source>
         <translation>Åpne fil(er)</translation>
     </message>
@@ -9855,49 +9880,49 @@ Vennligst korriger disse før du fortsetter.</translation>
 <context>
     <name>SongsPlugin.EditVerseForm</name>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editversedialog.py" line="90"/>
+        <location filename="../../openlp/core/common/i18n.py" line="376"/>
+        <source>Down</source>
+        <translation>Ned</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="379"/>
         <source>Edit Verse</source>
         <translation>Rediger vers</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editversedialog.py" line="91"/>
-        <source>&amp;Verse type:</source>
-        <translation>&amp;Verstype:</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/plugins/songs/forms/editversedialog.py" line="101"/>
+        <location filename="../../openlp/core/common/i18n.py" line="387"/>
         <source>&amp;Forced Split</source>
         <translation>&amp;Hardt sideskift</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editversedialog.py" line="102"/>
+        <location filename="../../openlp/core/common/i18n.py" line="388"/>
         <source>Split the verse when displayed regardless of the screen size.</source>
         <translation>Del verset når det vises uavhengig av skjermstørrelse.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editversedialog.py" line="104"/>
+        <location filename="../../openlp/core/common/i18n.py" line="397"/>
         <source>&amp;Insert</source>
         <translation>Set &amp;inn</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editversedialog.py" line="105"/>
+        <location filename="../../openlp/core/common/i18n.py" line="398"/>
         <source>Split a slide into two by inserting a verse splitter.</source>
         <translation>Splitte siden i to ved å sette et verssplitter.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editversedialog.py" line="107"/>
+        <location filename="../../openlp/core/common/i18n.py" line="472"/>
         <source>Transpose:</source>
         <translation>Transponer:</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editversedialog.py" line="108"/>
+        <location filename="../../openlp/core/common/i18n.py" line="477"/>
         <source>Up</source>
         <translation>Opp</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editversedialog.py" line="109"/>
-        <source>Down</source>
-        <translation>Ned</translation>
+        <location filename="../../openlp/core/common/i18n.py" line="481"/>
+        <source>&amp;Verse type:</source>
+        <translation>&amp;Verstype:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editverseform.py" line="160"/>
@@ -10062,247 +10087,252 @@ Vennligst korriger disse før du fortsetter.</translation>
         <translation>Sangeksporten mislyktes. {error}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="199"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="200"/>
         <source>This importer has been disabled.</source>
         <translation>Denne importfunksjonen er deaktivert.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="211"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="212"/>
         <source>OpenLyrics Files</source>
         <translation>OpenLyrics filer</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="212"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="213"/>
         <source>OpenLyrics or OpenLP 2 Exported Song</source>
         <translation>OpenLyrics eller OpenLP 2 eksporterte sanger</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="219"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="220"/>
         <source>OpenLP 2 Databases</source>
         <translation>OpenLP 2 databaser</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="222"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="223"/>
         <source>Generic Document/Presentation</source>
         <translation>Generic Document/Presentation</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="225"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="226"/>
         <source>The generic document/presentation importer has been disabled because OpenLP cannot access OpenOffice or LibreOffice.</source>
         <translation>Den generiske dokument/presentasjon importøren har blitt deaktivert fordi OpenLP ikke får tilgang til OpenOffice eller LibreOffice.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="228"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="229"/>
         <source>Select Document/Presentation Files</source>
         <translation>Velg dokument/presentasjonsfiler</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="234"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="235"/>
         <source>CCLI SongSelect Files</source>
         <translation>CCLI SongSelect-filer</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="241"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="242"/>
         <source>ChordPro Files</source>
         <translation>ChordPro-filer</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="248"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="249"/>
         <source>DreamBeam Song Files</source>
         <translation>DreamBeam Sangfiler</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="255"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="256"/>
         <source>EasySlides XML File</source>
         <translation>EasySlides XML-fil</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="262"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="263"/>
         <source>EasyWorship 2007/2009 Song Database</source>
         <translation>EasyWorship 2007/2009 sangdatabase</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="270"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="271"/>
         <source>EasyWorship 6/7 Song Data Directory</source>
         <translation>EasyWorship 6/7 sangdatakatalog</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="278"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="279"/>
         <source>EasyWorship 2007/2009 Service File</source>
         <translation>EasyWorship 2007/2009 møteprogramfil</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="285"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="287"/>
+        <source>EasyWorship 6/7 Service File</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="294"/>
         <source>Foilpresenter Song Files</source>
         <translation>Foilpresenter sangfiler</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="293"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="302"/>
         <source>LiveWorship Database</source>
         <translation>LiveWorship sangdatabase</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="295"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="304"/>
         <source>First convert your LiveWorship database to an XML text file, as explained in the &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-liveworship&quot;&gt;User Manual&lt;/a&gt;.</source>
         <translation>Konverter først LiveWorship-databasen din til en XML-tekstfil, som forklart i &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-liveworship&quot;&gt;brukerhåndboken&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="304"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="313"/>
         <source>LyriX Files</source>
         <translation>LyriX Filer</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="305"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="314"/>
         <source>LyriX (Exported TXT-files)</source>
         <translation>LyriX (Eksporterte TXT-filer)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="312"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="321"/>
         <source>MediaShout Database</source>
         <translation>MediaShout database</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="313"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="322"/>
         <source>The MediaShout importer is only supported on Windows. It has been disabled due to a missing Python module. If you want to use this importer, you will need to install the &quot;pyodbc&quot; module.</source>
         <translation>Importfunksjonen for MediaShout støttes bare i Windows. Den har blitt deaktivert på grunn av en manglende Python-modul. Hvis du ønsker å bruke denne importøren, må du installere &quot;pyodbc&quot; modulen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="329"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="338"/>
         <source>OPS Pro database</source>
         <translation>OPS Pro database</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="330"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="339"/>
         <source>The OPS Pro importer is only supported on Windows. It has been disabled due to a missing Python module. If you want to use this importer, you will need to install the &quot;pyodbc&quot; module.</source>
         <translation>Importfunksjonen for OPS Pro støttes bare i Windows. Den har blitt deaktivert på grunn av en manglende Python-modul. Hvis du ønsker å bruke denne importfunksjonen, må du installere &quot;pyodbc&quot; modulen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="339"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="348"/>
         <source>PowerPraise Song Files</source>
         <translation>PowerPraise sangfiler</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="346"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="355"/>
         <source>You need to specify a valid PowerSong 1.0 database folder.</source>
         <translation>Du må angi en gyldig PowerSong 1.0 databasemappe.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="353"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="362"/>
         <source>PresentationManager Song Files</source>
         <translation>PresentationManager sangfiler</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="360"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="369"/>
         <source>ProPresenter Song Files</source>
         <translation>ProPresenter sangfiler</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="367"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="376"/>
         <source>Singing The Faith Exported Files</source>
         <translation>Singing The Faith eksporterte filer</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="369"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="378"/>
         <source>First use Singing The Faith Electronic edition to export the song(s) in Text format.</source>
         <translation>Bruk først Singing The Faith Electronic-utgaven for å eksportere sangen(e) i tekstformat.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="377"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="386"/>
         <source>SongBeamer Files</source>
         <translation>SongBeamer filer</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="385"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="394"/>
         <source>SongPro Text Files</source>
         <translation>SongPro tekstfiler</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="386"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="395"/>
         <source>SongPro (Export File)</source>
         <translation>SongPro (eksportfil)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="387"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="396"/>
         <source>In SongPro, export your songs using the File -&gt; Export menu</source>
         <translation>I SongPro eksporterer du sangene ved hjelp av File -&gt; Export menyen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="394"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="403"/>
         <source>SongShow Plus Song Files</source>
         <translation>SongShow Plus sangfiler</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="401"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="410"/>
         <source>Songs Of Fellowship Song Files</source>
         <translation>Songs Of Fellowship sangfiler</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="403"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="412"/>
         <source>The Songs of Fellowship importer has been disabled because OpenLP cannot access OpenOffice or LibreOffice.</source>
         <translation>&quot;Songs of Fellowship&quot;-importøren har blitt deaktivert fordi OpenLP ikke får tilgang til OpenOffice eller LibreOffice.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="411"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="420"/>
         <source>SundayPlus Song Files</source>
         <translation>SundayPlus sangfiler</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="418"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="427"/>
         <source>VideoPsalm Files</source>
         <translation>VideoPsalm Filer</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="419"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="428"/>
         <source>VideoPsalm</source>
         <translation>VideoPsalm</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="420"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="429"/>
         <source>The VideoPsalm songbooks are normally located in {path}</source>
         <translation>VideoPsalm sangbøker finnes vanligvis i {path}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="428"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="437"/>
         <source>Words Of Worship Song Files</source>
         <translation>Words Of Worship sangfiler</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="436"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="445"/>
         <source>Worship Assistant Files</source>
         <translation>Worship Assistant filer</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="438"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="447"/>
         <source>Worship Assistant (CSV)</source>
         <translation>Worship Assistant (CSV)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="439"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="448"/>
         <source>In Worship Assistant, export your Database to a CSV file.</source>
         <translation>I Worship Assistant må du eksportere din database til en CSV fil.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="447"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="456"/>
         <source>WorshipCenter Pro Song Files</source>
         <translation>WorshipCenter Pro sangfiler</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="449"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="458"/>
         <source>The WorshipCenter Pro importer is only supported on Windows. It has been disabled due to a missing Python module. If you want to use this importer, you will need to install the &quot;pyodbc&quot; module.</source>
         <translation>Importfunksjonen for MediaShout støttes bare i Windows. Den har blitt deaktivert på grunn av en manglende Python-modul. Hvis du ønsker å bruke denne importøren, må du installere &quot;pyodbc&quot; modulen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="459"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="468"/>
         <source>ZionWorx (CSV)</source>
         <translation>ZionWorx (CSV)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="460"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="469"/>
         <source>First convert your ZionWorx database to a CSV text file, as explained in the &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-zionworx&quot;&gt;User Manual&lt;/a&gt;.</source>
         <translation>Først må du konvertere ZionWorx databasen til en CSV tekstfil, som forklart i &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-zionworx&quot;&gt; brukerveiledningen&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="469"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="478"/>
         <source>Datasoul Song Files</source>
         <translation>Datasoul Song filer</translation>
     </message>
@@ -10344,7 +10374,7 @@ Vennligst korriger disse før du fortsetter.</translation>
 <context>
     <name>SongsPlugin.MediaItem</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="728"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="731"/>
         <source>CCLI License</source>
         <translation>CCLI Lisens</translation>
     </message>
@@ -10430,17 +10460,17 @@ Vennligst korriger disse før du fortsetter.</translation>
         <translation>kopi</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="634"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="637"/>
         <source>Media</source>
         <translation>Media</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="681"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="684"/>
         <source>CCLI License: </source>
         <translation>CCLI Lisens: </translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="741"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="744"/>
         <source>Failed to render Song footer html.
 See log for details</source>
         <translation>Kunne ikke gjengi html for sangbunntekst.
@@ -11205,12 +11235,12 @@ Er du sikker på at du vil importere denne sangen?</translation>
 <context>
     <name>SongsPlugin.UI</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/ui.py" line="55"/>
+        <location filename="../../openlp/plugins/songs/lib/ui.py" line="56"/>
         <source>Song key warning</source>
         <translation>Manglende sangtoneart</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/ui.py" line="55"/>
+        <location filename="../../openlp/plugins/songs/lib/ui.py" line="56"/>
         <source>No musical key has been detected for this song, it should be placed before the first chord.
 For an optimal chord experience, please include a song key at the beginning of the song. For example: [=G]
 
@@ -11224,39 +11254,39 @@ Du kan deaktivere denne advarselen i sanginnstillingene.</translation>
 <context>
     <name>SongsPlugin.VerseType</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="149"/>
-        <source>Verse</source>
-        <translation>Vers</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="150"/>
-        <source>Chorus</source>
-        <translation>Refreng</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="151"/>
+        <location filename="../../openlp/core/common/i18n.py" line="359"/>
         <source>Bridge</source>
         <translation>Stikk</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="152"/>
-        <source>Pre-Chorus</source>
-        <translation>Bro</translation>
+        <location filename="../../openlp/core/common/i18n.py" line="364"/>
+        <source>Chorus</source>
+        <translation>Refreng</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="153"/>
-        <source>Intro</source>
-        <translation>Intro</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="154"/>
+        <location filename="../../openlp/core/common/i18n.py" line="381"/>
         <source>Ending</source>
         <translation>Avslutning</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="155"/>
+        <location filename="../../openlp/core/common/i18n.py" line="400"/>
+        <source>Intro</source>
+        <translation>Intro</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="429"/>
         <source>Other</source>
         <translation>Tilleggsinformasjon</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="433"/>
+        <source>Pre-Chorus</source>
+        <translation>Bro</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="478"/>
+        <source>Verse</source>
+        <translation>Vers</translation>
     </message>
 </context>
 <context>
