@@ -26,6 +26,7 @@ import logging
 
 from PySide6 import QtCore, QtWidgets
 from openlp.core.common.i18n import translate
+from openlp.core.common.registry import Registry
 
 from openlp.core.lib.ui import create_widget_action
 from openlp.core.ui.icons import UiIcons
@@ -157,11 +158,13 @@ class MediaSlider(QtWidgets.QSlider):
         :param event: The triggering event
         """
         if "seek_slider" in self.objectName():
-            time_value = QtWidgets.QStyle.sliderValueFromPosition(self.minimum(), self.maximum(), event.x(), self.width())
+            time_value = QtWidgets.QStyle.sliderValueFromPosition(self.minimum(), self.maximum(),
+                                                                  event.x(), self.width())
             self.setToolTip('%s' % datetime.timedelta(seconds=int(time_value / 1000)))
         else:
             volume_value = QtWidgets.QStyle.sliderValueFromPosition(self.minimum(), self.maximum(),
                                                                     event.x(), self.width())
+            print(float(volume_value / 10))
             self.setToolTip("%1.2f" % float((volume_value / 10)))
         QtWidgets.QSlider.mouseMoveEvent(self, event)
 
@@ -186,6 +189,7 @@ class MediaToolbar(OpenLPToolbar):
     def __init__(self, parent, hide_components=[], action_prefixes=''):
         super().__init__(parent)
         self.on_action = lambda *args: None
+        self.parent = parent
         self.hide_components = hide_components
         self.action_prefixes = action_prefixes
         self.setup_ui()
@@ -217,7 +221,7 @@ class MediaToolbar(OpenLPToolbar):
         self.position_label = QtWidgets.QLabel()
         self.position_label.setText(' 00:00 / 00:00')
         self.position_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        self.position_label.setToolTip(translate('OpenLP.SlideController', 'Video timer.'))
+        self.position_label.setToolTip(translate('OpenLP.SlideController', 'Media timer.'))
         self.position_label.setMinimumSize(90, 0)
         self.position_label.setObjectName(self.action_prefixes + 'position_label')
         self.add_toolbar_widget(self.position_label)
@@ -234,7 +238,7 @@ class MediaToolbar(OpenLPToolbar):
             self.seek_slider.valueChanged.connect(self._on_action)
         if 'volume' not in self.hide_components:
             # Build the volume_slider.
-            self.volume_slider = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
+            self.volume_slider = MediaSlider(QtCore.Qt.Orientation.Horizontal, self, self)
             self.volume_slider.setTickInterval(10)
             self.volume_slider.setTickPosition(QtWidgets.QSlider.TickPosition.TicksAbove)
             self.volume_slider.setMinimum(0)
@@ -255,4 +259,5 @@ class MediaToolbar(OpenLPToolbar):
             self.identification_label.setVisible(False)
 
     def _on_action(self, *args):
-        self.on_action(*args)
+        sender = self.sender().objectName() if self.sender().objectName() else self.sender().text()
+        Registry().execute("{text}".format(text=sender), [self.parent, args])

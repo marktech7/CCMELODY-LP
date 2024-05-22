@@ -116,7 +116,6 @@ class UiIcons(metaclass=Singleton):
             'new_group': {'icon': 'mdi.folder'},
             'notes': {'icon': 'mdi.note'},
             'open': {'icon': 'mdi.folder-open'},
-            'optical': {'icon': 'mdi.disc'},
             'pause': {'icon': 'mdi.pause'},
             'planning_center': {'icon': 'mdi.cloud-download'},
             'play': {'icon': 'mdi.play'},

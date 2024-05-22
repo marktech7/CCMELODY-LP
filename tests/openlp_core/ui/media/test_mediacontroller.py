@@ -85,22 +85,6 @@ def test_initialise_good(media_env: MediaController, state_media: State):
     mocked_setup.assert_called_once(), 'The setup function has been called'
 
 
-def test_initialise_missing_vlc(media_env: MediaController, state_media: State):
-    """
-    Test that the bootstrap initialise method is called correctly with no VLC
-    """
-    # GIVEN: a mocked setup and no VLC
-    with patch.object(media_env.media_controller, u'setup') as mocked_setup, \
-         patch('openlp.core.ui.media.mediacontroller.get_vlc', return_value=False):
-        # THEN: The underlying method is called
-        media_env.media_controller.bootstrap_initialise()
-    # THEN: The following should have happened
-    mocked_setup.assert_called_once(), 'The setup function has been called'
-    text = State().get_text()
-    if not is_macosx():
-        assert text.find("python3-vlc") > 0, "VLC should not be missing"
-
-
 @patch('openlp.core.ui.media.mediacontroller.pymediainfo_available', False)
 def test_initialise_missing_pymedia(media_env: MediaController, state_media: State):
     """
@@ -132,7 +116,6 @@ def test_initialise_missing_pymedia_fedora(media_env: MediaController, state_med
     mocked_setup.assert_called_once(), 'The setup function has been called'
     text = State().get_text()
     assert text.find("python3-pymediainfo") == -1, "PyMedia should be missing"
-    assert text.find("python3-vlc") > 0, "VLC should not be missing"
     assert text.find("rpmfusion") > 0, "RPMFusion should provide the modules"
 
 
@@ -151,7 +134,6 @@ def test_initialise_missing_pymedia_not_fedora(media_env: MediaController, state
     mocked_setup.assert_called_once(), 'The setup function has been called'
     text = State().get_text()
     assert text.find("python3-pymediainfo") == -1, "PyMedia should be missing"
-    assert text.find("python3-vlc") > 0, "VLC should not be missing"
     assert text.find("rpmfusion") == -1, "RPMFusion should not provide the modules"
 
 
@@ -169,7 +151,6 @@ def test_initialise_missing_pymedia_mac_os(media_env: MediaController, state_med
     mocked_setup.assert_called_once(), 'The setup function has been called'
     text = State().get_text()
     assert text.find("python3-pymediainfo") == -1, "PyMedia should be missing"
-    assert text.find("python3-vlc") == -1, "PyMedia should be missing"
     assert text.find("videolan") > 0, "VideoLAN should provide the modules"
 
 

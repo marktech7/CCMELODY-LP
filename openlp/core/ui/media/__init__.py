@@ -52,21 +52,6 @@ class MediaState(object):
     Stopped = 4
 
 
-class VlCState(object):
-    """
-    A copy of the VLC States to allow for readable code
-    From https://www.olivieraubert.net/vlc/python-ctypes/doc/vlc.State-class.html
-    """
-    NothingSpecial = 0
-    Opening = 1
-    Buffering = 2
-    Playing = 3
-    Paused = 4
-    Stopped = 5
-    Ended = 6
-    Error = 7
-
-
 class MediaType(object):
     """
     An enumeration of possible Media Types
@@ -74,28 +59,24 @@ class MediaType(object):
     Unused = 0
     Audio = 1
     Video = 2
-    CD = 3
-    DVD = 4
-    Folder = 5
-    Stream = 6
+    Stream = 7
 
 
-class ItemMediaInfo(object):
+class MediaPlayItem(object):
     """
     This class hold the media related info
     """
-    file_info = None
+    external_stream = []  # for remote things like USB Cameras
+    audio_file = None  # for song Audio files when we have background videos
+    media_file = None  # for standalone media
     is_background = False
-    is_theme_background = None
+    is_theme_background = False
     length = 0
     start_time = 0
     end_time = 0
-    title_track = 0
-    is_playing = False
+    is_playing = MediaState.Off
     timer = 1000
-    audio_track = 0
-    subtitle_track = 0
-    media_type = MediaType()
+    media_type = MediaType().Unused
 
 
 def get_volume(controller) -> int:
@@ -125,7 +106,7 @@ def save_volume(controller, volume: int) -> None:
         return Registry().get('settings').setValue('media/preview volume', volume)
 
 
-def is_looping_playback(controller) -> bool:
+def saved_looping_playback(controller) -> bool:
     """
     :param controller: the controller in use
     :return: Are we looping
@@ -147,28 +128,6 @@ def toggle_looping_playback(controller) -> None:
     else:
         Registry().get('settings').setValue('media/preview loop',
                                             not Registry().get('settings').value('media/preview loop'))
-
-
-def parse_optical_path(input_string):
-    """
-    Split the optical path info.
-
-    :param input_string: The string to parse
-    :return: The elements extracted from the string:  filename, title, audio_track, subtitle_track, start, end
-    """
-    log.debug('parse_optical_path, about to parse: "{text}"'.format(text=input_string))
-    clip_info = input_string.split(sep=':')
-    title = str(clip_info[1])
-    audio_track = int(clip_info[2])
-    subtitle_track = int(clip_info[3])
-    start = float(clip_info[4])
-    end = float(clip_info[5])
-    clip_name = clip_info[6]
-    filename = clip_info[7]
-    # Windows path usually contains a colon after the drive letter
-    if len(clip_info) > 8:
-        filename += ':' + clip_info[8]
-    return filename, title, audio_track, subtitle_track, start, end, clip_name
 
 
 def parse_stream_path(input_string):
@@ -199,10 +158,20 @@ def format_milliseconds(milliseconds):
     seconds, millis = divmod(milliseconds, 1000)
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
-    return "{hours:02d}:{minutes:02d}:{seconds:02d},{millis:03d}".format(hours=hours,
-                                                                         minutes=minutes,
-                                                                         seconds=seconds,
-                                                                         millis=millis)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d},{millis:03d}"
+
+
+def format_play_time(milliseconds):
+    """
+    Format milliseconds into a human readable time string.
+    :param milliseconds: Milliseconds to format
+    :return: Time string in format: hh:mm:ss,ttt
+    """
+    milliseconds = int(milliseconds)
+    seconds, millis = divmod(milliseconds, 1000)
+    minutes, seconds = divmod(seconds, 60)
+    _, minutes = divmod(minutes, 60)
+    return f"{minutes:02d}:{seconds:02d}"
 
 
 media_empty_song = [{"title": "", "text": "", "verse": 0, "footer": ""}]

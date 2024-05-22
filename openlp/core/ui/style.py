@@ -90,7 +90,7 @@ class UiThemes(Enum):
 def is_ui_theme_dark():
     ui_theme_name = Registry().get('settings').value('advanced/ui_theme_name')
 
-    if ui_theme_name == UiThemes.Automatic:
+    if ui_theme_name is None or ui_theme_name == UiThemes.Automatic:
         return is_system_darkmode()
     else:
         return ui_theme_name.value.startswith('dark:')

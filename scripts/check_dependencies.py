@@ -39,9 +39,9 @@ IS_MAC = sys.platform.startswith('dar')
 
 
 VERS = {
-    'Python': '3.6',
-    'PySide6': '6.2',
-    'Qt6': '6.2',
+    'Python': '3.12',
+    'PySide6': '6.7',
+    'Qt6': '6.7',
     'pymediainfo': '2.2',
     'sqlalchemy': '0.5',
     'enchant': '1.6'
@@ -93,7 +93,6 @@ MODULES = [
     'requests',
     'qtawesome',
     'pymediainfo',
-    'vlc',
     'qrcode',
     'packaging',
 ]

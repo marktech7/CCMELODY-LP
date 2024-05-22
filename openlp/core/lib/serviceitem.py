@@ -908,10 +908,11 @@ class ServiceItem(RegistryProperties):
                 elif self.is_capable(ItemCapabilities.HasBackgroundAudio) and not State().check_preconditions('media'):
                     self.is_valid = False
                     break
-                elif self.is_capable(ItemCapabilities.IsOptical) and State().check_preconditions('media'):
-                    if not os.path.exists(slide['title']):
-                        self.is_valid = False
-                        break
+                # is not sup[ported but can arrive in old service file
+                # TODO remove in 4.1
+                elif self.is_capable(ItemCapabilities.IsOptical):
+                    self.is_valid = False
+                    break
                 elif self.is_capable(ItemCapabilities.CanStream):
                     (name, mrl, options) = parse_stream_path(slide['path'])
                     if not name or not mrl or not options:

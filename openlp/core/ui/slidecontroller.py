@@ -45,7 +45,7 @@ from openlp.core.lib.ui import create_action
 from openlp.core.state import State
 from openlp.core.ui import DisplayControllerType, HideMode
 from openlp.core.ui.icons import UiIcons
-from openlp.core.ui.media import media_empty_song
+from openlp.core.ui.media import MediaPlayItem, media_empty_song
 from openlp.core.widgets.layouts import AspectRatioLayout
 from openlp.core.widgets.toolbar import MediaToolbar, OpenLPToolbar
 from openlp.core.widgets.views import ListPreviewWidget
@@ -115,8 +115,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.controller_type = None
         self.displays = []
         self.screens = ScreenList()
-        self.vlc_instance = None
-        self.media_info = None
+        self.media_player = None
+        self.audio_player = None
+        self.media_play_item = MediaPlayItem()
         Registry().set_flag('has doubleclick added item to service', True)
         Registry().set_flag('replace service manager item', False)
 

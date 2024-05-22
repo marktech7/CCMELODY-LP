@@ -199,14 +199,14 @@ class CaptureVideoLinuxWidget(CaptureVideoWidget):
         """
         Insert devices for V4L2
         """
-        video_devs = glob.glob('/dev/video*')
+        #video_devs = glob.glob('/dev/video*')
         self.video_devices_combo_box.addItems(video_devs)
-        audio_devs = glob.glob('/dev/snd/pcmC*D*c')
+        #audio_devs = glob.glob('/dev/snd/pcmC*D*c')
         vlc_audio_devs = []
-        for dev in audio_devs:
-            vlc_dev = dev.replace('/dev/snd/pcmC', 'hw:')
-            vlc_dev = re.sub(r'c$', '', vlc_dev).replace('D', ',')
-            vlc_audio_devs.append(vlc_dev)
+        #for dev in audio_devs:
+        #    vlc_dev = dev.replace('/dev/snd/pcmC', 'hw:')
+        #    vlc_dev = re.sub(r'c$', '', vlc_dev).replace('D', ',')
+        #    vlc_audio_devs.append(vlc_dev)
         self.audio_devices_combo_box.addItems(vlc_audio_devs)
 
     def update_mrl(self):
@@ -668,36 +668,36 @@ class Ui_StreamSelector(object):
         self.stacked_modes_layout = QtWidgets.QStackedLayout(self.stacked_modes)
         self.stacked_modes_layout.setObjectName('stacked_modes_layout')
         # Widget for DirectShow - Windows only
-        if is_win():
-            self.direct_show_widget = CaptureVideoDirectShowWidget(stream_selector, self.theme_stream)
-            self.stacked_modes_layout.addWidget(self.direct_show_widget)
-            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'DirectShow'))
-        elif is_linux():
-            # Widget for V4L2 - Linux only
-            self.v4l2_widget = CaptureVideoLinuxWidget(stream_selector, self.theme_stream)
-            self.stacked_modes_layout.addWidget(self.v4l2_widget)
-            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'Video Camera'))
-            # Widget for analog TV - Linux only
-            self.analog_tv_widget = CaptureAnalogTVWidget(stream_selector, self.theme_stream)
-            self.stacked_modes_layout.addWidget(self.analog_tv_widget)
-            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'TV - analog'))
-            # Do not allow audio streams for themes
-            if not self.theme_stream:
-                # Widget for JACK - Linux only
-                self.jack_widget = JackAudioKitWidget(stream_selector, self.theme_stream)
-                self.stacked_modes_layout.addWidget(self.jack_widget)
-                self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector',
-                                                              'JACK Audio Connection Kit'))
-        # Digital TV - both linux and windows
-        if is_win() or is_linux():
-            self.digital_tv_widget = CaptureDigitalTVWidget(stream_selector, self.theme_stream)
-            self.stacked_modes_layout.addWidget(self.digital_tv_widget)
-            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'TV - digital'))
+        #if is_win():
+        self.direct_show_widget = CaptureVideoDirectShowWidget(stream_selector, self.theme_stream)
+        self.stacked_modes_layout.addWidget(self.direct_show_widget)
+        self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'DirectShow'))
+        #elif is_linux():
+        #    # Widget for V4L2 - Linux only
+        #    self.v4l2_widget = CaptureVideoLinuxWidget(stream_selector, self.theme_stream)
+        #    self.stacked_modes_layout.addWidget(self.v4l2_widget)
+        #    self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'Video Camera'))
+        #    # Widget for analog TV - Linux only
+        #    self.analog_tv_widget = CaptureAnalogTVWidget(stream_selector, self.theme_stream)
+        #    self.stacked_modes_layout.addWidget(self.analog_tv_widget)
+        #    self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'TV - analog'))
+        #    # Do not allow audio streams for themes
+        #    if not self.theme_stream:
+        #        # Widget for JACK - Linux only
+        #        self.jack_widget = JackAudioKitWidget(stream_selector, self.theme_stream)
+        #        self.stacked_modes_layout.addWidget(self.jack_widget)
+        #        self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector',
+        #                                                      'JACK Audio Connection Kit'))
+        ## Digital TV - both linux and windows
+        #if is_win() or is_linux():
+        #    self.digital_tv_widget = CaptureDigitalTVWidget(stream_selector, self.theme_stream)
+        #    self.stacked_modes_layout.addWidget(self.digital_tv_widget)
+        #    self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'TV - digital'))
         # for macs
-        if is_macosx():
-            self.mac_input_widget = MacInputWidget(stream_selector, self.theme_stream)
-            self.stacked_modes_layout.addWidget(self.mac_input_widget)
-            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'Input devices'))
+        #if is_macosx():
+        #    self.mac_input_widget = MacInputWidget(stream_selector, self.theme_stream)
+        #    self.stacked_modes_layout.addWidget(self.mac_input_widget)
+        #    self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'Input devices'))
         # Setup the stacked widgets
         self.main_layout.addWidget(self.stacked_modes)
         self.stacked_modes_layout.setCurrentIndex(0)
