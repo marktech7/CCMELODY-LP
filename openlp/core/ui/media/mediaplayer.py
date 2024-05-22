@@ -22,7 +22,6 @@
 The :mod:`~openlp.core.ui.media.mediaplayer` module for media playing.
 """
 import logging
-import os
 
 from PySide6 import QtCore, QtWidgets
 
@@ -30,7 +29,6 @@ from openlp.core.common.mixins import LogMixin
 from openlp.core.common.registry import Registry
 from openlp.core.display.window import DisplayWindow
 from openlp.core.ui.slidecontroller import SlideController
-from openlp.core.ui.media import get_volume
 from openlp.core.ui.media.mediabase import MediaBase
 
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
@@ -139,7 +137,7 @@ class MediaPlayer(MediaBase, LogMixin):
         #     print(a.id())
         #     print(a.description())
         #     print(a.description() == "Chicony USB2.0 Camera: Chicony")
-            # print("Chicony USB2.0 Camera: Chicony" in a.description())
+        #     print("Chicony USB2.0 Camera: Chicony" in a.description())
 
         # mediaCaptureSession = QMediaCaptureSession()
         # mediaCaptureSession.setCamera(camera)

@@ -33,7 +33,7 @@ from PySide6 import QtCore, QtWidgets
 from PySide6.QtMultimedia import QMediaDevices
 
 from openlp.core.common.i18n import translate
-from openlp.core.common.platform import is_linux, is_macosx, is_win
+from openlp.core.common.platform import is_linux
 from openlp.plugins.media.forms import VLCOptionsWidget
 
 # Copied from VLC source code: modules/access/v4l2/v4l2.c
@@ -199,11 +199,11 @@ class CaptureVideoLinuxWidget(CaptureVideoWidget):
         """
         Insert devices for V4L2
         """
-        #video_devs = glob.glob('/dev/video*')
+        video_devs = glob.glob('/dev/video*')
         self.video_devices_combo_box.addItems(video_devs)
-        #audio_devs = glob.glob('/dev/snd/pcmC*D*c')
+        # audio_devs = glob.glob('/dev/snd/pcmC*D*c')
         vlc_audio_devs = []
-        #for dev in audio_devs:
+        # for dev in audio_devs:
         #    vlc_dev = dev.replace('/dev/snd/pcmC', 'hw:')
         #    vlc_dev = re.sub(r'c$', '', vlc_dev).replace('D', ',')
         #    vlc_audio_devs.append(vlc_dev)
@@ -668,7 +668,7 @@ class Ui_StreamSelector(object):
         self.stacked_modes_layout = QtWidgets.QStackedLayout(self.stacked_modes)
         self.stacked_modes_layout.setObjectName('stacked_modes_layout')
         # Widget for DirectShow - Windows only
-        #if is_win():
+        # if is_win():
         self.direct_show_widget = CaptureVideoDirectShowWidget(stream_selector, self.theme_stream)
         self.stacked_modes_layout.addWidget(self.direct_show_widget)
         self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'DirectShow'))
@@ -689,12 +689,12 @@ class Ui_StreamSelector(object):
         #        self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector',
         #                                                      'JACK Audio Connection Kit'))
         ## Digital TV - both linux and windows
-        #if is_win() or is_linux():
+        # if is_win() or is_linux():
         #    self.digital_tv_widget = CaptureDigitalTVWidget(stream_selector, self.theme_stream)
         #    self.stacked_modes_layout.addWidget(self.digital_tv_widget)
         #    self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'TV - digital'))
         # for macs
-        #if is_macosx():
+        # if is_macosx():
         #    self.mac_input_widget = MacInputWidget(stream_selector, self.theme_stream)
         #    self.stacked_modes_layout.addWidget(self.mac_input_widget)
         #    self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'Input devices'))

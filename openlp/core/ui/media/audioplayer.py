@@ -22,17 +22,10 @@
 The :mod:`~openlp.core.ui.media.audioplayer` module for secondary background audio.
 """
 import logging
-import os
-import threading
 
-from PySide6 import QtCore, QtWidgets
-
-from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin
-from openlp.core.common.registry import Registry
 from openlp.core.display.window import DisplayWindow
 from openlp.core.ui.slidecontroller import SlideController
-from openlp.core.ui.media import get_volume
 from openlp.core.ui.media.mediabase import MediaBase
 
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput

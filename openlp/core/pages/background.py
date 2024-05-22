@@ -26,7 +26,6 @@ from PySide6 import QtWidgets
 from openlp.core.common import get_images_filter
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.theme import BackgroundGradientType, BackgroundType
-from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.pages import GridLayoutPage
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.media import VIDEO_EXT
@@ -233,7 +232,7 @@ class BackgroundPage(GridLayoutPage):
         """
         Open the Stream selection form.
         """
- #      if get_vlc():
+        # if get_vlc():
         # Only import this form is VLC is available
         from openlp.plugins.media.forms.networkstreamselectorform import NetworkStreamSelectorForm
         stream_selector_form = NetworkStreamSelectorForm(self, self.set_stream, True)
@@ -242,9 +241,9 @@ class BackgroundPage(GridLayoutPage):
             stream_selector_form.set_mrl(self.stream_lineedit.text())
         stream_selector_form.exec()
         del stream_selector_form
- #       else:
-  #          critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
-   #                                    translate('MediaPlugin.MediaItem', 'Network streaming support requires VLC.'))
+        #       else:
+        #          critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
+        #                                    translate('MediaPlugin.MediaItem', 'Network streaming support requires VLC.'))
 
     def set_stream(self, stream_str):
         """
