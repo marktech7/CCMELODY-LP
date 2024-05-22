@@ -672,7 +672,7 @@ class Ui_StreamSelector(object):
         self.direct_show_widget = CaptureVideoDirectShowWidget(stream_selector, self.theme_stream)
         self.stacked_modes_layout.addWidget(self.direct_show_widget)
         self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'DirectShow'))
-        #elif is_linux():
+        # elif is_linux():
         #    # Widget for V4L2 - Linux only
         #    self.v4l2_widget = CaptureVideoLinuxWidget(stream_selector, self.theme_stream)
         #    self.stacked_modes_layout.addWidget(self.v4l2_widget)
@@ -688,7 +688,7 @@ class Ui_StreamSelector(object):
         #        self.stacked_modes_layout.addWidget(self.jack_widget)
         #        self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector',
         #                                                      'JACK Audio Connection Kit'))
-        ## Digital TV - both linux and windows
+        #  Digital TV - both linux and windows
         # if is_win() or is_linux():
         #    self.digital_tv_widget = CaptureDigitalTVWidget(stream_selector, self.theme_stream)
         #    self.stacked_modes_layout.addWidget(self.digital_tv_widget)

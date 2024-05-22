@@ -314,7 +314,6 @@ class MediaMediaItem(FolderLibraryItem):
         items = self.manager.get_all_objects(Item, or_(*clauses))
         return [Path(item.file_path) for item in items]
 
-
     def on_open_device_stream(self):
         """
         When the open device stream button is clicked, open the stream selector window.
@@ -323,7 +322,7 @@ class MediaMediaItem(FolderLibraryItem):
         stream_selector_form = StreamSelectorForm(self.main_window, self.add_device_stream)
         stream_selector_form.exec()
         del stream_selector_form
-        #else:
+        # else:
         #    critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
         #                               translate('MediaPlugin.MediaItem', 'Device streaming support requires VLC.'))
 
