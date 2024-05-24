@@ -45,7 +45,7 @@ from openlp.core.state import State, MessageType
 from openlp.core.ui import DisplayControllerType, HideMode
 from openlp.core.ui.slidecontroller import SlideController
 from openlp.core.ui.media import MediaState, MediaPlayItem, MediaType, format_play_seconds, media_empty_song, \
-        format_play_time, parse_stream_path, get_volume, toggle_looping_playback, saved_looping_playback, save_volume
+    format_play_time, parse_stream_path, get_volume, toggle_looping_playback, saved_looping_playback, save_volume
 from openlp.core.ui.media.remote import register_views
 from openlp.core.ui.media.audioplayer import AudioPlayer
 from openlp.core.ui.media.mediaplayer import MediaPlayer
@@ -335,15 +335,12 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             is_autoplay = True
         elif not hidden and (
             service_item.will_auto_start
-            or self.settings.value("media/media auto start") == QtCore.Qt.CheckState.Checked
-        ):
+            or self.settings.value("media/media auto start") == QtCore.Qt.CheckState.Checked):
             is_autoplay = True
         # Unblank on load set
         elif self.settings.value("core/auto unblank"):
             is_autoplay = True
         if controller.media_play_item.is_theme_background:
-            is_autoplay = True
-        if controller.media_play_item.media_type == MediaType.Stream:
             is_autoplay = True
         if controller.media_play_item.media_type == MediaType.Stream:
             is_autoplay = True

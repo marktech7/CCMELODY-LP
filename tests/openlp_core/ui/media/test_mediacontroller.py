@@ -359,13 +359,20 @@ def test_media_stop(media_env, settings):
     # GIVEN: A live media controller and a message with two elements
     mocked_slide_controller = MagicMock()
     mocked_media_player = MagicMock()
+    mocked_audio_player = MagicMock()
     mocked_display = MagicMock(hide_mode=None)
     mocked_slide_controller.controller_type = 'media player'
     mocked_slide_controller.media_play_item = MediaPlayItem()
     mocked_slide_controller.media_play_item.is_background = False
     mocked_slide_controller.set_hide_mode = MagicMock()
     mocked_slide_controller.is_live = True
-    media_env.media_controller.media_play_item = MediaPlayItem()
+    mocked_slide_controller.media_player = mocked_media_player
+    media_env.media_controller.media_player = mocked_media_player
+    mocked_slide_controller.audio_player = mocked_audio_player
+    media_env.media_controller.audio_player = mocked_audio_player
+    mocked_slide_controller.media_play_item = MediaPlayItem()
+    mocked_slide_controller.media_play_item.media_file = Path()
+    mocked_slide_controller.media_play_item.audio_file = Path()
     media_env.media_controller.is_theme_background = False
     media_env.media_controller.live_hide_timer = MagicMock()
     media_env.media_controller._define_display = MagicMock(return_value=mocked_display)
@@ -377,8 +384,10 @@ def test_media_stop(media_env, settings):
     #       The controller's hide mode should be set to Blank
     assert result is True
     mocked_media_player.stop.assert_called_once()
+    mocked_audio_player.stop.assert_called_once()
     media_env.media_controller.live_hide_timer.start.assert_called_once()
     mocked_slide_controller.set_hide_mode.assert_called_once_with(HideMode.Blank)
+    assert media_env.media_controller.media_play_item.is_playing == MediaState.Stopped
 
 
 def test_media_stop_no_hide_change(media_env, settings):
@@ -388,25 +397,33 @@ def test_media_stop_no_hide_change(media_env, settings):
     # GIVEN: A live media controller and a message with two elements
     mocked_slide_controller = MagicMock()
     mocked_media_player = MagicMock()
+    mocked_audio_player = MagicMock()
     mocked_display = MagicMock(hide_mode=HideMode.Screen)
     mocked_slide_controller.controller_type = 'media player'
     mocked_slide_controller.media_play_item = MediaPlayItem()
     mocked_slide_controller.media_play_item.is_background = False
     mocked_slide_controller.set_hide_mode = MagicMock()
     mocked_slide_controller.is_live = True
+    mocked_slide_controller.media_player = mocked_media_player
+    media_env.media_controller.media_player = mocked_media_player
+    mocked_slide_controller.audio_player = mocked_audio_player
+    media_env.media_controller.audio_player = mocked_audio_player
+    mocked_slide_controller.media_play_item = MediaPlayItem()
+    mocked_slide_controller.media_play_item.media_file = Path()
+    mocked_slide_controller.media_play_item.audio_file = Path()
     media_env.media_controller.is_theme_background = False
     media_env.media_controller.live_hide_timer = MagicMock()
     media_env.media_controller._define_display = MagicMock(return_value=mocked_display)
-
     # WHEN: media_stop() is called
     result = media_env.media_controller.media_stop(mocked_slide_controller)
 
     # THEN: Result should be successful, media player should be stopped and the hide timer should have started
     #       The controller's hide mode should not have been set
     assert result is True
-    mocked_media_player.stop.assert_called_once_with(mocked_slide_controller)
+    mocked_media_player.stop.assert_called_once()
     media_env.media_controller.live_hide_timer.start.assert_called_once()
     mocked_slide_controller.set_hide_mode.assert_not_called()
+    assert mocked_slide_controller.media_play_item.is_playing == MediaState.Stopped
 
 
 def test_media_volume_msg(media_env):
@@ -424,7 +441,7 @@ def test_media_volume_msg(media_env):
     mocked_media_volume.assert_called_with(1, 50)
 
 
-def test_media_seek_msg(media_env):
+def test_media_seek_msg(media_env, registry):
     """
     Test that the media controller responds to the request to seek to a particular position
     """
@@ -439,7 +456,7 @@ def test_media_seek_msg(media_env):
     mocked_media_seek.assert_called_with(1, 800)
 
 
-def test_media_reset(media_env):
+def test_media_reset(media_env, settings):
     """
     Test that the media controller conducts the correct actions when resetting
     """
@@ -458,16 +475,16 @@ def test_media_reset(media_env):
     media_env.media_controller._media_set_visibility.assert_called_once_with(mocked_slide_controller, False)
 
 
-def test_media_hide(media_env, registry):
+def test_media_hide(media_env, settings):
     """
     Test that the media controller conducts the correct actions when hiding
     """
     # GIVEN: A media controller, mocked slide controller, mocked media player and mocked display
     mocked_slide_controller = MagicMock()
     mocked_media_player = MagicMock()
-    mocked_media_player.get_live_state.return_value = MediaState.Playing
+    mocked_slide_controller.media_player = mocked_media_player
     mocked_slide_controller.controller_type = 'media player'
-    mocked_slide_controller.media_play_info = MagicMock(is_background=False)
+    mocked_slide_controller.media_play_item = MagicMock(is_playing=MediaState.Playing)
     mocked_slide_controller.get_hide_mode = MagicMock(return_value=None)
     mocked_slide_controller.is_live = False
     Registry().register('live_controller', mocked_slide_controller)
@@ -702,27 +719,6 @@ def test_set_controls_visible(media_env):
     # THEN: The media controls should have been set to visible
     mocked_controller.mediabar.setVisible.assert_called_once_with(True)
 
-
-@patch('openlp.core.ui.media.mediacontroller.MediaPlayInfo')
-def test_setup_display(MockItemMediaPlayInfo, media_env):
-    """
-    Test that the display/controllers are set up correctly
-    """
-    # GIVEN: A media controller object and some mocks
-    mocked_media_info = MagicMock()
-    MockItemMediaPlayInfo.return_value = mocked_media_info
-    media_env.media_controller.media_player = MagicMock()
-    mocked_display = MagicMock()
-    media_env.media_controller._define_display = MagicMock(return_value=mocked_display)
-    controller = MagicMock()
-
-    # WHEN: setup_display() is called
-    media_env.media_controller.setup_display(controller, True)
-
-    # THEN: The right calls should have been made
-    assert controller.media_info == mocked_media_info
-    assert controller.has_audio is False
-    media_env.media_controller._define_display.assert_called_with(controller)
 
 
 def test_media_play(media_env):

@@ -25,7 +25,7 @@ import pytest
 
 from unittest.mock import MagicMock, ANY
 
-from openlp.core.ui.media import get_volume, save_volume, toggle_looping_playback, is_looping_playback
+from openlp.core.ui.media import get_volume, save_volume, toggle_looping_playback, saved_looping_playback
 from openlp.core.ui.media import format_milliseconds
 
 
@@ -73,5 +73,5 @@ def test_toggle_looping_playback(mock_settings, live, result):
 def test_is_looping_playback(mock_settings, live, result):
     controller = MagicMock()
     controller.is_live = live
-    is_looping_playback(controller)
+    saved_looping_playback(controller)
     mock_settings.value.assert_called_with(result)

@@ -27,6 +27,7 @@ import logging
 from openlp.core.common import trace_error_handler
 from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 
 
 DO_NOT_TRACE_EVENTS = ['timerEvent', 'paintEvent', 'drag_enter_event', 'drop_event', 'on_controller_size_changed',
@@ -241,7 +242,7 @@ class RegistryProperties(object):
         return self._projector_manager
 
     @property
-    def settings(self):
+    def settings(self) -> Settings:
         """
         Adds the settings object to the class dynamically
         """
