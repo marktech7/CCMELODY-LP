@@ -66,13 +66,17 @@ def test_add_song_with_lyrics(MockAuthor: MagicMock, MockSong: MagicMock, song_i
     # GIVEN: A PlanningCenterSongImport Class and some values
     item_title = 'Title'
     author = 'Author'
+    copyright = "Copyright"
+    ccli_number = 1111
     lyrics = 'This is my song!'
     theme_name = 'Theme Name'
     last_modified = datetime.datetime.now()
     # WHEN:  A song is added with lyrics
-    song_import.add_song(item_title, author, lyrics, theme_name, last_modified)
+    song_import.add_song(item_title, author, lyrics, theme_name, last_modified, copyright, ccli_number)
     # THEN:  A mock song has valid title, lyrics, and theme_name values
     assert MockSong.return_value.title == item_title, 'Mock Song Title matches input title'
+    assert MockSong.return_value.copyright == copyright
+    assert MockSong.return_value.ccli_number == ccli_number
     assert lyrics in MockSong.return_value.lyrics, 'Mock Song Lyrics contain input lyrics'
     assert MockSong.return_value.theme_name == theme_name, 'Mock Song Theme matches input theme'
 
@@ -86,13 +90,17 @@ def test_add_song_with_verse(MockAuthor: MagicMock, MockSong: MagicMock, song_im
     # GIVEN: A PlanningCenterSongImport Class
     item_title = 'Title'
     author = 'Author'
+    copyright = "Copyright"
+    ccli_number = 1111
     lyrics = 'V1\nThis is my song!'
     theme_name = 'Theme Name'
     last_modified = datetime.datetime.now()
     # WHEN:  A song is added with lyrics that contain a verse tag
-    song_import.add_song(item_title, author, lyrics, theme_name, last_modified)
+    song_import.add_song(item_title, author, lyrics, theme_name, last_modified, copyright, ccli_number)
     # THEN:  A mock song has valid title, lyrics, and theme_name values
     assert MockSong.return_value.title == item_title, 'Mock Song Title matches input title'
+    assert MockSong.return_value.copyright == copyright
+    assert MockSong.return_value.ccli_number == ccli_number
     assert 'This is my song!' in MockSong.return_value.lyrics, 'Mock Song Lyrics contain input lyrics'
     assert 'type="v"' in MockSong.return_value.lyrics, 'Mock Song Lyrics contain input verse'
     assert MockSong.return_value.theme_name == theme_name, 'Mock Song Theme matches input theme'

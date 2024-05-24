@@ -92,6 +92,7 @@ def test_save_check_box_settings(form):
     form.on_add_from_service_check_box_changed(QtCore.Qt.Checked)
     form.on_disable_chords_import_check_box_changed(QtCore.Qt.Unchecked)
     form.on_auto_play_check_box_changed(QtCore.Qt.Checked)
+    form.on_uppercase_check_box_changed(QtCore.Qt.Checked)
     # WHEN: Save is invoked
     form.save()
     # THEN: The correct values should be stored in the settings
@@ -101,6 +102,7 @@ def test_save_check_box_settings(form):
     assert form.settings.value('songs/add song from service') is True
     assert form.settings.value('songs/disable chords import') is False
     assert form.settings.value('songs/auto play audio') is True
+    assert form.settings.value('songs/uppercase songs') is True
 
 
 def test_english_notation_button(form):
@@ -149,7 +151,7 @@ def test_password_change(mocked_settings_set_val, mocked_question, form):
     form.save()
     # THEN: footer should not have been saved (one less call than the change test below)
     mocked_question.assert_called_once()
-    assert mocked_settings_set_val.call_count == 11
+    assert mocked_settings_set_val.call_count == 12
 
 
 @patch('openlp.plugins.songs.lib.songstab.QtWidgets.QMessageBox.question')
@@ -165,7 +167,7 @@ def test_password_change_cancelled(mocked_settings_set_val, mocked_question, for
     form.save()
     # THEN: footer should not have been saved (one less call than the change test below)
     mocked_question.assert_called_once()
-    assert mocked_settings_set_val.call_count == 10
+    assert mocked_settings_set_val.call_count == 11
 
 
 @patch('openlp.core.common.settings.Settings.setValue')
@@ -177,7 +179,7 @@ def test_footer_nochange(mocked_settings_set_val, form):
     # WHEN: save is invoked
     form.save()
     # THEN: footer should not have been saved (one less call than the change test below)
-    assert mocked_settings_set_val.call_count == 11
+    assert mocked_settings_set_val.call_count == 12
 
 
 @patch('openlp.core.common.settings.Settings.setValue')
@@ -190,7 +192,7 @@ def test_footer_change(mocked_settings_set_val, form):
     # WHEN: save is invoked
     form.save()
     # THEN: footer should have been saved (one more call to setValue than the nochange test)
-    assert mocked_settings_set_val.call_count == 12
+    assert mocked_settings_set_val.call_count == 13
     assert form.footer_edit_box.toPlainText() == 'A new footer'
 
 

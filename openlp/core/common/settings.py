@@ -363,6 +363,7 @@ class Settings(QtCore.QSettings):
         'songs/chord notation': 'english',  # Can be english, german or neo-latin
         'songs/disable chords import': False,
         'songs/auto play audio': False,
+        'songs/uppercase songs': False,
         'songusage/status': PluginStatus.Inactive,
         'songusage/db type': 'sqlite',
         'songusage/db username': '',
