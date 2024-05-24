@@ -44,8 +44,8 @@ from openlp.core.lib.ui import critical_error_message_box, warning_message_box
 from openlp.core.state import State, MessageType
 from openlp.core.ui import DisplayControllerType, HideMode
 from openlp.core.ui.slidecontroller import SlideController
-from openlp.core.ui.media import MediaState, MediaPlayItem, MediaType, media_empty_song, format_play_time, \
-    parse_stream_path, get_volume, toggle_looping_playback, saved_looping_playback, save_volume
+from openlp.core.ui.media import MediaState, MediaPlayItem, MediaType, format_play_seconds, media_empty_song, \
+        format_play_time, parse_stream_path, get_volume, toggle_looping_playback, saved_looping_playback, save_volume
 from openlp.core.ui.media.remote import register_views
 from openlp.core.ui.media.audioplayer import AudioPlayer
 from openlp.core.ui.media.mediaplayer import MediaPlayer
@@ -394,13 +394,10 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         loaded_a = True
         if controller.media_play_item.media_file:
             loaded_m = controller.media_player.load()
-            print(loaded_m)
             if loaded_m:
                 self._resize(controller)
         if controller.media_play_item.audio_file:
             loaded_a = controller.audio_player.load()
-            # if loaded_a:
-            # self.current_audio_players[controller.controller_type] = controller.audio_player
         if loaded_a is True and loaded_m is True:
             return True
         return False
@@ -452,7 +449,6 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
                 controller.set_hide_mode(None)
                 display.hide_display(HideMode.Screen)
             controller._set_theme(controller.service_item)
-            # display.load_verses([{"verse": "v1", "text": "", "footer": " "}])
             display.load_verses(media_empty_song)
         controller.output_has_changed()
         return True
@@ -506,7 +502,12 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         controller.mediabar.blockSignals(False)
 
     @staticmethod
-    def _update_seek_ui(controller):
+    def _update_seek_ui(controller: Type[SlideController]) -> None:
+        """
+        Update the media toolbar display after changes to sliders
+
+        :param controller: the slidecontroller to be updated
+        """
         controller.mediabar.position_label.setText(f"{format_play_time(controller.media_play_item.timer)}/"
                                                    f"{format_play_time(controller.media_play_item.length)}")
 
@@ -628,6 +629,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         save_volume(controller, volume)
         controller.media_player.volume(volume)
         controller.mediabar.volume_slider.setValue(volume)
+        controller.mediabar.volume_label.setText(f"{format_play_seconds(volume)}")
 
     def media_seek_msg(self, msg: list):
         """

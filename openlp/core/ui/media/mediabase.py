@@ -124,7 +124,7 @@ class MediaBase(RegistryProperties):
         :param controller: The controller where the media is
         :return:
         """
-        self.audio_output.setVolume(float(vol / 100))
+        self.audio_output.setVolume(float(vol / 10))
 
     def seek(self, seek_value: int) -> None:
         """

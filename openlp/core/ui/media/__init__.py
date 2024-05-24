@@ -139,7 +139,7 @@ def parse_stream_path(input_string):
     """
     log.debug('parse_stream_path, about to parse: "{text}"'.format(text=input_string))
     # skip the header: 'devicestream:' or 'networkstream:'
-    header, data = input_string.split(':', 1)
+    _, data = input_string.split(':', 1)
     # split at '&&'
     stream_info = data.split('&&')
     name = stream_info[0]
@@ -168,10 +168,18 @@ def format_play_time(milliseconds):
     :return: Time string in format: hh:mm:ss,ttt
     """
     milliseconds = int(milliseconds)
-    seconds, millis = divmod(milliseconds, 1000)
+    seconds, _ = divmod(milliseconds, 1000)
     minutes, seconds = divmod(seconds, 60)
     _, minutes = divmod(minutes, 60)
     return f"{minutes:02d}:{seconds:02d}"
+
+
+def format_play_seconds(seconds: float) -> str:
+    """
+
+    """
+    secs, psec = divmod(seconds, 10)
+    return f"{secs:01d}.{psec:01d}"
 
 
 media_empty_song = [{"title": "", "text": "", "verse": 0, "footer": ""}]
