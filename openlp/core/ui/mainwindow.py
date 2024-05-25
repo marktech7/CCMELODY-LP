@@ -1028,7 +1028,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         The screen has changed so we have to update components such as the renderer.
         """
         try:
-            self.screen_updating_lock.acquire()
             # if a warning has been shown within the last 5 seconds, skip showing again to avoid spamming user,
             # also do not show if the settings window is visible
             has_shown_messagebox_recently = self.screen_change_timestamp \
@@ -1041,6 +1040,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                                   UiStrings().ScreenSetupHasChanged,
                                                   QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
                 self.screen_change_timestamp = datetime.now()
+            self.screen_updating_lock.acquire()
             self.application.set_busy_cursor()
             self.renderer.resize(self.live_controller.screens.current.display_geometry.size())
             self.preview_controller.screen_size_changed()
