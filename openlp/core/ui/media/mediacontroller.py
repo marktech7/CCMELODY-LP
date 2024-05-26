@@ -333,9 +333,8 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         # Visible or background requested or Service Item wants background media
         if service_item.requires_media() and hidden == HideMode.Theme:
             is_autoplay = True
-        elif not hidden and (
-            service_item.will_auto_start
-            or self.settings.value("media/media auto start") == QtCore.Qt.CheckState.Checked):
+        elif not hidden and (service_item.will_auto_start or
+                             self.settings.value("media/media auto start") == QtCore.Qt.CheckState.Checked):
             is_autoplay = True
         # Unblank on load set
         elif self.settings.value("core/auto unblank"):

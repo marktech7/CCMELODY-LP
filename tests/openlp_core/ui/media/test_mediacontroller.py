@@ -23,14 +23,13 @@ Package to test the openlp.core.ui.media package.
 """
 from pathlib import Path
 
-from unittest import skipUnless
 from unittest.mock import MagicMock, patch
 
 import pytest
 from PySide6 import QtCore
 
 from openlp.core.state import State
-from openlp.core.common.platform import is_linux, is_macosx
+from openlp.core.common.platform import is_macosx
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.ui import DisplayControllerType, HideMode
@@ -239,7 +238,7 @@ def test_load_video(media_env, settings):
     media_env.media_controller.media_play = MagicMock()
     media_env.media_controller.set_controls_visible = MagicMock()
     # WHEN: load_video() is called
-    res = media_env.media_controller.load_video(DisplayControllerType.Live, mocked_service_item)
+    media_env.media_controller.load_video(DisplayControllerType.Live, mocked_service_item)
 
     # THEN: The current controller's media should be reset
     #       The volume should be set from the settings
@@ -720,13 +719,11 @@ def test_set_controls_visible(media_env):
     mocked_controller.mediabar.setVisible.assert_called_once_with(True)
 
 
-
 def test_media_play(media_env):
     """
     Test that the display/controllers are set up correctly
     """
     # GIVEN: A mocked controller where is_background is false
-    media_env.current_media_players = MagicMock()
     Registry().register('settings', MagicMock())
     media_env.live_timer = MagicMock()
     media_env.live_hide_timer = MagicMock()

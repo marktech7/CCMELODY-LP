@@ -22,25 +22,16 @@
 Module to test the MediaClipSelectorForm.
 """
 import pytest
-import os
-from unittest import SkipTest
 from unittest.mock import MagicMock, patch
 
 from PySide6 import QtCore, QtTest, QtWidgets
 
-from openlp.core.ui.media.vlcplayer import get_vlc
 from openlp.plugins.media.forms.mediaclipselectorform import MediaClipSelectorForm
-
-
-if os.name == 'nt' and not get_vlc():
-    raise SkipTest('Windows without VLC, skipping this test since it cannot run without vlc')
 
 
 @pytest.fixture()
 def form(settings):
     main_window = QtWidgets.QMainWindow()
-    vlc_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.get_vlc')
-    vlc_patcher.start()
     timer_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.QtCore.QTimer')
     timer_patcher.start()
     # Mock the media item
@@ -55,7 +46,6 @@ def form(settings):
     frm.find_optical_devices = MagicMock()
     yield frm
     del frm
-    vlc_patcher.stop()
     timer_patcher.stop()
     del main_window
 
