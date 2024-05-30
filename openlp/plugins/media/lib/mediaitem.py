@@ -33,7 +33,7 @@ from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
 from openlp.core.lib import MediaType, ServiceItemContext
 from openlp.core.lib.serviceitem import ItemCapabilities
-from openlp.core.lib.ui import create_action, create_widget_action, critical_error_message_box
+from openlp.core.lib.ui import create_widget_action, critical_error_message_box
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.library import FolderLibraryItem
@@ -125,6 +125,20 @@ class MediaMediaItem(FolderLibraryItem):
         self.service_path = AppLocation.get_section_data_path('media') / 'thumbnails'
         self.rebuild_players()
 
+    def add_middle_header_bar(self):
+        super().add_middle_header_bar()
+        self.toolbar.addSeparator()
+        network_stream_button_text = translate('MediaPlugin.MediaItem', 'Open network stream')
+        network_stream_button_tooltip = translate('MediaPlugin.MediaItem', 'Open network stream')
+        self.toolbar.add_toolbar_action('networkstream_action', text=network_stream_button_text,
+                                        icon=UiIcons().network_stream, tooltip=network_stream_button_tooltip,
+                                        triggers=self.on_open_network_stream)
+        device_stream_button_text = translate('MediaPlugin.MediaItem', 'Open device stream')
+        device_stream_button_tooltip = translate('MediaPlugin.MediaItem', 'Open device stream')
+        self.toolbar.add_toolbar_action('devicestream_action', text=device_stream_button_text,
+                                        icon=UiIcons().device_stream, tooltip=device_stream_button_tooltip,
+                                        triggers=self.on_open_device_stream)
+
     def add_custom_context_actions(self):
         """
         Add custom actions to the context menu.
@@ -138,27 +152,6 @@ class MediaMediaItem(FolderLibraryItem):
             text=translate('MediaPlugin', 'Add new media'),
             icon=UiIcons().open, triggers=self.on_file_click)
         create_widget_action(self.list_view, separator=True)
-
-    def setup_ui(self):
-        """
-        Re-implement to add a dropdown menu to the load icon
-        """
-        super().setup_ui()
-        if State().check_preconditions('media'):
-            network_stream_button_text = translate('MediaPlugin.MediaItem', 'Open network stream')
-            network_stream_button_tooltip = translate('MediaPlugin.MediaItem', 'Open network stream')
-            self.open_network_stream = create_action(self, 'open_network_stream',
-                                                     icon=UiIcons().network_stream,
-                                                     text=network_stream_button_text,
-                                                     tooltip=network_stream_button_tooltip,
-                                                     triggers=self.on_open_network_stream)
-            self.load_menu = QtWidgets.QMenu(self.toolbar)
-            self.load_menu.setObjectName('load_menu')
-            # self.load_menu.addAction(self.open_stream)
-            self.load_menu.addAction(self.open_network_stream)
-            self.toolbar.actions['mediaLoadAction'].setMenu(self.load_menu)
-            button = self.toolbar.widgetForAction(self.toolbar.actions['mediaLoadAction'])
-            button.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.MenuButtonPopup)
 
     def generate_slide_data(self, service_item, *, item=None, remote=False, context=ServiceItemContext.Service,
                             **kwargs):
@@ -183,7 +176,7 @@ class MediaMediaItem(FolderLibraryItem):
         filename = media_item.file_path
         if filename.startswith('devicestream:') or filename.startswith('networkstream:'):
             # Special handling if the filename is a devicestream
-            (name, mrl, options) = parse_stream_path(filename)
+            (name, _, _) = parse_stream_path(filename)
             service_item.processor = 'qt6'
             service_item.add_capability(ItemCapabilities.CanStream)
             service_item.add_from_command(filename, name, self.clapperboard)
@@ -245,7 +238,7 @@ class MediaMediaItem(FolderLibraryItem):
         track_info = QtCore.QFileInfo(track_str)
         tree_item = None
         if track_str.startswith('devicestream:') or track_str.startswith('networkstream:'):
-            (name, mrl, options) = parse_stream_path(track_str)
+            (name, mrl, _) = parse_stream_path(track_str)
             tree_item = QtWidgets.QTreeWidgetItem([name])
             tree_item.setText(0, name)
             if track_str.startswith('devicestream:'):
@@ -318,13 +311,9 @@ class MediaMediaItem(FolderLibraryItem):
         """
         When the open device stream button is clicked, open the stream selector window.
         """
-        # if get_vlc():
         stream_selector_form = StreamSelectorForm(self.main_window, self.add_device_stream)
         stream_selector_form.exec()
         del stream_selector_form
-        # else:
-        #    critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
-        #                               translate('MediaPlugin.MediaItem', 'Device streaming support requires VLC.'))
 
     def add_device_stream(self, stream):
         """
