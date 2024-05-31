@@ -228,8 +228,6 @@ class MediaToolbar(OpenLPToolbar):
         if 'seek' not in self.hide_components:
             # Build the media seek_slider.
             self.seek_slider = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
-            self.seek_slider.setTickInterval(10)
-            self.seek_slider.setTickPosition(QtWidgets.QSlider.TickPosition.TicksAbove)
             self.seek_slider.setMaximum(1000)
             self.seek_slider.setTracking(True)
             self.seek_slider.setMouseTracking(True)

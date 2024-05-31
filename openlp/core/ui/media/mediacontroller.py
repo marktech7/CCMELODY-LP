@@ -23,7 +23,7 @@ The :mod:`~openlp.core.ui.media.mediacontroller` module is the control module fo
 """
 import logging
 from pathlib import Path
-from typing import Type, Union
+from typing import Union
 
 try:
     from pymediainfo import MediaInfo, __version__ as pymediainfo_version
@@ -239,27 +239,36 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         log.debug(f"load_video is_live:{controller.is_live}")
         # stop running videos
         self.media_reset(controller)
+        print("A")
         controller.media_play_item.is_theme_background = is_theme_background
         controller.media_play_item.media_type = MediaType.Video
         controller.media_play_item.is_playing = MediaState.Loaded
         # background will always loop video.
         if service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
+            print("B")
             controller.media_play_item.audio_file = service_item.background_audio[0][0]
             controller.media_play_item.media_type = MediaType.Audio
-            # is_background indicates we shouldn't override the normal display
-            controller.media_play_item.is_background = True
+            if controller.media_play_item.is_theme_background:
+                print("B1")
+                controller.media_play_item.media_type = MediaType.Dual
+                controller.media_play_item.media_file = service_item.video_file_name           # is_background indicates we shouldn't override the normal display
+                controller.media_play_item.is_background = True
         elif service_item.is_capable(ItemCapabilities.CanStream):
+            print("C")
             (name, mrl, options) = parse_stream_path(service_item.stream_mrl)
             controller.media_play_item.external_stream = (mrl, options)
             controller.media_play_item.is_background = True
             controller.media_play_item.media_type = MediaType.Stream
+        # TODO not set anywhere.
         elif service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
+            print("D")
             controller.media_play_item.media_file = service_item.video_file_name
             controller.media_play_item.is_background = True
         else:
+            # I am a media file
+            print("E")
             controller.media_play_item.media_file = service_item.get_frame_path()
             controller.media_play_item.is_background = False
-        display = self._define_display(controller)
         # TODO is this needed
         if service_item.is_capable(ItemCapabilities.CanStream):
             self.log_debug(f"video is stream  live={controller.is_live}")
@@ -273,7 +282,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             controller.media_play_item.start_time = service_item.start_time
             controller.media_play_item.timer = service_item.start_time
             controller.media_play_item.end_time = service_item.end_time
-        is_valid = self._check_file_type_and_load(controller, display)
+        is_valid = self._check_file_type_and_load(controller)
         if not is_valid:
             # Media could not be loaded correctly
             critical_error_message_box(
@@ -374,12 +383,12 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             return duration or 0
         return 0
 
-    def _check_file_type_and_load(self, controller: SlideController, display: DisplayWindow):
+    def _check_file_type_and_load(self, controller: SlideController) -> bool:
         """
         Select the correct media Player type from the prioritized Player list
 
         :param controller: First element is the controller which should be used
-        :param display: Which display to use
+        :return boolean: Sucess or Failure to load the file(s)
         """
         if controller.media_play_item.media_type == MediaType.Stream:
             self._resize(controller)
@@ -389,10 +398,12 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         loaded_m = True
         loaded_a = True
         if controller.media_play_item.media_file:
+            print("F1")
             loaded_m = controller.media_player.load()
             if loaded_m:
                 self._resize(controller)
         if controller.media_play_item.audio_file:
+            print("F2")
             loaded_a = controller.audio_player.load()
         if loaded_a is True and loaded_m is True:
             return True
@@ -425,8 +436,10 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         controller.mediabar.volume_slider.blockSignals(True)
         display = self._define_display(controller)
         if controller.audio_player and controller.media_play_item.audio_file:
+            print("G1")
             controller.audio_player.play()
         if controller.media_player and controller.media_play_item.media_file:
+            print("G2")
             controller.media_player.play()
         # TODO to be tested my need a different play function
         if controller.media_player and controller.media_play_item.external_stream:
@@ -445,7 +458,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
                 controller.set_hide_mode(None)
                 display.hide_display(HideMode.Screen)
             controller._set_theme(controller.service_item)
-            display.load_verses(media_empty_song)
+            # display.load_verses(media_empty_song)
         controller.output_has_changed()
         return True
 
@@ -498,7 +511,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         controller.mediabar.blockSignals(False)
 
     @staticmethod
-    def _update_seek_ui(controller: Type[SlideController]) -> None:
+    def _update_seek_ui(controller: SlideController) -> None:
         """
         Update the media toolbar display after changes to sliders
 
@@ -523,7 +536,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         """
         return self.media_pause(self.live_controller)
 
-    def media_pause(self, controller: Type[SlideController]) -> True:
+    def media_pause(self, controller: SlideController) -> True:
         """
         Responds to the request to pause a loaded video
 
@@ -551,7 +564,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         """
         self.media_loop(msg[0])
 
-    def media_loop(self, controller: Type[SlideController]):
+    def media_loop(self, controller: SlideController):
         """
         Responds to the request to loop a loaded video
 
@@ -575,7 +588,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         """
         return self.media_stop(self.live_controller)
 
-    def media_stop(self, controller: Type[SlideController]) -> bool:
+    def media_stop(self, controller: SlideController) -> bool:
         """
         Responds to the request to stop a loaded video
 
@@ -614,7 +627,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         vol = msg[1][0]
         self.media_volume(controller, vol)
 
-    def media_volume(self, controller: Type[SlideController], volume: int):
+    def media_volume(self, controller: SlideController, volume: int):
         """
         Changes the volume of a running video
 

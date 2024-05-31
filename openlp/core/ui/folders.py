@@ -261,7 +261,7 @@ class ChooseFolderForm(QtWidgets.QDialog, FolderPopulateMixin):
         else:
             return QtWidgets.QDialog.accept(self)
 
-    def on_folder_combobox_selected(self, index):
+    def on_folder_combobox_selected(self, index: int):
         """
         Handles the activated signal from the existing folder combobox when the
         user makes a selection
@@ -271,7 +271,7 @@ class ChooseFolderForm(QtWidgets.QDialog, FolderPopulateMixin):
         self.existing_radio_button.setChecked(True)
         self.folder_combobox.setFocus()
 
-    def on_new_folder_edit_changed(self, new_folder):
+    def on_new_folder_edit_changed(self, new_folder: str):
         """
         Handles the textEdited signal from the new folder text input field
         when the user enters a new folder name

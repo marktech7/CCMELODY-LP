@@ -59,6 +59,7 @@ class MediaType(object):
     Unused = 0
     Audio = 1
     Video = 2
+    Dual = 3
     Stream = 7
 
 
