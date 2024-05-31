@@ -32,7 +32,6 @@ from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.platform import is_linux, is_macosx, is_win
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui.icons import UiIcons
-from openlp.core.ui.media.vlcplayer import get_vlc
 from openlp.plugins.media.forms.mediaclipselectordialog import Ui_MediaClipSelector
 
 
@@ -118,10 +117,10 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         """
         Setup VLC instance and mediaplayer
         """
-        vlc = get_vlc()
-        self.vlc_instance = vlc.Instance()
+        # vlc = get_vlc()
+        # self.vlc_instance = vlc.Instance()
         # creating an empty vlc media player
-        self.vlc_media_player = self.vlc_instance.media_player_new()
+        # self.vlc_media_player = self.vlc_instance.media_player_new()
         # The media player has to be 'connected' to the QFrame.
         # (otherwise a video would be displayed in it's own window)
         # This is platform specific!
