@@ -520,8 +520,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # Media Manager
         self.media_tool_box.currentChanged.connect(self.on_media_tool_box_changed)
         self.application.set_busy_cursor()
-        # Timestamp for latest screen-change-popup. Used to prevent spamming the user with popups
-        self.screen_change_timestamp = None
+        self.should_show_screen_change_message = True
         # Simple message boxes
         Registry().register_function('theme_change_global', self.default_theme_changed)
         Registry().register_function('config_screen_changed', self.screen_changed)
@@ -1028,18 +1027,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         The screen has changed so we have to update components such as the renderer.
         """
         try:
-            # if a warning has been shown within the last 5 seconds, skip showing again to avoid spamming user,
-            # also do not show if the settings window is visible
-            has_shown_messagebox_recently = self.screen_change_timestamp \
-                and (datetime.now() - self.screen_change_timestamp).seconds < 5
-            should_show_messagebox = self.settings_form.isHidden() and not has_shown_messagebox_recently
+            # If a warning has been shown before, skip showing again to avoid spamming user.
+            # Also do not show if the settings window is visible.
+            should_show_messagebox = self.settings_form.isHidden() and self.should_show_screen_change_message
             if should_show_messagebox:
+                self.should_show_screen_change_message = False
                 self.live_controller.toggle_display('desktop')
                 QtWidgets.QMessageBox.information(self,
                                                   UiStrings().ScreenSetupHasChangedTitle,
                                                   UiStrings().ScreenSetupHasChanged,
                                                   QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
-                self.screen_change_timestamp = datetime.now()
             self.screen_updating_lock.acquire()
             self.application.set_busy_cursor()
             self.renderer.resize(self.live_controller.screens.current.display_geometry.size())
@@ -1055,6 +1052,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             QtCore.QTimer.singleShot(150, lambda: self.application.process_events())
         finally:
             self.screen_updating_lock.release()
+            self.should_show_screen_change_message = True
 
     def closeEvent(self, event: QtGui.QCloseEvent):
         """
