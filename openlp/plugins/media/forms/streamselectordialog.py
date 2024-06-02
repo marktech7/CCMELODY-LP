@@ -89,8 +89,8 @@ class CaptureModeWidget(QtWidgets.QWidget):
             self.audio_devices_combo_box.addItem(au.description())
 
     def update_mrl(self):
-        vdev = self.video_devices_combo_box.currentData()
-        adev = self.audio_devices_combo_box.currentData()
+        vdev = self.video_devices_combo_box.currentText()
+        adev = self.audio_devices_combo_box.currentText()
         stream_string = 'qt6video={vdev};qt6audio={adev}'.format(vdev=vdev, adev=adev)
         self.callback(stream_string)
 
@@ -98,16 +98,16 @@ class CaptureModeWidget(QtWidgets.QWidget):
         return s.replace(':', '\\:')
 
     def set_mrl(self, main, options):
-        vdev = re.search(r'qt6video=(\w+)', main)
+        vdev = re.search(r'qt6video=(.+);', main)
         if vdev:
             for i in range(self.video_devices_combo_box.count()):
-                if self.video_devices_combo_box.itemData(i) == vdev.group(1):
+                if self.video_devices_combo_box.itemText(i) == vdev.group(1):
                     self.video_devices_combo_box.setCurrentIndex(i)
                     break
-        adev = re.search(r'qt6audio=(\w+)', main)
+        adev = re.search(r'qt6audio=(.+)', main)
         if adev:
             for i in range(self.audio_devices_combo_box.count()):
-                if self.audio_devices_combo_box.itemData(i) == adev.group(1):
+                if self.audio_devices_combo_box.itemText(i) == adev.group(1):
                     self.audio_devices_combo_box.setCurrentIndex(i)
                     break
 
