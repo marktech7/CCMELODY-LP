@@ -22,19 +22,20 @@
 The :mod:`~openlp.core.ui.media.mediaplayer` module for media playing.
 """
 import logging
+import re
 
 from PySide6 import QtCore, QtWidgets
+from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput, QMediaDevices, QMediaCaptureSession, QCamera
+from PySide6.QtMultimediaWidgets import QVideoWidget
+from PySide6.QtCore import QUrl
 
 from openlp.core.common.mixins import LogMixin
 from openlp.core.common.registry import Registry
 from openlp.core.display.window import DisplayWindow
 from openlp.core.ui.slidecontroller import SlideController
 from openlp.core.ui.media.mediabase import MediaBase
+from openlp.core.ui.media import MediaType
 
-from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
-from PySide6.QtMultimediaWidgets import QVideoWidget
-
-from PySide6.QtCore import QUrl
 
 log = logging.getLogger(__name__)
 
@@ -130,22 +131,36 @@ class MediaPlayer(MediaBase, LogMixin):
         :return:  Success or Failure
         """
         self.log_debug("load stream  in Media Player")
-        # TODO sort out when we have the input sorted
-        # aa = QMediaDevices.videoInputs()
-        # for a in aa:
-        #     print(a)
-        #     print(a.id())
-        #     print(a.description())
-        #     print(a.description() == "Chicony USB2.0 Camera: Chicony")
-        #     print("Chicony USB2.0 Camera: Chicony" in a.description())
 
-        # mediaCaptureSession = QMediaCaptureSession()
-        # mediaCaptureSession.setCamera(camera)
-        # mediaCaptureSession.setVideoOutput(video_widget)
+        if self.controller.media_play_item.media_type == MediaType.DeviceStream:
+            if self.controller.media_play_item.external_stream:
+                mrl = self.controller.media_play_item.external_stream[0]
+                vdev_name = re.search(r'qt6video=(.+);', mrl)
+                vdev_to_play = None
+                if vdev_name:
+                    for vdev in QMediaDevices.videoInputs():
+                        if vdev.description() == vdev_name.group(1):
+                            vdev_to_play = vdev
+                            break
+                adev_name = re.search(r'qt6audio=(.+)', mrl)
+                adev_to_play = None
+                if adev_name:
+                    for adev in QMediaDevices.audioInputs():
+                        if adev.description() == adev_name.group(1):
+                            adev_to_play = vdev
+                            break
 
-        if self.controller.media_play_item.external_stream:
-            self.media_player.setSource(QUrl.fromLocalFile(str(self.controller.media_play_item.media_file)))
-            return True
+                mediaCaptureSession = QMediaCaptureSession()
+                mediaCaptureSession.setCamera(QCamera(vdev_to_play))
+                mediaCaptureSession.setAudioInput(adev_to_play)
+                # TODO: how to make this replace the player?
+                #mediaCaptureSession.setVideoOutput(video_widget)
+
+        elif self.controller.media_play_item.media_type == MediaType.NetworkStream:
+            if self.controller.media_play_item.external_stream:
+                mrl = self.controller.media_play_item.external_stream[0]
+                self.media_player.setSource(QUrl(mrl))
+                return True
         return False
 
     def play(self) -> None:

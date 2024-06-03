@@ -914,7 +914,7 @@ class ServiceItem(RegistryProperties):
                     self.is_valid = False
                     break
                 elif self.is_capable(ItemCapabilities.CanStream):
-                    (name, mrl, options) = parse_stream_path(slide['path'])
+                    (_, name, mrl, options) = parse_stream_path(slide['path'])
                     if not name or not mrl or not options:
                         self.is_valid = False
                         break

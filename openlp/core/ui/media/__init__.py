@@ -60,7 +60,8 @@ class MediaType(object):
     Audio = 1
     Video = 2
     Dual = 3
-    Stream = 7
+    DeviceStream = 4
+    NetworkStream = 5
 
 
 class MediaPlayItem(object):
@@ -136,17 +137,21 @@ def parse_stream_path(input_string):
     Split the device stream path info.
 
     :param input_string: The string to parse
-    :return: The elements extracted from the string:  streamname, MRL, VLC-options
+    :return: The elements extracted from the string:  type, streamname, MRL, VLC-options
     """
     log.debug('parse_stream_path, about to parse: "{text}"'.format(text=input_string))
-    # skip the header: 'devicestream:' or 'networkstream:'
-    _, data = input_string.split(':', 1)
+    # identify header: 'devicestream:' or 'networkstream:'
+    type_str, data = input_string.split(':', 1)
+    if type_str == 'devicestream':
+        stream_type = MediaType.DeviceStream
+    else:
+        stream_type = MediaType.NetworkStream
     # split at '&&'
     stream_info = data.split('&&')
     name = stream_info[0]
     mrl = stream_info[1]
     options = stream_info[2]
-    return name, mrl, options
+    return stream_type, name, mrl, options
 
 
 def format_milliseconds(milliseconds):

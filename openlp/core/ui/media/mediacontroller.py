@@ -253,12 +253,12 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
                 controller.media_play_item.media_type = MediaType.Dual
                 controller.media_play_item.media_file = service_item.video_file_name           # is_background indicates we shouldn't override the normal display
                 controller.media_play_item.is_background = True
-        elif service_item.is_capable(ItemCapabilities.CanStream):
+        elif service_item.is_capable(ItemCapabilities.HasBackgroundStream):
             print("C")
-            (name, mrl, options) = parse_stream_path(service_item.stream_mrl)
+            (stream_type, name, mrl, options) = parse_stream_path(service_item.stream_mrl)
             controller.media_play_item.external_stream = (mrl, options)
             controller.media_play_item.is_background = True
-            controller.media_play_item.media_type = MediaType.Stream
+            controller.media_play_item.media_type = stream_type
         # TODO not set anywhere.
         elif service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
             print("D")
@@ -273,8 +273,8 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         if service_item.is_capable(ItemCapabilities.CanStream):
             self.log_debug(f"video is stream  live={controller.is_live}")
             path = service_item.get_frames()[0]["path"]
-            controller.media_play_item.media_type = MediaType.Stream
-            (name, mrl, options) = parse_stream_path(path)
+            (stream_type, name, mrl, options) = parse_stream_path(path)
+            controller.media_play_item.media_type = stream_type
             controller.media_play_item.external_stream = (mrl, options)
         else:
             self.log_debug(f"standard media, is not a stream, live={controller.is_live}")
@@ -291,10 +291,10 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             )
             return False
         self.log_debug("video media type: {tpe} ".format(tpe=str(controller.media_play_item.media_type)))
-        # If both the preview and live view have a stream, make sure only the live view continues streaming
-        if controller.media_play_item.media_type == MediaType.Stream:
+        # If both the preview and live view have a device stream, make sure only the live view continues streaming
+        if controller.media_play_item.media_type == MediaType.DeviceStream:
             if controller.is_live:
-                if self.preview_controller.media_play_item.media_type == MediaType.Stream:
+                if self.preview_controller.media_play_item.media_type == MediaType.DeviceStream:
                     self.log_warning("stream can only be displayed in one instance, killing preview stream")
                     warning_message_box(
                         translate("MediaPlugin.MediaItem", "Unable to Preview Stream"),
@@ -302,7 +302,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
                     )
                     self.preview_controller.on_media_close()
             else:
-                if self.live_controller.media_play_item.media_type == MediaType.Stream:
+                if self.live_controller.media_play_item.media_type == MediaType.DeviceStream:
                     self.log_warning("stream cannot be previewed while also streaming live")
                     warning_message_box(
                         translate("MediaPlugin.MediaItem", "Unable to Preview Stream "),
@@ -350,7 +350,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             is_autoplay = True
         if controller.media_play_item.is_theme_background:
             is_autoplay = True
-        if controller.media_play_item.media_type == MediaType.Stream:
+        if controller.media_play_item.media_type in [MediaType.DeviceStream, MediaType.NetworkStream]:
             is_autoplay = True
         return is_autoplay
 
@@ -390,7 +390,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         :param controller: First element is the controller which should be used
         :return boolean: Sucess or Failure to load the file(s)
         """
-        if controller.media_play_item.media_type == MediaType.Stream:
+        if controller.media_play_item.media_type in [MediaType.DeviceStream, MediaType.NetworkStream]:
             self._resize(controller)
             if controller.media_player.load_stream():
                 return True

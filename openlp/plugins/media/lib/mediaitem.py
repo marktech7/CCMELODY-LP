@@ -37,7 +37,7 @@ from openlp.core.lib.ui import create_widget_action, critical_error_message_box
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.library import FolderLibraryItem
-from openlp.core.ui.media import parse_stream_path, AUDIO_EXT, VIDEO_EXT
+from openlp.core.ui.media import parse_stream_path, AUDIO_EXT, VIDEO_EXT, MediaType
 
 from openlp.plugins.media.lib.db import Folder, Item
 
@@ -176,7 +176,7 @@ class MediaMediaItem(FolderLibraryItem):
         filename = media_item.file_path
         if filename.startswith('devicestream:') or filename.startswith('networkstream:'):
             # Special handling if the filename is a devicestream
-            (name, _, _) = parse_stream_path(filename)
+            (_, name, _, _) = parse_stream_path(filename)
             service_item.processor = 'qt6'
             service_item.add_capability(ItemCapabilities.CanStream)
             service_item.add_from_command(filename, name, self.clapperboard)
@@ -223,7 +223,7 @@ class MediaMediaItem(FolderLibraryItem):
             name = filename.name
             filename = str(filename)
         elif filename.startswith('devicestream:') or filename.startswith('networkstream:'):
-            name, _, _ = parse_stream_path(filename)
+            _, name, _, _ = parse_stream_path(filename)
         else:
             name = os.path.basename(filename)
         item = self.item_class(name=name, file_path=filename)
@@ -238,10 +238,10 @@ class MediaMediaItem(FolderLibraryItem):
         track_info = QtCore.QFileInfo(track_str)
         tree_item = None
         if track_str.startswith('devicestream:') or track_str.startswith('networkstream:'):
-            (name, mrl, _) = parse_stream_path(track_str)
+            (stream_type, name, mrl, _) = parse_stream_path(track_str)
             tree_item = QtWidgets.QTreeWidgetItem([name])
             tree_item.setText(0, name)
-            if track_str.startswith('devicestream:'):
+            if stream_type == MediaType.DeviceStream:
                 tree_item.setIcon(0, UiIcons().device_stream)
             else:
                 tree_item.setIcon(0, UiIcons().network_stream)
@@ -283,8 +283,8 @@ class MediaMediaItem(FolderLibraryItem):
         """
         if Path(item.file_path).exists():
             return [item.file_path, Path(item.file_path).name]
-        elif item.file_path.startswith('device'):
-            (name, _, _) = parse_stream_path(item.file_path)
+        elif item.file_path.startswith('device') or item.file_path.startswith('network'):
+            (_, name, _, _) = parse_stream_path(item.file_path)
             return [item.file_path, name]
         else:
             return super().format_search_result(item)
