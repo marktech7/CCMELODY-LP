@@ -55,7 +55,7 @@ class MediaPlayer(MediaBase, LogMixin):
 
     def setup(self, controller: SlideController, display: DisplayWindow) -> None:
         """
-        Set up an audio player andbind it to a controller and display
+        Set up an media player and bind it to a controller and display
 
         :param controller: The controller where the media is
         :param display: The display where the media is.
@@ -75,13 +75,18 @@ class MediaPlayer(MediaBase, LogMixin):
         self.audio_output = QAudioOutput()
         self.media_player.setAudioOutput(self.audio_output)
         self.video_widget = QVideoWidget()
-        self.media_player.setVideoOutput(self.video_widget)
         layout = QtWidgets.QVBoxLayout(controller.media_widget)
         layout.addWidget(self.video_widget)
         layout.setContentsMargins(0, 0, 0, 0)
         self.controller = controller
         self.display = display
         self.media_player.positionChanged.connect(self.pos_callback)
+        # device stream objects. setVideoOutput is called when loading stream, video_widget can't be used by both
+        # QMediaCaptureSession and QMediaPlayer
+        self.media_capture_session = QMediaCaptureSession()
+        self.media_capture_session.setAudioOutput(self.audio_output)
+        self.device_video_input = None
+        self.device_audio_input = None
 
     def pos_callback(self, position) -> None:
         """
@@ -121,6 +126,8 @@ class MediaPlayer(MediaBase, LogMixin):
         """
         self.log_debug("load external media stream in Media Player")
         if self.controller.media_play_item.media_file:
+            self.media_capture_session.setVideoOutput(None)
+            self.media_player.setVideoOutput(self.video_widget)
             self.media_player.setSource(QUrl.fromLocalFile(str(self.controller.media_play_item.media_file)))
             return True
         return False
@@ -132,33 +139,31 @@ class MediaPlayer(MediaBase, LogMixin):
         """
         self.log_debug("load stream  in Media Player")
 
-        if self.controller.media_play_item.media_type == MediaType.DeviceStream:
-            if self.controller.media_play_item.external_stream:
-                mrl = self.controller.media_play_item.external_stream[0]
+        if self.controller.media_play_item.external_stream:
+            mrl = self.controller.media_play_item.external_stream[0]
+            if self.controller.media_play_item.media_type == MediaType.DeviceStream:
+                self.media_player.setVideoOutput(None)
+                self.media_capture_session.setVideoOutput(self.video_widget)
                 vdev_name = re.search(r'qt6video=(.+);', mrl)
-                vdev_to_play = None
+                self.device_video_input = None
                 if vdev_name:
                     for vdev in QMediaDevices.videoInputs():
                         if vdev.description() == vdev_name.group(1):
-                            vdev_to_play = vdev
+                            self.device_video_input = QCamera(vdev)
+                            self.media_capture_session.setCamera(self.device_video_input)
                             break
                 adev_name = re.search(r'qt6audio=(.+)', mrl)
-                adev_to_play = None
+                self.device_audio_input = None
                 if adev_name:
                     for adev in QMediaDevices.audioInputs():
                         if adev.description() == adev_name.group(1):
-                            adev_to_play = vdev
+                            self.device_audio_input = vdev
+                            self.media_capture_session.setAudioInput(self.device_audio_input)
                             break
-
-                mediaCaptureSession = QMediaCaptureSession()
-                mediaCaptureSession.setCamera(QCamera(vdev_to_play))
-                mediaCaptureSession.setAudioInput(adev_to_play)
-                # TODO: how to make this replace the player?
-                #mediaCaptureSession.setVideoOutput(video_widget)
-
-        elif self.controller.media_play_item.media_type == MediaType.NetworkStream:
-            if self.controller.media_play_item.external_stream:
-                mrl = self.controller.media_play_item.external_stream[0]
+                return True
+            elif self.controller.media_play_item.media_type == MediaType.NetworkStream:
+                self.media_capture_session.setVideoOutput(None)
+                self.media_player.setVideoOutput(self.video_widget)
                 self.media_player.setSource(QUrl(mrl))
                 return True
         return False
@@ -168,7 +173,13 @@ class MediaPlayer(MediaBase, LogMixin):
         Play the current loaded audio item
         :return:
         """
-        self.media_player.play()
+        if self.controller.media_play_item.media_type == MediaType.DeviceStream:
+            if self.device_video_input:
+                self.device_video_input.start()
+            if self.device_audio_input:
+                self.device_audio_input.start()
+        else:
+            self.media_player.play()
 
     def pause(self) -> None:
         """
@@ -177,7 +188,13 @@ class MediaPlayer(MediaBase, LogMixin):
         :param controller: The controller which is managing the display
         :return:
         """
-        self.media_player.pause()
+        if self.controller.media_play_item.media_type == MediaType.DeviceStream:
+            if self.device_video_input:
+                self.device_video_input.stop()
+            if self.device_audio_input:
+                self.device_audio_input.stop()
+        else:
+            self.media_player.pause()
 
     def stop(self) -> None:
         """
@@ -186,7 +203,13 @@ class MediaPlayer(MediaBase, LogMixin):
         :param controller: The controller where the media is
         :return:
         """
-        self.media_player.stop()
+        if self.controller.media_play_item.media_type == MediaType.DeviceStream:
+            if self.device_video_input:
+                self.device_video_input.stop()
+            if self.device_audio_input:
+                self.device_audio_input.stop()
+        else:
+            self.media_player.stop()
 
     def duration(self) -> int:
         """
