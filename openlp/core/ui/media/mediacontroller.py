@@ -636,7 +636,11 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         """
         self.log_debug(f"media_volume {volume}")
         save_volume(controller, volume)
-        controller.media_player.volume(volume)
+        if controller.media_play_item.media_type == MediaType.Dual:
+            controller.media_player.volume(0)
+            controller.audio_player.volume(volume)
+        else:
+            controller.media_player.volume(volume)
         controller.mediabar.volume_slider.setValue(volume)
         controller.mediabar.volume_label.setText(f"{format_play_seconds(volume)}")
 
@@ -658,7 +662,10 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         :param controller: The controller to use.
         :param seek_value: The value to set.
         """
-        controller.media_player.seek(seek_value)
+        if controller.media_play_item.media_type == MediaType.Dual:
+            controller.audio_player.seek(seek_value)
+        else:
+            controller.media_player.seek(seek_value)
         controller.media_play_item.timer = seek_value
         self._update_seek_ui(controller)
 

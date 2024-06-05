@@ -55,7 +55,7 @@ class MediaPlayer(MediaBase, LogMixin):
 
     def setup(self, controller: SlideController, display: DisplayWindow) -> None:
         """
-        Set up an media player and bind it to a controller and display
+        Set up an media and audio player and bind it to a controller and display
 
         :param controller: The controller where the media is
         :param display: The display where the media is.
@@ -114,7 +114,7 @@ class MediaPlayer(MediaBase, LogMixin):
 
     def check_available(self):
         """
-        Return the availability of VLC
+        Return the availability of component
         """
         return True
 
@@ -180,6 +180,7 @@ class MediaPlayer(MediaBase, LogMixin):
                 self.device_audio_input.start()
         else:
             self.media_player.play()
+        # TODO handle variable start tomes fpr first play
 
     def pause(self) -> None:
         """
