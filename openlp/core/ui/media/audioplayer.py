@@ -24,8 +24,10 @@ The :mod:`~openlp.core.ui.media.audioplayer` module for secondary background aud
 import logging
 
 from openlp.core.common.mixins import LogMixin
+from openlp.core.common.registry import Registry
 from openlp.core.display.window import DisplayWindow
 from openlp.core.ui.slidecontroller import SlideController
+from openlp.core.ui.media import MediaType
 from openlp.core.ui.media.mediabase import MediaBase
 
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
@@ -61,12 +63,22 @@ class AudioPlayer(MediaBase, LogMixin):
         self.media_player.setAudioOutput(self.audio_output)
         self.controller = controller
         self.display = display
+        self.media_player.positionChanged.connect(self.pos_callback)
 
-    def check_available(self):
+    def pos_callback(self, position) -> None:
         """
-        Return the availability of VLC
+        Media callback for position changed event.  Saves position and calls UI updates.
+        :param event: The media position has changed
+        :return: None
         """
-        return True
+        if self.controller.media_play_item.media_type != MediaType.Dual:
+            return
+        self.controller.media_play_item.timer = position
+        if self.controller.is_live:
+            Registry().get("media_controller").vlc_live_media_tick.emit()
+        else:
+            Registry().get("media_controller").vlc_preview_media_tick.emit()
+
 
     def load(self) -> bool:
         """

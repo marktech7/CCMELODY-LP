@@ -23,6 +23,9 @@ The :mod:`~openlp.core.ui.media` module contains classes and objects for media p
 """
 import logging
 
+from PySide6.QtMultimedia import QMediaFormat
+
+from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 
 log = logging.getLogger(__name__ + '.__init__')
@@ -39,6 +42,26 @@ VIDEO_EXT = ['*.3g2', '*.3gp', '*.3gp2', '*.3gpp', '*.amv', '*.asf', '*.avi', '*
              '*.mpv2', '*.mts', '*.mtv', '*.mxf', '*.mxg', '*.nsv', '*.nuv', '*.ogg', '*.ogm', '*.ogv', '*.ogx', '*.ps',
              '*.rec', '*.rm', '*.rmvb', '*.rpl', '*.thp', '*.tod', '*.ts', '*.tts', '*.txd', '*.vob', '*.vro', '*.webm',
              '*.wm', '*.wmv', '*.wtv', '*.xesc', '*.nut', '*.rv', '*.xvid']
+
+AVI = "video/x-msvideo"  # AVI
+
+
+MP4 = 'video/mp4'
+
+
+def get_supported_mime_types():
+    result = []
+    mime_types = []
+    for f in QMediaFormat().supportedFileFormats(QMediaFormat.Decode):
+        mime_type = QMediaFormat(f).mimeType()
+        result.append(mime_type.name())
+    mime_types = result
+    if (is_win and AVI not in mime_types):
+        mime_types.append(AVI)
+    elif MP4 not in mime_types:
+        mime_types.append(MP4)
+    # file_dialog.setMimeTypeFilters(self._mime_types)
+    return mime_types
 
 
 class MediaState(object):

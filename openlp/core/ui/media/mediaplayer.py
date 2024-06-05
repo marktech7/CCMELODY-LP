@@ -36,6 +36,10 @@ from openlp.core.ui.slidecontroller import SlideController
 from openlp.core.ui.media.mediabase import MediaBase
 from openlp.core.ui.media import MediaType
 
+AVI = "video/x-msvideo"  # AVI
+
+
+MP4 = 'video/mp4'
 
 log = logging.getLogger(__name__)
 
@@ -90,11 +94,12 @@ class MediaPlayer(MediaBase, LogMixin):
 
     def pos_callback(self, position) -> None:
         """
-        A Tick event triggered by VLC
-        :param event: The VLC Event triggered
-        :param controller: The controller upon which the event occurs
+        Media callback for position changed event.  Saves position and calls UI updates.
+        :param event: The media position has changed
         :return: None
         """
+        if self.controller.media_play_item.media_type == MediaType.Dual:
+            return
         self.controller.media_play_item.timer = position
         if self.controller.is_live:
             Registry().get("media_controller").vlc_live_media_tick.emit()

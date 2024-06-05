@@ -96,7 +96,7 @@ class MediaMediaItem(FolderLibraryItem):
         Set which icons the media manager tab should show
         """
         super().required_icons()
-        self.has_file_icon = True
+        self.has_file_media_icon = True
         self.has_new_icon = False
         self.has_edit_icon = False
         if not State().check_preconditions('media'):

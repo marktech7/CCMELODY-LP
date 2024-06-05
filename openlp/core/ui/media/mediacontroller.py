@@ -488,6 +488,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             loop_set = saved_looping_playback(controller)
             loop_disabled = False
             controller.media_player.toggle_loop(loop_set)
+        controller.mediabar.seek_slider.setTickInterval(controller.media_play_item.length // 10)
         controller.mediabar.seek_slider.setMaximum(controller.media_play_item.length)
         if mode == "load":
             controller.mediabar.actions["playbackPlay"].setDisabled(False)
