@@ -32,7 +32,6 @@ from openlp.core.ui.media import VIDEO_EXT
 from openlp.core.widgets.buttons import ColorButton
 from openlp.core.widgets.edits import PathEdit
 from openlp.core.widgets.labels import FormLabel
-# from openlp.core.ui.media.vlcplayer import get_vlc
 
 
 class BackgroundPage(GridLayoutPage):
@@ -214,8 +213,6 @@ class BackgroundPage(GridLayoutPage):
         """
         Open the Stream selection form.
         """
-        # if get_vlc():
-        # Only import this form if VLC is available.
         from openlp.plugins.media.forms.streamselectorform import StreamSelectorForm
 
         stream_selector_form = StreamSelectorForm(self, self.set_stream, True)
@@ -224,16 +221,11 @@ class BackgroundPage(GridLayoutPage):
             stream_selector_form.set_mrl(self.stream_lineedit.text())
         stream_selector_form.exec()
         del stream_selector_form
-        # else:
-        #    critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
-        #                               translate('MediaPlugin.MediaItem', 'Device streaming support requires VLC.'))
 
     def _on_network_stream_select_button_triggered(self):
         """
         Open the Stream selection form.
         """
-        # if get_vlc():
-        # Only import this form is VLC is available
         from openlp.plugins.media.forms.networkstreamselectorform import NetworkStreamSelectorForm
         stream_selector_form = NetworkStreamSelectorForm(self, self.set_stream, True)
         # prefill in the form any network stream already defined
@@ -241,9 +233,6 @@ class BackgroundPage(GridLayoutPage):
             stream_selector_form.set_mrl(self.stream_lineedit.text())
         stream_selector_form.exec()
         del stream_selector_form
-        #       else:
-        #          critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
-        #       translate('MediaPlugin.MediaItem', 'Network streaming support requires VLC.'))
 
     def set_stream(self, stream_str):
         """
