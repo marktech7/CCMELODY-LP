@@ -72,14 +72,6 @@ class ImageSource(object):
     CommandPlugins = 3
 
 
-class MediaType(object):
-    """
-    An enumeration class for types of media.
-    """
-    Audio = 1
-    Video = 2
-
-
 class ServiceItemAction(object):
     """
     Provides an enumeration for the required action moving between service items by left/right arrow keys

@@ -25,9 +25,8 @@ import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch
 
-from openlp.core.lib import MediaType
 from openlp.core.common.registry import Registry
-from openlp.core.ui.media import AUDIO_EXT, VIDEO_EXT
+from openlp.core.ui.media import AUDIO_EXT, VIDEO_EXT, MediaType
 from openlp.plugins.media.lib.mediaitem import MediaMediaItem
 
 

@@ -34,10 +34,11 @@ from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
-from openlp.core.lib import MediaType, create_separated_list
+from openlp.core.lib import create_separated_list
 from openlp.core.lib.formattingtags import FormattingTags
 from openlp.core.lib.plugin import PluginStatus
-from openlp.core.lib.ui import critical_error_message_box, find_and_set_in_combo_box, set_case_insensitive_completer
+from openlp.core.lib.ui import critical_error_message_box, find_and_set_in_combo_box, set_case_insensitive_completer, \
+    MediaType
 from openlp.core.state import State
 from openlp.core.widgets.dialogs import FileDialog
 from openlp.plugins.songs.forms.editsongdialog import Ui_EditSongDialog

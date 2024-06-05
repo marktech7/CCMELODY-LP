@@ -31,7 +31,7 @@ from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
-from openlp.core.lib import MediaType, ServiceItemContext
+from openlp.core.lib import ServiceItemContext
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import create_widget_action, critical_error_message_box
 from openlp.core.state import State

@@ -72,7 +72,7 @@ class MediaPlugin(Plugin):
                 name = filename.name
                 filename = str(filename)
             elif filename.startswith('devicestream:') or filename.startswith('networkstream:'):
-                name, _, _ = parse_stream_path(filename)
+                _, name, _, _ = parse_stream_path(filename)
             else:
                 name = os.path.basename(filename)
             item = Item(name=name, file_path=filename)
