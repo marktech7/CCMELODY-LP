@@ -84,7 +84,7 @@ class MediaPlayer(MediaBase, LogMixin):
         layout.setContentsMargins(0, 0, 0, 0)
         self.controller = controller
         self.display = display
-        self.media_player.positionChanged.connect(self.pos_callback)
+        self.media_player.positionChanged.connect(self.position_changed_event)
         # device stream objects. setVideoOutput is called when loading stream, video_widget can't be used by both
         # QMediaCaptureSession and QMediaPlayer
         self.media_capture_session = QMediaCaptureSession()
@@ -92,7 +92,7 @@ class MediaPlayer(MediaBase, LogMixin):
         self.device_video_input = None
         self.device_audio_input = None
 
-    def pos_callback(self, position) -> None:
+    def position_changed_event(self, position) -> None:
         """
         Media callback for position changed event.  Saves position and calls UI updates.
         :param event: The media position has changed

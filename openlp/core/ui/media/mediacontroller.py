@@ -47,6 +47,7 @@ from openlp.core.ui.slidecontroller import SlideController
 from openlp.core.ui.media import MediaState, MediaPlayItem, MediaType, format_play_seconds, media_empty_song, \
     format_play_time, parse_stream_path, get_volume, toggle_looping_playback, saved_looping_playback, save_volume
 from openlp.core.ui.media.remote import register_views
+from openlp.core.ui.media.mediainfo import media_info
 from openlp.core.ui.media.audioplayer import AudioPlayer
 from openlp.core.ui.media.mediaplayer import MediaPlayer
 
@@ -361,6 +362,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
 
         :param media_path: The file path to be checked..
         """
+        media_info().get_media_info(str(media_path))
         if MediaInfo.can_parse():
             if pymediainfo_version < "4.3":
                 # pymediainfo only introduced file objects in 4.3, so if this is an older version, we'll have to use
@@ -375,6 +377,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             duration = media_data.tracks[0].duration
             # It appears that sometimes we get a string. Let's try to interpret that as int, or fall back to 0
             # See https://gitlab.com/openlp/openlp/-/issues/1387
+            print(duration)
             if isinstance(duration, str):
                 if duration.strip().isdigit():
                     duration = int(duration.strip())

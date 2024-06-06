@@ -50,18 +50,31 @@ MP4 = 'video/mp4'
 
 
 def get_supported_mime_types():
-    result = []
+    """
+    Provide a list of Mime types for  the Media imput dialog to use for selection
+    """
     mime_types = []
     for f in QMediaFormat().supportedFileFormats(QMediaFormat.Decode):
         mime_type = QMediaFormat(f).mimeType()
-        result.append(mime_type.name())
-    mime_types = result
+        mime_types.append(mime_type.name())
+        print(mime_type.suffixes())
     if (is_win and AVI not in mime_types):
         mime_types.append(AVI)
     elif MP4 not in mime_types:
         mime_types.append(MP4)
-    # file_dialog.setMimeTypeFilters(self._mime_types)
     return mime_types
+
+def validate_supported_mime_type(mime: str) -> bool:
+    result = []
+    for f in QMediaFormat().supportedFileFormats(QMediaFormat.Decode):
+        mime_type = QMediaFormat(f).mimeType()
+        result.append(mime_type.name())
+        for m in mime_type.suffixes():
+            print(m,mime)
+            if mime in m:
+                return True
+    return False
+
 
 
 class MediaState(object):

@@ -44,7 +44,7 @@ from openlp.core.lib import create_thumb, image_to_data_uri, ItemCapabilities
 from openlp.core.lib.theme import BackgroundType, TransitionSpeed
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
-from openlp.core.ui.media import parse_stream_path
+from openlp.core.ui.media import parse_stream_path, validate_supported_mime_type
 
 
 log = logging.getLogger(__name__)
@@ -927,7 +927,8 @@ class ServiceItem(RegistryProperties):
                         self.is_valid = False
                         break
                     if suffixes and not self.is_text():
-                        file_suffix = "*.{suffx}".format(suffx=slide['title'].split('.')[-1])
+                        file_suffix = "{suffx}".format(suffx=slide['title'].split('.')[-1])
+                        print(validate_supported_mime_type(file_suffix.lower()))
                         if file_suffix.lower() not in suffixes:
                             self.is_valid = False
                             break
