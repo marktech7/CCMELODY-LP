@@ -162,7 +162,7 @@ class MediaPlayer(MediaBase, LogMixin):
                 if adev_name:
                     for adev in QMediaDevices.audioInputs():
                         if adev.description() == adev_name.group(1):
-                            self.device_audio_input = vdev
+                            self.device_audio_input = adev
                             self.media_capture_session.setAudioInput(self.device_audio_input)
                             break
                 return True
