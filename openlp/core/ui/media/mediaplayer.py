@@ -25,7 +25,7 @@ import logging
 import re
 
 from PySide6 import QtCore, QtWidgets
-from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput, QMediaDevices, QMediaCaptureSession, QCamera
+from PySide6.QtMultimedia import QAudioInput, QAudioOutput, QCamera, QMediaDevices, QMediaCaptureSession, QMediaPlayer
 from PySide6.QtMultimediaWidgets import QVideoWidget
 from PySide6.QtCore import QUrl
 
@@ -162,7 +162,9 @@ class MediaPlayer(MediaBase, LogMixin):
                 if adev_name:
                     for adev in QMediaDevices.audioInputs():
                         if adev.description() == adev_name.group(1):
-                            self.device_audio_input = adev
+                            self.device_audio_input = QAudioInput()
+                            self.device_audio_input.setDevice(adev)
+                            self.device_audio_input.setMuted(True)
                             self.media_capture_session.setAudioInput(self.device_audio_input)
                             break
                 return True
@@ -182,7 +184,7 @@ class MediaPlayer(MediaBase, LogMixin):
             if self.device_video_input:
                 self.device_video_input.start()
             if self.device_audio_input:
-                self.device_audio_input.start()
+                self.device_audio_input.setMuted(False)
         else:
             self.media_player.play()
         # TODO handle variable start tomes fpr first play
@@ -198,7 +200,7 @@ class MediaPlayer(MediaBase, LogMixin):
             if self.device_video_input:
                 self.device_video_input.stop()
             if self.device_audio_input:
-                self.device_audio_input.stop()
+                self.device_audio_input.setMuted(True)
         else:
             self.media_player.pause()
 
@@ -213,7 +215,7 @@ class MediaPlayer(MediaBase, LogMixin):
             if self.device_video_input:
                 self.device_video_input.stop()
             if self.device_audio_input:
-                self.device_audio_input.stop()
+                self.device_audio_input.setMuted(True)
         else:
             self.media_player.stop()
 
