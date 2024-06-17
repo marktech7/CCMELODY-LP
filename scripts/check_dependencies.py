@@ -42,7 +42,6 @@ VERS = {
     'Python': '3.12',
     'PySide6': '6.7',
     'Qt6': '6.7',
-    'pymediainfo': '2.2',
     'sqlalchemy': '0.5',
     'enchant': '1.6'
 }
@@ -92,7 +91,6 @@ MODULES = [
     'waitress',
     'requests',
     'qtawesome',
-    'pymediainfo',
     'qrcode',
     'packaging',
 ]

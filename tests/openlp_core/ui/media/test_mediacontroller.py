@@ -84,22 +84,6 @@ def test_initialise_good(media_env: MediaController, state_media: State):
     mocked_setup.assert_called_once(), 'The setup function has been called'
 
 
-@patch('openlp.core.ui.media.mediacontroller.pymediainfo_available', False)
-def test_initialise_missing_pymedia(media_env: MediaController, state_media: State):
-    """
-    Test that the bootstrap initialise method is called correctly with no pymediainfo
-    """
-    # GIVEN: a mocked setup and no pymedia
-    with patch.object(media_env.media_controller, u'setup') as mocked_setup:
-        # THEN: The underlying method is called
-        media_env.media_controller.bootstrap_initialise()
-    # THEN: The following should have happened
-    mocked_setup.assert_called_once(), 'The setup function has been called'
-    text = State().get_text()
-    if not is_macosx():
-        assert text.find("pymediainfo") > 0, "PyMedia should not be missing"
-
-
 def test_post_set_up_good(media_env: MediaController, state_media: State, registry: Registry):
     """
     Test the Bootstrap post set up assuming all functions are good
@@ -255,12 +239,11 @@ def test_check_file_type_null(media_env):
     """
     Test that we don't try to play media when no players available
     """
-    # GIVEN: A mocked UiStrings, get_used_players, controller, display and service_item
+    # GIVEN: A mocked UiStrings, get_used_players, controller and service_item
     mocked_controller = MagicMock()
-    mocked_display = MagicMock()
 
     # WHEN: calling _check_file_type when no players exists
-    ret = media_env.media_controller._check_file_type_and_load(mocked_controller, mocked_display)
+    ret = media_env.media_controller._check_file_type_and_load(mocked_controller)
 
     # THEN: it should return False
     assert ret is False, '_check_file_type should return False when no media file matches.'
@@ -270,15 +253,14 @@ def test_check_file_audio(media_env):
     """
     Test that we process a file that is valid
     """
-    # GIVEN: A mocked UiStrings, get_used_players, controller, display and service_item
+    # GIVEN: A mocked UiStrings, get_used_players, controller and service_item
     mocked_controller = MagicMock()
-    mocked_display = MagicMock()
     mocked_controller.media_play_item = MediaPlayItem()
     mocked_controller.media_info.audio_file = [TEST_PATH / 'mp3_file.mp3']
     media_env.media_controller.media_player = MagicMock()
 
     # WHEN: calling _check_file_type when no players exists
-    ret = media_env.media_controller._check_file_type_and_load(mocked_controller, mocked_display)
+    ret = media_env.media_controller._check_file_type_and_load(mocked_controller)
 
     # THEN: it should return False
     assert ret is True, '_check_file_type should return True when audio file is present and matches.'
@@ -288,9 +270,8 @@ def test_check_file_video(media_env):
     """
     Test that we process a file that is valid
     """
-    # GIVEN: A mocked UiStrings, get_used_players, controller, display and service_item
+    # GIVEN: A mocked UiStrings, get_used_players, controller and service_item
     mocked_controller = MagicMock()
-    mocked_display = MagicMock()
     mocked_controller.media_play_item = MediaPlayItem()
     mocked_controller.media_play_item.media_file = [TEST_PATH / 'mp4_file.mp4']
     mocked_controller.media_player = MagicMock()
@@ -300,7 +281,7 @@ def test_check_file_video(media_env):
     media_env.media_controller.decide_autoplay = MagicMock(return_value=True)
 
     # WHEN: calling _check_file_type when no players exists
-    ret = media_env.media_controller._check_file_type_and_load(mocked_controller, mocked_display)
+    ret = media_env.media_controller._check_file_type_and_load(mocked_controller)
 
     # THEN: it should return False
     assert ret is True, '_check_file_type should return True when media file is present and matches.'
@@ -513,114 +494,6 @@ def test_media_length(file_name, media_length, media_env):
 
     # THEN you can determine the run time
     assert results == media_length, f'The correct duration for {file_name} should be {media_length}, was {results}'
-
-
-@patch('openlp.core.ui.media.mediacontroller.MediaInfo.parse')
-@patch('openlp.core.ui.media.mediacontroller.Path')
-def test_media_length_duration_none(MockPath, mocked_parse, media_env):
-    """
-    Test that when MediaInfo doesn't give us a duration, we default to 0
-    """
-    # GIVEN: A fake media file and a mocked MediaInfo.parse() function
-    mocked_parse.return_value = MagicMock(tracks=[MagicMock(duration=None)])
-    file_path = 'path/to/fake/video.mkv'
-
-    # WHEN the media data is retrieved
-    duration = media_env.media_controller.media_length(file_path)
-
-    # THEN you can determine the run time
-    assert duration == 0, 'The duration should be 0'
-
-
-@patch('openlp.core.ui.media.mediacontroller.MediaInfo.parse')
-@patch('openlp.core.ui.media.mediacontroller.Path')
-def test_media_length_duration_string_digits(MockPath, mocked_parse, media_env):
-    """
-    Test that when MediaInfo gives us a duration, but it is a string, we typecast it
-    """
-    # GIVEN: A fake media file and a mocked MediaInfo.parse() function
-    mocked_parse.return_value = MagicMock(tracks=[MagicMock(duration='546')])
-    file_path = 'path/to/fake/video.mkv'
-
-    # WHEN the media data is retrieved
-    duration = media_env.media_controller.media_length(file_path)
-
-    # THEN you can determine the run time
-    assert duration == 546, 'The duration should be 546'
-
-
-@patch('openlp.core.ui.media.mediacontroller.MediaInfo.parse')
-@patch('openlp.core.ui.media.mediacontroller.Path')
-def test_media_length_duration_string_alpha(MockPath, mocked_parse, media_env):
-    """
-    Test that when MediaInfo gives us a duration, but it is a string of nonsense, we default to 0
-    """
-    # GIVEN: A fake media file and a mocked MediaInfo.parse() function
-    mocked_parse.return_value = MagicMock(tracks=[MagicMock(duration='sdffgh')])
-    file_path = 'path/to/fake/video.mkv'
-
-    # WHEN the media data is retrieved
-    duration = media_env.media_controller.media_length(file_path)
-
-    # THEN you can determine the run time
-    assert duration == 0, 'The duration should be 0'
-
-
-@patch('openlp.core.ui.media.mediacontroller.MediaInfo.parse')
-def test_media_length_duration_old_version(mocked_parse, media_env):
-    """
-    Test that when a version of MediaInfo < 4.3 is installed, a file name is passed directly to the parse method
-    """
-    # GIVEN: A fake media file and a mocked MediaInfo.parse() function
-    from openlp.core.ui.media import mediacontroller
-    mediacontroller.pymediainfo_version = '4.0.1'
-    mocked_parse.return_value = MagicMock(tracks=[MagicMock(duration=10)])
-    file_path = 'path/to/fake/video.mkv'
-
-    # WHEN the media data is retrieved
-    duration = media_env.media_controller.media_length(file_path)
-
-    # THEN you can determine the run time
-    mocked_parse.assert_called_once_with('path/to/fake/video.mkv')
-    assert duration == 10, 'The duration should be 10'
-
-
-@patch('openlp.core.ui.media.mediacontroller.Path')
-@patch('openlp.core.ui.media.mediacontroller.MediaInfo.parse')
-def test_media_length_duration_new_version(mocked_parse, MockPath, media_env):
-    """
-    Test that when a version of MediaInfo > 4.3 is installed, a file OBJECT is passed to the parse method
-    """
-    # GIVEN: A fake media file and a mocked MediaInfo.parse() function
-    from openlp.core.ui.media import mediacontroller
-    mediacontroller.pymediainfo_version = '5.0.3'
-    mocked_file = MagicMock()
-    MockPath.return_value.open.return_value.__enter__.return_value = mocked_file
-    mocked_parse.return_value = MagicMock(tracks=[MagicMock(duration=8)])
-    file_path = 'path/to/fake/video.mkv'
-
-    # WHEN the media data is retrieved
-    duration = media_env.media_controller.media_length(file_path)
-
-    # THEN you can determine the run time
-    mocked_parse.assert_called_once_with(mocked_file)
-    assert duration == 8, 'The duration should be 8'
-
-
-@patch('openlp.core.ui.media.mediacontroller.MediaInfo.can_parse')
-def test_media_length_no_can_parse(mocked_can_parse, media_env):
-    """
-    Check that 0 is returned when MediaInfo cannot parse
-    """
-    # GIVEN: A fake media file and a mocked MediaInfo.can_parse() function
-    mocked_can_parse.return_value = False
-    file_path = Path('path/to/fake/video.mkv')
-
-    # WHEN the media data is retrieved
-    duration = media_env.media_controller.media_length(file_path)
-
-    # THEN you can determine the run time
-    assert duration == 0, 'The duration should be 0'
 
 
 def test_on_media_play(media_env):

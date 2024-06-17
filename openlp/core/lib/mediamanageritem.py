@@ -33,7 +33,7 @@ from openlp.core.lib import ServiceItemContext
 from openlp.core.lib.plugin import StringContent
 from openlp.core.lib.serviceitem import ServiceItem
 from openlp.core.lib.ui import create_widget_action, critical_error_message_box
-from openlp.core.ui.media import AVI, MP4, get_supported_mime_types
+from openlp.core.ui.media import AVI, MP4, get_supported_mime_types, get_supported_media_suffix
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.dialogs import FileDialog
 from openlp.core.widgets.edits import SearchEdit
@@ -369,11 +369,14 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties, LogMixin):
         file_dialog = FileDialog(self)
         file_dialog.setDirectory(str(self.settings.value(self.settings_section + '/last directory')))
         file_dialog.setWindowTitle(self.on_new_prompt)
-        mime_types = get_supported_mime_types()
-        file_dialog.setMimeTypeFilters(mime_types)
-        default_mimetype = AVI if is_win else MP4
-        if default_mimetype in mime_types:
-            file_dialog.selectMimeTypeFilter(default_mimetype)
+        #mime_types = get_supported_mime_types()
+        #print(mime_types)
+        #file_dialog.setMimeTypeFilters(mime_types)
+        #default_mimetype = MP4
+        #if default_mimetype in mime_types:
+        #    file_dialog.selectMimeTypeFilter(default_mimetype)
+        suffixes = get_supported_media_suffix()
+        file_dialog.setNameFilters(suffixes)
         if file_dialog.exec() == QtWidgets.QDialog.Accepted:
             file_paths = file_dialog.selectedFiles()
             self.log_info(f'New file(s) {file_paths}')

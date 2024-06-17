@@ -25,14 +25,6 @@ import logging
 from pathlib import Path
 from typing import Union
 
-try:
-    from pymediainfo import MediaInfo, __version__ as pymediainfo_version
-
-    pymediainfo_available = True
-except ImportError:
-    pymediainfo_available = False
-    pymediainfo_version = "0.0"
-
 from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
@@ -104,19 +96,8 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         self.setup()
         State().add_service("mediacontroller", 0)
         State().add_service("media_live", 0)
-        if pymediainfo_available:
-            State().update_pre_conditions("mediacontroller", True)
-            State().update_pre_conditions("media_live", True)
-        else:
-            if hasattr(self.main_window, "splash") and self.main_window.splash.isVisible():
-                self.main_window.splash.hide()
-            message = translate(
-                "OpenLP.MediaController",
-                "OpenLP requires the pymediainfo library in order to show videos and other "
-                "media, but is are not installed. Please install this library to enable "
-                "media playback in OpenLP.",
-            )
-            State().missing_text("media_live", message, MessageType.Error)
+        State().update_pre_conditions("mediacontroller", True)
+        State().update_pre_conditions("media_live", True)
 
     def bootstrap_post_set_up(self):
         """
@@ -362,29 +343,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
 
         :param media_path: The file path to be checked..
         """
-        media_info().get_media_info(str(media_path))
-        if MediaInfo.can_parse():
-            if pymediainfo_version < "4.3":
-                # pymediainfo only introduced file objects in 4.3, so if this is an older version, we'll have to use
-                # the old method. See https://gitlab.com/openlp/openlp/-/issues/1187
-                media_data = MediaInfo.parse(str(media_path))
-            else:
-                # pymediainfo has an issue opening non-ascii file names, so pass it a file object instead
-                # See https://gitlab.com/openlp/openlp/-/issues/1041
-                with Path(media_path).open("rb") as media_file:
-                    media_data = MediaInfo.parse(media_file)
-                # duration returns in milli seconds
-            duration = media_data.tracks[0].duration
-            # It appears that sometimes we get a string. Let's try to interpret that as int, or fall back to 0
-            # See https://gitlab.com/openlp/openlp/-/issues/1387
-            print(duration)
-            if isinstance(duration, str):
-                if duration.strip().isdigit():
-                    duration = int(duration.strip())
-                else:
-                    duration = 0
-            return duration or 0
-        return 0
+        return media_info().get_media_duration(str(media_path))
 
     def _check_file_type_and_load(self, controller: SlideController) -> bool:
         """

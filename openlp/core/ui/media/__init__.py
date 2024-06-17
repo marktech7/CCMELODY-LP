@@ -45,8 +45,21 @@ VIDEO_EXT = ['*.3g2', '*.3gp', '*.3gp2', '*.3gpp', '*.amv', '*.asf', '*.avi', '*
 
 AVI = "video/x-msvideo"  # AVI
 
-
 MP4 = 'video/mp4'
+
+
+def get_supported_media_suffix():
+    """
+    Provide a list of suffixes the Media input dialog to use for selection
+    """
+    suffixes = []
+    for f in QMediaFormat().supportedFileFormats(QMediaFormat.Decode):
+        mime_type = QMediaFormat(f).mimeType()
+        suffixes += ['*.'+ s for s in mime_type.suffixes()]
+    suffix_filter = []
+    suffix_filter.append('Media files ({suffixes})'.format(suffixes=' '.join(suffixes)))
+    suffix_filter.append('Any files (*)')
+    return suffix_filter
 
 
 def get_supported_mime_types():
@@ -58,11 +71,15 @@ def get_supported_mime_types():
         mime_type = QMediaFormat(f).mimeType()
         mime_types.append(mime_type.name())
         print(mime_type.suffixes())
-    if (is_win and AVI not in mime_types):
-        mime_types.append(AVI)
-    elif MP4 not in mime_types:
-        mime_types.append(MP4)
+    #if (is_win() and AVI not in mime_types):
+    #    mime_types.append(AVI)
+    #if MP4 not in mime_types:
+    #    mime_types.append(MP4)
+    # Add mimetype for all files (*.*)
+    mime_types.append('; '.join(mime_types))
+    mime_types.append('application/octet-stream')
     return mime_types
+
 
 def validate_supported_mime_type(mime: str) -> bool:
     result = []
@@ -70,7 +87,7 @@ def validate_supported_mime_type(mime: str) -> bool:
         mime_type = QMediaFormat(f).mimeType()
         result.append(mime_type.name())
         for m in mime_type.suffixes():
-            print(m,mime)
+            print(m, mime)
             if mime in m:
                 return True
     return False

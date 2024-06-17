@@ -23,51 +23,42 @@ The :mod:`~openlp.core.ui.media.mediainfo` module for media meta data.
 """
 import logging
 
-from PySide6.QtCore import QObject, QUrl
-from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
-from PySide6.QtMultimediaWidgets import QVideoWidget
+from time import sleep
 
-from openlp.core.ui.slidecontroller import SlideController
+from PySide6 import QtWidgets
+from PySide6.QtCore import QObject, QUrl
+from PySide6.QtMultimedia import QMediaPlayer
 
 log = logging.getLogger(__name__)
 
+
 class media_info(QObject):
 
-    def get_media_info(self, media_file: str) -> None:
+    def get_media_duration(self, media_file: str) -> int:
         """
-        Set up an media and audio player and bind it to a controller and display
+        Set up a headless media player to parse the mediafile and get duration.
 
         :param controller: The controller where the media is
         :param display: The display where the media is.
         :return:
         """
-        # if controller.is_live:
-        #     controller.media_widget = QtWidgets.QWidget(controller)
-        #     controller.media_widget.setWindowFlags(
-        #         QtCore.Qt.WindowType.FramelessWindowHint
-        #         | QtCore.Qt.WindowType.Tool
-        #         | QtCore.Qt.WindowType.WindowStaysOnTopHint)
-        #     controller.media_widget.setAttribute(QtCore.Qt.WidgetAttribute.WA_X11NetWmWindowTypeDialog)
-
-        # else:
-        #     controller.media_widget = QtWidgets.QWidget(display)
-        print("GMI")
+        self.got_duration = False
+        self.error_occurred = False
+        self.duration = 0
         self.media_player = QMediaPlayer(None)
-        self.audio_output = QAudioOutput()
-        self.video_widget = QVideoWidget()
         self.media_player.errorOccurred.connect(self.error_event)
         self.media_player.durationChanged.connect(self.duration_changed_event)
-        self.media_player.setVideoOutput(self.video_widget)
         self.media_player.setSource(QUrl.fromLocalFile(str(media_file)))
-        print("h1", self.media_player.error())
-        self.media_player.play()
-        print("h2", self.media_player.error())
+        loops = 0
+        while not self.got_duration and not self.error_occurred and loops < 100:
+            loops += 1
+            sleep(0.01)
+            QtWidgets.QApplication.instance().processEvents()
+        return self.duration
 
     def duration_changed_event(self, duration: int):
-        print("DD", duration)
+        self.got_duration = True
+        self.duration = duration
 
     def error_event(self, error_text) -> None:
-        print("Error ", error_text)
-
-
-
+        self.error_occurred = True
