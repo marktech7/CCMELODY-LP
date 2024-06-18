@@ -848,19 +848,17 @@ def test_decide_autoplay_media_preview(media_env, settings):
     """
     Test that media with a normal background behaves
     """
-    # GIVEN: A media controller and a service item
+    # GIVEN: A service item
     mocked_service_item = MagicMock()
     mocked_service_item.requires_media.return_value = False
     settings.setValue('core/auto unblank', True)
     settings.setValue('media/media auto start', QtCore.Qt.CheckState.Unchecked)
-    media_env.media_controller.is_live = False
-    media_env.media_controller.is_theme_background = False
 
     # WHEN: decide_autoplay() is called
-    ret = media_env.media_controller.decide_autoplay(mocked_service_item, media_env.media_controller, False)
+    ret = media_env.media_controller.decide_autoplay(mocked_service_item, False)
 
-    # THEN: The current controller's media should be reset
-    assert ret is True, "The Media should have been autoplayed"
+    # THEN: Autoplay will obey the following
+    assert ret is False, "The Media should NOT have been autoplayed"
 
 
 def test_decide_autoplay_media_normal_hidden_live(media_env, settings):
@@ -872,11 +870,8 @@ def test_decide_autoplay_media_normal_hidden_live(media_env, settings):
     mocked_service_item.requires_media.return_value = True
     settings.setValue('core/auto unblank', True)
     settings.setValue('media/media auto start', QtCore.Qt.CheckState.Unchecked)
-    media_env.media_controller.is_live = True
-    media_env.media_controller.media_info = ItemMediaInfo()
-    media_env.media_controller.is_theme_background = True
     # WHEN: decide_autoplay() is called
-    ret = media_env.media_controller.decide_autoplay(mocked_service_item, media_env.media_controller, HideMode.Theme)
+    ret = media_env.media_controller.decide_autoplay(mocked_service_item, HideMode.Theme)
     # THEN: Autoplay will obey the following
     assert ret is True, "The Media should have been autoplayed"
 
@@ -890,13 +885,10 @@ def test_decide_autoplay_media_normal_not_hidden_live(media_env, settings):
     mocked_service_item.requires_media.return_value = True
     settings.setValue('core/auto unblank', False)
     settings.setValue('media/media auto start', QtCore.Qt.CheckState.Unchecked)
-    media_env.media_controller.is_live = True
-    media_env.media_controller.media_info = ItemMediaInfo()
-    media_env.media_controller.is_theme_background = False
     # WHEN: decide_autoplay() is called
-    ret = media_env.media_controller.decide_autoplay(mocked_service_item, media_env.media_controller, HideMode.Screen)
+    ret = media_env.media_controller.decide_autoplay(mocked_service_item, HideMode.Screen)
     # THEN: Autoplay will obey the following
-    assert ret is False, "The Media should have not be autoplayed"
+    assert ret is False, "The Media should NOT have been autoplayed"
 
 
 def test_decide_autoplay_media_autostart_not_hidden_live(media_env, settings):
@@ -909,13 +901,10 @@ def test_decide_autoplay_media_autostart_not_hidden_live(media_env, settings):
     mocked_service_item.item.will_auto_start.return_value = True
     settings.setValue('core/auto unblank', False)
     settings.setValue('media/media auto start', QtCore.Qt.CheckState.Unchecked)
-    media_env.media_controller.is_live = True
-    media_env.media_controller.media_info = ItemMediaInfo()
-    media_env.media_controller.is_theme_background = False
     # WHEN: decide_autoplay() is called
-    ret = media_env.media_controller.decide_autoplay(mocked_service_item, media_env.media_controller, False)
+    ret = media_env.media_controller.decide_autoplay(mocked_service_item, False)
     # THEN: Autoplay will obey the following
-    assert ret is False, "The Media should have not be autoplayed"
+    assert ret is False, "The Media should NOT have been autoplayed"
 
 
 def test_decide_autoplay_media_global_autostart_not_hidden_live(media_env, settings):
@@ -928,13 +917,10 @@ def test_decide_autoplay_media_global_autostart_not_hidden_live(media_env, setti
     mocked_service_item.item.will_auto_start.return_value = False
     settings.setValue('core/auto unblank', False)
     settings.setValue('media/media auto start', QtCore.Qt.CheckState.Checked)
-    media_env.media_controller.is_live = True
-    media_env.media_controller.media_info = ItemMediaInfo()
-    media_env.media_controller.is_theme_background = False
     # WHEN: decide_autoplay() is called
-    ret = media_env.media_controller.decide_autoplay(mocked_service_item, media_env.media_controller, False)
+    ret = media_env.media_controller.decide_autoplay(mocked_service_item, False)
     # THEN: Autoplay will obey the following
-    assert ret is False, "The Media should have not be autoplayed"
+    assert ret is False, "The Media should NOT have been autoplayed"
 
 
 def test_decide_autoplay_media_normal_autounblank_live(media_env, settings):
@@ -946,11 +932,8 @@ def test_decide_autoplay_media_normal_autounblank_live(media_env, settings):
     mocked_service_item.requires_media.return_value = True
     settings.setValue('core/auto unblank', True)
     settings.setValue('media/media auto start', QtCore.Qt.CheckState.Unchecked)
-    media_env.media_controller.is_live = True
-    media_env.media_controller.media_info = ItemMediaInfo()
-    media_env.media_controller.media_info.is_theme_background = False
     # WHEN: decide_autoplay() is called
-    ret = media_env.media_controller.decide_autoplay(mocked_service_item, media_env.media_controller, HideMode.Screen)
+    ret = media_env.media_controller.decide_autoplay(mocked_service_item, HideMode.Screen)
     # THEN: Autoplay will obey the following
     assert ret is True, "The Media should have be autoplayed"
 

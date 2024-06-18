@@ -330,7 +330,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
 
                     return
         self._media_bar(controller, 'load')
-        if self.decide_autoplay(service_item, controller, hidden):
+        if self.decide_autoplay(service_item, hidden):
             start_hidden = controller.media_info.is_theme_background and controller.is_live and \
                 (controller.current_hide_mode == HideMode.Blank or controller.current_hide_mode == HideMode.Screen)
             if not self.media_play(controller, start_hidden):
@@ -343,23 +343,22 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
                        format(nm=self.current_media_players[controller.controller_type].display_name))
         return True
 
-    def decide_autoplay(self, service_item, controller, hidden: bool) -> bool:
+    def decide_autoplay(self, service_item, hidden: bool) -> bool:
         """
         Function to decide if we can / want to autoplay a media item
 
         :param service_item: The Media Service item
-        :param controller: The controller on which the item is to be played
         :param hidden: Is the display hidden at present?
         :return: Can we autoplay the media.
         """
-        if not controller.is_live or self.settings.value('core/auto unblank'):
-            is_autoplay = True
-        elif not hidden and service_item.requires_media() and (
-                service_item.will_auto_start or
-                self.settings.value('media/media auto start') == QtCore.Qt.CheckState.Checked):
-            is_autoplay = True
-        else:
-            is_autoplay = False
+        is_autoplay = False
+        if (service_item.requires_media()):
+            if self.settings.value('core/auto unblank'):
+                is_autoplay = True
+            elif not hidden and (
+                    service_item.will_auto_start or
+                    self.settings.value('media/media auto start') == QtCore.Qt.CheckState.Checked):
+                is_autoplay = True
         return is_autoplay
 
     @staticmethod
