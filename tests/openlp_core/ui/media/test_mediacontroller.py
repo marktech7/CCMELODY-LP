@@ -901,7 +901,7 @@ def test_decide_autoplay_media_autostart_not_hidden_live(media_env, settings):
     # WHEN: decide_autoplay() is called
     ret = media_env.media_controller.decide_autoplay(mocked_service_item, media_env.media_controller, False)
     # THEN: Autoplay will obey the following
-    assert ret is True, "The Media should have not be autoplayed"
+    assert ret is False, "The Media should have not be autoplayed"
 
 
 def test_decide_autoplay_media_global_autostart_not_hidden_live(media_env, settings):
@@ -920,7 +920,7 @@ def test_decide_autoplay_media_global_autostart_not_hidden_live(media_env, setti
     # WHEN: decide_autoplay() is called
     ret = media_env.media_controller.decide_autoplay(mocked_service_item, media_env.media_controller, False)
     # THEN: Autoplay will obey the following
-    assert ret is True, "The Media should have not be autoplayed"
+    assert ret is False, "The Media should have not be autoplayed"
 
 
 def test_decide_autoplay_media_normal_autounblank_live(media_env, settings):
