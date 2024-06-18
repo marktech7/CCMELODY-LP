@@ -349,27 +349,17 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
 
         :param service_item: The Media Service item
         :param controller: The controller on which the item is to be played
-        :param hidden: is the display hidden at present?
+        :param hidden: Is the display hidden at present?
         :return: Can we autoplay the media.
         """
-        if not controller.is_live:
-            return True
-        is_autoplay = False
-        # Visible or background requested or Service Item wants background media
-        if service_item.requires_media() and hidden == HideMode.Theme:
+        if not controller.is_live or self.settings.value('core/auto unblank'):
             is_autoplay = True
-        elif not hidden and (service_item.will_auto_start or
-                             self.settings.value('media/media auto start') == QtCore.Qt.CheckState.Checked):
+        elif not hidden and service_item.requires_media() and (
+            service_item.will_auto_start or
+            self.settings.value('media/media auto start') == QtCore.Qt.CheckState.Checked):
             is_autoplay = True
-        # Unblank on load set
-        elif self.settings.value('core/auto unblank'):
-            is_autoplay = True
-        if controller.media_info.is_theme_background:
-            is_autoplay = True
-        if controller.media_info.media_type == MediaType.Stream:
-            is_autoplay = True
-        if controller.media_info.media_type == MediaType.Stream:
-            is_autoplay = True
+        else:
+            is_autoplay = False
         return is_autoplay
 
     @staticmethod
