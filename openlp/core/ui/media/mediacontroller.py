@@ -355,8 +355,8 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         if not controller.is_live or self.settings.value('core/auto unblank'):
             is_autoplay = True
         elif not hidden and service_item.requires_media() and (
-            service_item.will_auto_start or
-            self.settings.value('media/media auto start') == QtCore.Qt.CheckState.Checked):
+                service_item.will_auto_start or
+                self.settings.value('media/media auto start') == QtCore.Qt.CheckState.Checked):
             is_autoplay = True
         else:
             is_autoplay = False
