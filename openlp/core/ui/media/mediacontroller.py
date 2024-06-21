@@ -34,7 +34,7 @@ except ImportError:
 
 from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common.i18n import translate
+from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.path import path_to_str
 from openlp.core.common.platform import is_linux, is_macosx
@@ -307,8 +307,8 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             is_valid = self._check_file_type(controller, display)
         if not is_valid:
             # Media could not be loaded correctly
-            critical_error_message_box(translate('MediaPlugin.MediaItem', 'Unsupported File'),
-                                       translate('MediaPlugin.MediaItem', 'Unsupported File'))
+            critical_error_message_box(UiStrings().UnsupportedFile,
+                                       UiStrings().UnsupportedFile)
             return False
         self.log_debug('video media type: {tpe} '.format(tpe=str(controller.media_info.media_type)))
         # If both the preview and live view have a stream, make sure only the live view continues streaming
@@ -334,8 +334,8 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             start_hidden = controller.media_info.is_theme_background and controller.is_live and \
                 (controller.current_hide_mode == HideMode.Blank or controller.current_hide_mode == HideMode.Screen)
             if not self.media_play(controller, start_hidden):
-                critical_error_message_box(translate('MediaPlugin.MediaItem', 'Unsupported File'),
-                                           translate('MediaPlugin.MediaItem', 'Unsupported File'))
+                critical_error_message_box(UiStrings().UnsupportedFile,
+                                           UiStrings().UnsupportedFile)
                 return False
         self._update_seek_ui(controller)
         self.set_controls_visible(controller, True)
@@ -380,6 +380,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         :param media_path: The file path to be checked..
         """
         if MediaInfo.can_parse():
+            media_data = None
             if pymediainfo_version < '4.3':
                 # pymediainfo only introduced file objects in 4.3, so if this is an older version, we'll have to use
                 # the old method. See https://gitlab.com/openlp/openlp/-/issues/1187
@@ -387,18 +388,21 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             else:
                 # pymediainfo has an issue opening non-ascii file names, so pass it a file object instead
                 # See https://gitlab.com/openlp/openlp/-/issues/1041
-                with Path(media_path).open('rb') as media_file:
-                    media_data = MediaInfo.parse(media_file)
+                file_path = Path(media_path)
+                if file_path.is_file():
+                    with file_path.open('rb') as media_file:
+                        media_data = MediaInfo.parse(media_file)
+            if media_data is not None:
                 # duration returns in milli seconds
-            duration = media_data.tracks[0].duration
-            # It appears that sometimes we get a string. Let's try to interpret that as int, or fall back to 0
-            # See https://gitlab.com/openlp/openlp/-/issues/1387
-            if isinstance(duration, str):
-                if duration.strip().isdigit():
-                    duration = int(duration.strip())
-                else:
-                    duration = 0
-            return duration or 0
+                duration = media_data.tracks[0].duration
+                # It appears that sometimes we get a string. Let's try to interpret that as int, or fall back to 0
+                # See https://gitlab.com/openlp/openlp/-/issues/1387
+                if isinstance(duration, str):
+                    if duration.strip().isdigit():
+                        duration = int(duration.strip())
+                    else:
+                        duration = 0
+                return duration or 0
         return 0
 
     def media_setup_optical(self, filename, title, audio_track, subtitle_track, start, end,

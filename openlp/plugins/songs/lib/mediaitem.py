@@ -635,8 +635,10 @@ class SongMediaItem(MediaManagerItem):
                 total_length = 0
                 # We could have stored multiple files but only the first one will be played.
                 for m in song.media_files:
-                    total_length += self.media_controller.media_length(m.file_path)
-                    service_item.background_audio = [(m.file_path, m.file_hash)]
+                    file_path = m.file_path
+                    if file_path.is_file():
+                        total_length += self.media_controller.media_length(file_path)
+                        service_item.background_audio = [(file_path, m.file_hash)]
                     break
                 service_item.set_media_length(total_length)
                 service_item.metadata.append('<em>{label}:</em> {media}'.

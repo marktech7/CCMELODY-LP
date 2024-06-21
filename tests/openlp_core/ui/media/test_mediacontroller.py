@@ -579,6 +579,20 @@ def test_media_length(file_name, media_length, media_env):
     assert results == media_length, f'The correct duration for {file_name} should be {media_length}, was {results}'
 
 
+def test_media_non_existent(media_env):
+    """
+    Test that when media file does not exist, we default to 0
+    """
+    # GIVEN: A path to a nonexistent media file
+    file_path = 'path/to/nonexistent/video.mkv'
+
+    # WHEN the media data is retrieved
+    duration = media_env.media_controller.media_length(file_path)
+
+    # THEN the duration should be zero
+    assert duration == 0, 'The duration should be 0'
+
+
 @patch('openlp.core.ui.media.mediacontroller.MediaInfo.parse')
 @patch('openlp.core.ui.media.mediacontroller.Path')
 def test_media_length_duration_none(MockPath, mocked_parse, media_env):
@@ -592,7 +606,7 @@ def test_media_length_duration_none(MockPath, mocked_parse, media_env):
     # WHEN the media data is retrieved
     duration = media_env.media_controller.media_length(file_path)
 
-    # THEN you can determine the run time
+    # THEN the duration should be zero
     assert duration == 0, 'The duration should be 0'
 
 
