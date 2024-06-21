@@ -846,9 +846,9 @@ def test_media_play(media_env):
 
 def test_decide_autoplay_media_preview(media_env, settings):
     """
-    Test that media with a normal background behaves
+    Test that no media, that is not hidden, behaves
     """
-    # GIVEN: A service item
+    # GIVEN: A service item that has no linked media and is not hidden
     mocked_service_item = MagicMock()
     mocked_service_item.requires_media.return_value = False
     settings.setValue('core/auto unblank', True)
@@ -863,9 +863,11 @@ def test_decide_autoplay_media_preview(media_env, settings):
 
 def test_decide_autoplay_media_normal_hidden_live(media_env, settings):
     """
-    Test that media with a normal background behaves
+    Test that media, that has show theme active with
+    setting auto unblank active and media auto start inactive, behaves
     """
-    # GIVEN: A media controller and a service item
+    # GIVEN: A service item that has linked media and has show theme active with
+    # setting auto unblank active and media auto start inactive
     mocked_service_item = MagicMock()
     mocked_service_item.requires_media.return_value = True
     settings.setValue('core/auto unblank', True)
@@ -878,9 +880,11 @@ def test_decide_autoplay_media_normal_hidden_live(media_env, settings):
 
 def test_decide_autoplay_media_normal_not_hidden_live(media_env, settings):
     """
-    Test that media with a normal background behaves
+    Test that media, that has show desktop active with
+    setting auto unblank inactive and media auto start inactive, behaves
     """
-    # GIVEN: A media controller and a service item
+    # GIVEN: A service item that has linked media and has show desktop active with
+    # setting auto unblank inactive and media auto start inactive
     mocked_service_item = MagicMock()
     mocked_service_item.requires_media.return_value = True
     settings.setValue('core/auto unblank', False)
@@ -893,9 +897,11 @@ def test_decide_autoplay_media_normal_not_hidden_live(media_env, settings):
 
 def test_decide_autoplay_media_autostart_not_hidden_live(media_env, settings):
     """
-    Test that media with a normal background behaves
+    Test that no media, that is not hidden and will auto start with
+    setting auto unblank inactive and media auto start inactive, behaves
     """
-    # GIVEN: A media controller and a service item
+    # GIVEN: A service item that has no linked media and has media auto start and
+    # is not hidden with setting auto unblank inactive and media auto start inactive
     mocked_service_item = MagicMock()
     mocked_service_item.requires_media.return_value = False
     mocked_service_item.item.will_auto_start.return_value = True
@@ -909,9 +915,11 @@ def test_decide_autoplay_media_autostart_not_hidden_live(media_env, settings):
 
 def test_decide_autoplay_media_global_autostart_not_hidden_live(media_env, settings):
     """
-    Test that media with a normal background behaves
+    Test that no media, that is not hidden with setting auto unblank inactive
+    and media auto start active, behaves
     """
-    # GIVEN: A media controller and a service item
+    # GIVEN: A service item that has no linked media and is not hidden
+    # with setting auto unblank inactive and media auto start active
     mocked_service_item = MagicMock()
     mocked_service_item.requires_media.return_value = False
     mocked_service_item.item.will_auto_start.return_value = False
@@ -925,15 +933,17 @@ def test_decide_autoplay_media_global_autostart_not_hidden_live(media_env, setti
 
 def test_decide_autoplay_media_normal_autounblank_live(media_env, settings):
     """
-    Test that media with a normal background behaves
+    Test that media, that has show black active with
+    setting auto unblank active and media auto start inactive, behaves
     """
-    # GIVEN: A media controller and a service item
+    # GIVEN: A service item that has linked media and has show black active
+    # with setting auto unblank active and media auto start inactive
     mocked_service_item = MagicMock()
     mocked_service_item.requires_media.return_value = True
     settings.setValue('core/auto unblank', True)
     settings.setValue('media/media auto start', QtCore.Qt.CheckState.Unchecked)
     # WHEN: decide_autoplay() is called
-    ret = media_env.media_controller.decide_autoplay(mocked_service_item, HideMode.Screen)
+    ret = media_env.media_controller.decide_autoplay(mocked_service_item, HideMode.Blank)
     # THEN: Autoplay will obey the following
     assert ret is True, "The Media should have be autoplayed"
 
