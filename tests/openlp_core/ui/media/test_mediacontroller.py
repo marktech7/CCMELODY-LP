@@ -844,7 +844,7 @@ def test_media_play(media_env):
     mocked_controller._set_theme.assert_called_once()
 
 
-def test_decide_autoplay_media_preview(media_env, settings):
+def test_decide_autoplay_no_media_autounblank_not_hidden(media_env, settings):
     """
     Test that no media, that is not hidden, behaves
     """
@@ -861,7 +861,7 @@ def test_decide_autoplay_media_preview(media_env, settings):
     assert ret is False, "The Media should NOT have been autoplayed"
 
 
-def test_decide_autoplay_media_normal_hidden_live(media_env, settings):
+def test_decide_autoplay_media_autounblank_hidden_theme(media_env, settings):
     """
     Test that media, that has show theme active with
     setting auto unblank active and media auto start inactive, behaves
@@ -878,7 +878,7 @@ def test_decide_autoplay_media_normal_hidden_live(media_env, settings):
     assert ret is True, "The Media should have been autoplayed"
 
 
-def test_decide_autoplay_media_normal_not_hidden_live(media_env, settings):
+def test_decide_autoplay_media_hidden_screen(media_env, settings):
     """
     Test that media, that has show desktop active with
     setting auto unblank inactive and media auto start inactive, behaves
@@ -895,7 +895,7 @@ def test_decide_autoplay_media_normal_not_hidden_live(media_env, settings):
     assert ret is False, "The Media should NOT have been autoplayed"
 
 
-def test_decide_autoplay_media_autostart_not_hidden_live(media_env, settings):
+def test_decide_autoplay_no_media_autostart_not_hidden(media_env, settings):
     """
     Test that no media, that is not hidden and will auto start with
     setting auto unblank inactive and media auto start inactive, behaves
@@ -913,7 +913,7 @@ def test_decide_autoplay_media_autostart_not_hidden_live(media_env, settings):
     assert ret is False, "The Media should NOT have been autoplayed"
 
 
-def test_decide_autoplay_media_global_autostart_not_hidden_live(media_env, settings):
+def test_decide_autoplay_no_media_global_autostart_not_hidden(media_env, settings):
     """
     Test that no media, that is not hidden with setting auto unblank inactive
     and media auto start active, behaves
@@ -931,7 +931,7 @@ def test_decide_autoplay_media_global_autostart_not_hidden_live(media_env, setti
     assert ret is False, "The Media should NOT have been autoplayed"
 
 
-def test_decide_autoplay_media_normal_autounblank_live(media_env, settings):
+def test_decide_autoplay_media_autounblank_hidden_blank(media_env, settings):
     """
     Test that media, that has show black active with
     setting auto unblank active and media auto start inactive, behaves
