@@ -44,7 +44,7 @@ class PlanningCenterSongImport(SongImport):
         manager = songs.plugin.manager
         SongImport.__init__(self, manager, file_path=None)
 
-    def add_song(self, item_title, author, lyrics, theme_name, last_modified):
+    def add_song(self, item_title, author, lyrics, theme_name, last_modified, copyright="", ccli_number=""):
         """
         Builds and adds song to the database and returns the Song ID
         :param item_title: The song title.
@@ -52,12 +52,16 @@ class PlanningCenterSongImport(SongImport):
         :param lyrics: Lyrics String from Planning Center
         :param theme_name: Theme String to use for this song
         :param last_modified: DateTime of last modified date for this song
+        :param copyright: Copyright statement for this song
+        :param ccli_no: CCLI number for this song
         """
         self.set_defaults()
         self.title = item_title
         self.theme_name = theme_name
         if author:
             self.parse_author(author)
+        self.ccli_number = ccli_number
+        self.copyright = copyright
         # handle edge condition where a song has no lyrics set
         if lyrics is None:
             self.add_verse(item_title)

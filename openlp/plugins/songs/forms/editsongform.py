@@ -1105,16 +1105,17 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         for row in range(self.audio_list_widget.count()):
             item = self.audio_list_widget.item(row)
             file_path = item.data(QtCore.Qt.ItemDataRole.UserRole)
-            if save_path not in file_path.parents:
-                old_file_path, file_path = file_path, save_path / file_path.name
-                copyfile(old_file_path, file_path)
-            file_paths.append(file_path)
-            media_file = MediaFile()
-            media_file.file_path = file_path
-            media_file.file_hash = sha256_file_hash(file_path)
-            media_file.type = 'audio'
-            media_file.weight = row
-            self.song.media_files.append(media_file)
+            if file_path.is_file():
+                if save_path not in file_path.parents:
+                    old_file_path, file_path = file_path, save_path / file_path.name
+                    copyfile(old_file_path, file_path)
+                file_paths.append(file_path)
+                media_file = MediaFile()
+                media_file.file_path = file_path
+                media_file.file_hash = sha256_file_hash(file_path)
+                media_file.type = 'audio'
+                media_file.weight = row
+                self.song.media_files.append(media_file)
         for audio_path in audio_paths:
             if audio_path not in file_paths:
                 try:

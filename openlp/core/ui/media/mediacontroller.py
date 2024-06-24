@@ -27,7 +27,7 @@ from typing import Union
 
 from PySide6 import QtCore, QtWidgets
 
-from openlp.core.common.i18n import translate
+from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.display.window import DisplayWindow
@@ -267,10 +267,8 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         is_valid = self._check_file_type_and_load(controller)
         if not is_valid:
             # Media could not be loaded correctly
-            critical_error_message_box(
-                translate("MediaPlugin.MediaItem", "Unsupported File"),
-                translate("MediaPlugin.MediaItem", "Unable to load file - Unsupported File"),
-            )
+            critical_error_message_box(UiStrings().UnsupportedFile,
+                                       UiStrings().UnsupportedFile)
             return False
         self.log_debug("video media type: {tpe} ".format(tpe=str(controller.media_play_item.media_type)))
         # If both the preview and live view have a device stream, make sure only the live view continues streaming
@@ -300,10 +298,8 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
                 and (controller.current_hide_mode == HideMode.Blank or controller.current_hide_mode == HideMode.Screen)
             )
             if not self.media_play(controller, start_hidden):
-                critical_error_message_box(
-                    translate("MediaPlugin.MediaItem", "Unsupported File"),
-                    translate("MediaPlugin.MediaItem", "Unsupported File - unable to play"),
-                )
+                critical_error_message_box(UiStrings().UnsupportedFile,
+                                           UiStrings().UnsupportedFile)
                 return False
         self._update_seek_ui(controller)
         self.set_controls_visible(controller, True)

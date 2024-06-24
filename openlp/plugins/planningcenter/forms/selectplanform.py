@@ -200,6 +200,16 @@ class SelectPlanForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
                             if len(song_data) and len(arrangement_data):
                                 break
                         author = song_data['attributes']['author']
+                        try:
+                            copyright = song_data['attributes']['copyright']
+                        except KeyError:
+                            log.error("no copyright info for %s", item_title)
+                            copyright = ""
+                        try:
+                            ccli_no = song_data['attributes']['ccli_number']
+                        except KeyError:
+                            log.error("no ccli_number info for %s", item_title)
+                            ccli_no = ""
                         lyrics = arrangement_data['attributes']['lyrics']
                         arrangement_updated_at = datetime.strptime(arrangement_data['attributes']['updated_at'].
                                                                    rstrip("Z"), '%Y-%m-%dT%H:%M:%S')
@@ -207,7 +217,8 @@ class SelectPlanForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
                         planning_center_import = PlanningCenterSongImport()
                         theme_name = self.song_theme_selection_combo_box.currentText()
                         openlp_id = planning_center_import.add_song(item_title, author, lyrics,
-                                                                    theme_name, arrangement_updated_at)
+                                                                    theme_name, arrangement_updated_at,
+                                                                    copyright, ccli_no)
                         planning_center_id_to_openlp_id[song_id] = openlp_id
                     openlp_id = planning_center_id_to_openlp_id[song_id]
                     media_type = 'songs'

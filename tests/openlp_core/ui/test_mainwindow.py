@@ -785,8 +785,8 @@ def test_screen_changed_modal_sets_timestamp_after_blocking_on_modal(mocked_info
                                                                      mocked_timer_singleshot: MagicMock,
                                                                      main_window: MainWindow):
     """
-    Test that the screen changed modal latest shown timestamp is set after showing warning message, so
-    that duplicate modals due to event spamming on 'config_screen_changed' in less than 5 seconds is mitigated.
+    Test that the screen changed modal indicator is set back to True after showing warning message at the very end of
+    the method, so that duplicate modals due to event spamming on 'config_screen_changed' is mitigated.
     """
     # GIVEN: a newly opened OpenLP instance, mocked screens, renderer and an special QMessageBox warning handler
     main_window._live_controller = MagicMock()
@@ -796,10 +796,10 @@ def test_screen_changed_modal_sets_timestamp_after_blocking_on_modal(mocked_info
     # WHEN: we trigger a 'config_screen_changed' event
     Registry().execute('config_screen_changed')
 
-    # THEN: main_window.screen_change_timestamp should have a timestamp, indicating that timestamp is set after
-    # the blocking modal is shown.
+    # THEN: main_window.should_show_screen_change_message should be true, indicating that the next time the screen is
+    # changed the warning message will be displayed again
     mocked_information.assert_called_once()
-    assert main_window.screen_change_timestamp is not None
+    assert main_window.should_show_screen_change_message is True
 
 
 @patch('openlp.core.ui.mainwindow.QtWidgets.QMessageBox.critical')

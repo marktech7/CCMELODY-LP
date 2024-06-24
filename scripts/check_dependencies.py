@@ -31,7 +31,7 @@ modules, simply run this script::
 import importlib
 import os
 import sys
-from distutils.version import LooseVersion
+from packaging.version import parse
 
 IS_WIN = sys.platform.startswith('win')
 IS_LIN = sys.platform.startswith('lin')
@@ -133,7 +133,7 @@ def check_vers(version, required, text):
     if not isinstance(required, str):
         required = '.'.join(map(str, required))
     w('  %s >= %s ...  ' % (text, required) + space)
-    if LooseVersion(version) >= LooseVersion(required):
+    if parse(version) >= parse(required):
         w(version + os.linesep)
         return True
     else:
@@ -171,7 +171,7 @@ def print_vers_fail(required, text):
 
 
 def verify_python():
-    if not check_vers(list(sys.version_info), VERS['Python'], text='Python'):
+    if not check_vers(list(sys.version_info)[0:3], VERS['Python'], text='Python'):
         exit(1)
 
 

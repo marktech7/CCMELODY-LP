@@ -40,7 +40,7 @@ from openlp.core.ui.slidecontroller import NON_TEXT_MENU, WIDE_MENU, NARROW_MENU
     PreviewController, SlideController
 
 
-def test_initial_slide_controller(registry: Registry, mock_settings: MagicMock):
+def test_initial_slide_controller(registry: Registry, settings: Settings):
     """
     Test the initial slide controller state .
     """
@@ -1266,8 +1266,8 @@ def test_on_preview_double_click_add_to_service(mock_settings: MagicMock):
     assert 1 == slide_controller.on_preview_add_to_service.call_count, 'Should have been called once.'
 
 
-@patch(u'PySide6.QtCore.QTimer.singleShot')
-def test_update_preview_live(mocked_singleShot: MagicMock, registry: Registry):
+@patch('PySide6.QtCore.QTimer.singleShot')
+def test_update_preview_live(mocked_singleShot: MagicMock, registry: Registry, settings: Settings):
     """
     Test that the preview screen is updated with a screen grab for live service items
     """
@@ -1284,6 +1284,7 @@ def test_update_preview_live(mocked_singleShot: MagicMock, registry: Registry):
     slide_controller = SlideController(None)
     slide_controller.service_item = mocked_live_item
     slide_controller.is_live = True
+    slide_controller._current_hide_mode = None
     slide_controller.log_debug = MagicMock()
     slide_controller.selected_row = MagicMock()
     slide_controller.screens = MagicMock()
@@ -1304,7 +1305,47 @@ def test_update_preview_live(mocked_singleShot: MagicMock, registry: Registry):
     assert 2 == mocked_singleShot.call_count, 'Timer to display_maindisplay should have been called 2 times'
 
 
-@patch(u'PySide6.QtCore.QTimer.singleShot')
+@patch('PySide6.QtCore.QTimer.singleShot')
+def test_update_preview_live_hidden_blank(mocked_singleShot: MagicMock, registry: Registry, settings: Settings):
+    """
+    Test that the preview screen is updated with a screen grab for live service items when blank hidden mode.
+    """
+    # GIVEN: A mocked live service item, a mocked Registry,
+    #        and a slide controller with many mocks.
+    # Mocked Live Item
+    mocked_live_item = MagicMock()
+    mocked_live_item.get_rendered_frame.return_value = ''
+    mocked_live_item.is_capable = MagicMock()
+    mocked_live_item.is_capable.side_effect = [True, True]
+    mocked_main_window = MagicMock()
+    Registry().register('main_window', mocked_main_window)
+    # Mock SlideController
+    slide_controller = SlideController(None)
+    slide_controller.service_item = mocked_live_item
+    slide_controller.is_live = True
+    slide_controller._current_hide_mode = HideMode.Blank
+    slide_controller.preview_display = MagicMock()
+    slide_controller.log_debug = MagicMock()
+    slide_controller.selected_row = MagicMock()
+    slide_controller.screens = MagicMock()
+    slide_controller.screens.current = {'primary': ''}
+    slide_controller.displays = [MagicMock()]
+    slide_controller.display.preview.return_value = QtGui.QImage()
+    slide_controller.display_maindisplay = MagicMock()
+    slide_controller.slide_preview = MagicMock()
+    slide_controller.slide_count = 0
+    slide_controller.slide_changed_time = datetime.datetime.now()
+
+    # WHEN: update_preview is called
+    slide_controller.update_preview()
+
+    # THEN: A screen_grab should have been called
+    assert 0 == slide_controller.slide_preview.setPixmap.call_count, 'setPixmap should not be called'
+    assert 0 == slide_controller.display.preview.call_count, 'display.preview() should not be called'
+    assert 0 == mocked_singleShot.call_count, 'Timer to display_maindisplay should have been called 0 times'
+
+
+@patch('PySide6.QtCore.QTimer.singleShot')
 def test_update_preview_pres(mocked_singleShot: MagicMock, registry: Registry):
     """
     Test that the preview screen is updated with the correct preview for presentation service items
@@ -1341,7 +1382,7 @@ def test_update_preview_pres(mocked_singleShot: MagicMock, registry: Registry):
     assert 0 == mocked_singleShot.call_count, 'Timer to display_maindisplay should not be called'
 
 
-@patch(u'PySide6.QtCore.QTimer.singleShot')
+@patch('PySide6.QtCore.QTimer.singleShot')
 def test_update_preview_media(mocked_singleShot: MagicMock, registry: Registry):
     """
     Test that the preview screen is updated with the correct preview for media service items
@@ -1379,7 +1420,7 @@ def test_update_preview_media(mocked_singleShot: MagicMock, registry: Registry):
     assert 0 == mocked_singleShot.call_count, 'Timer to display_maindisplay should not be called'
 
 
-@patch(u'PySide6.QtCore.QTimer.singleShot')
+@patch('PySide6.QtCore.QTimer.singleShot')
 def test_update_preview_image(mocked_singleShot: MagicMock, registry: Registry):
     """
     Test that the preview screen is updated with the correct preview for image service items
@@ -1416,7 +1457,7 @@ def test_update_preview_image(mocked_singleShot: MagicMock, registry: Registry):
     assert 0 == mocked_singleShot.call_count, 'Timer to display_maindisplay should not be called'
 
 
-@patch(u'openlp.core.ui.slidecontroller.image_to_byte')
+@patch('openlp.core.ui.slidecontroller.image_to_byte')
 def test_display_maindisplay(mocked_image_to_byte: MagicMock, registry: Registry):
     """
     Test the display_maindisplay method
@@ -1477,10 +1518,10 @@ def _init__capture_maindisplay_mocks(geometry: list, mocked_screenlist: MagicMoc
                                         mocked_screenlist_instance=mocked_screenlist_instance)
 
 
-@patch(u'openlp.core.ui.slidecontroller.image_to_byte')
-@patch(u'openlp.core.ui.slidecontroller.ScreenList')
-@patch(u'openlp.core.ui.slidecontroller.QtWidgets.QApplication')
-@patch(u'openlp.core.ui.slidecontroller.is_wayland_compositor')
+@patch('openlp.core.ui.slidecontroller.image_to_byte')
+@patch('openlp.core.ui.slidecontroller.ScreenList')
+@patch('openlp.core.ui.slidecontroller.QtWidgets.QApplication')
+@patch('openlp.core.ui.slidecontroller.is_wayland_compositor')
 @mark.parametrize('geometry', [[[34, 67, 77, 42], [0, 0, 800, 600]]])
 def test__capture_maindisplay(mocked_is_wayland_compositor: MagicMock, mocked_application: MagicMock,
                               mocked_screenlist: MagicMock, mocked_image_to_byte: MagicMock, geometry: list,
@@ -1499,10 +1540,10 @@ def test__capture_maindisplay(mocked_is_wayland_compositor: MagicMock, mocked_ap
     mocks.mocked_screenlist_instance.current.try_grab_screen_part.assert_called_once()
 
 
-@patch(u'openlp.core.ui.slidecontroller.image_to_byte')
-@patch(u'openlp.core.ui.slidecontroller.ScreenList')
-@patch(u'openlp.core.ui.slidecontroller.QtWidgets.QApplication')
-@patch(u'openlp.core.ui.slidecontroller.is_wayland_compositor')
+@patch('openlp.core.ui.slidecontroller.image_to_byte')
+@patch('openlp.core.ui.slidecontroller.ScreenList')
+@patch('openlp.core.ui.slidecontroller.QtWidgets.QApplication')
+@patch('openlp.core.ui.slidecontroller.is_wayland_compositor')
 @mark.parametrize('geometry', [[[34, 67, 77, 42], [0, 0, 800, 600]]])
 def test__capture_maindisplay_wayland_fallbacks_to_windowed(mocked_is_wayland_compositor: MagicMock,
                                                             mocked_application: MagicMock,
@@ -1525,10 +1566,10 @@ def test__capture_maindisplay_wayland_fallbacks_to_windowed(mocked_is_wayland_co
     mocks.mocked_primary_screen.grabWindow.assert_not_called()
 
 
-@patch(u'openlp.core.ui.slidecontroller.image_to_byte')
-@patch(u'openlp.core.ui.slidecontroller.ScreenList')
-@patch(u'openlp.core.ui.slidecontroller.QtWidgets.QApplication')
-@patch(u'openlp.core.ui.slidecontroller.is_wayland_compositor')
+@patch('openlp.core.ui.slidecontroller.image_to_byte')
+@patch('openlp.core.ui.slidecontroller.ScreenList')
+@patch('openlp.core.ui.slidecontroller.QtWidgets.QApplication')
+@patch('openlp.core.ui.slidecontroller.is_wayland_compositor')
 @mark.parametrize('geometry', [[[400, 400, 800, 600], [0, 0, 800, 600]], [[510, 0, 800, 600], [0, 0, 800, 600]],
                                [[0, 320, 800, 600], [0, 0, 800, 600]], [[-200, -100, 800, 600], [0, 0, 800, 600]],
                                [[-120, 0, 800, 600], [0, 0, 800, 600]], [[0, -140, 800, 600], [0, 0, 800, 600]],
@@ -1556,9 +1597,9 @@ def test__capture_maindisplay_offscreen_fallbacks_to_windowed(mocked_is_wayland_
     mocks.mocked_primary_screen.grabWindow.assert_not_called()
 
 
-@patch(u'openlp.core.ui.slidecontroller.ScreenList')
-@patch(u'openlp.core.ui.slidecontroller.QtWidgets.QApplication')
-@patch(u'openlp.core.ui.slidecontroller.is_wayland_compositor')
+@patch('openlp.core.ui.slidecontroller.ScreenList')
+@patch('openlp.core.ui.slidecontroller.QtWidgets.QApplication')
+@patch('openlp.core.ui.slidecontroller.is_wayland_compositor')
 @mark.parametrize('geometry', [[[34, 67, 77, 42], [0, 0, 800, 600]]])
 def test__capture_maindisplay_offscreen_command_screenshot(mocked_is_wayland_compositor: MagicMock,
                                                            mocked_application: MagicMock,
@@ -1590,9 +1631,9 @@ def test__capture_maindisplay_offscreen_command_screenshot(mocked_is_wayland_com
     assert photo == pixmap
 
 
-@patch(u'openlp.core.ui.slidecontroller.ScreenList')
-@patch(u'openlp.core.ui.slidecontroller.QtWidgets.QApplication')
-@patch(u'openlp.core.ui.slidecontroller.is_wayland_compositor')
+@patch('openlp.core.ui.slidecontroller.ScreenList')
+@patch('openlp.core.ui.slidecontroller.QtWidgets.QApplication')
+@patch('openlp.core.ui.slidecontroller.is_wayland_compositor')
 @mark.parametrize('geometry', [[[-800, -600, 800, 600], [0, 0, 800, 600]]])
 @mark.parametrize('hide_mode', [HideMode.Screen, HideMode.Blank])
 def test__capture_maindisplay_window_fakes_black_screen(mocked_is_wayland_compositor: MagicMock,
@@ -1625,7 +1666,7 @@ def test__capture_maindisplay_window_fakes_black_screen(mocked_is_wayland_compos
     assert image.pixelColor(int(geometry[1][2] / 2), int(geometry[1][3] / 2)) == QtGui.QColorConstants.Black
 
 
-@patch(u'openlp.core.ui.slidecontroller.image_to_byte')
+@patch('openlp.core.ui.slidecontroller.image_to_byte')
 def test_grab_maindisplay(mocked_image_to_byte: MagicMock, registry: Registry):
     """
     Test the grab_maindisplay method
@@ -1649,7 +1690,7 @@ def test_grab_maindisplay(mocked_image_to_byte: MagicMock, registry: Registry):
     assert grabbed_stuff == 'placeholder bytified'
 
 
-@patch(u'openlp.core.ui.slidecontroller.image_to_byte')
+@patch('openlp.core.ui.slidecontroller.image_to_byte')
 def test_grab_maindisplay_cached(mocked_image_to_byte: MagicMock, registry: Registry):
     """
     Test the grab_maindisplay method with pre-cached screenshot
