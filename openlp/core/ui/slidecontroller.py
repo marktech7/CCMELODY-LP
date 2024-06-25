@@ -1211,13 +1211,13 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.screen_capture = None
             self.slide_changed_time = max(self.slide_changed_time, datetime.datetime.now())
         if self.service_item and self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
-            if self.is_live:
-                # If live, grab screen-cap of main display now
+            if self.is_live and self.get_hide_mode() is None:
+                # If live and not hidden, grab screen-cap of main display now
                 QtCore.QTimer.singleShot(500, self.display_maindisplay)
                 # but take another in a couple of seconds in case slide change is slow
                 QtCore.QTimer.singleShot(2500, self.display_maindisplay)
             else:
-                # If not live, use the slide's thumbnail/icon instead
+                # If not live or hidden, use the slide's thumbnail/icon instead
                 image_path = Path(self.service_item.get_rendered_frame(self.selected_row))
                 self.screen_capture = image_path
                 self.preview_display.set_single_image('#000', image_path)
