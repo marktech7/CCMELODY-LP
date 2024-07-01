@@ -23,6 +23,7 @@ Package to test the openlp.core.ui.slidecontroller package.
 """
 from collections import namedtuple
 import datetime
+from time import perf_counter
 
 from unittest.mock import MagicMock, patch, sentinel
 
@@ -30,9 +31,11 @@ from PySide6 import QtCore, QtGui
 from pytest import mark
 
 from openlp.core.state import State
+from openlp.core.common import ThemeLevel
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
+from openlp.core.common.utils import wait_for
 from openlp.core.lib import ItemCapabilities, ServiceItemAction
 from openlp.core.lib.serviceitem import ServiceItem
 from openlp.core.ui import HideMode
@@ -50,6 +53,49 @@ def test_initial_slide_controller(registry: Registry, settings: Settings):
     # WHEN: the default controller is built.
     # THEN: The controller should not be a live controller.
     assert slide_controller.is_live is False, 'The base slide controller should not be a live controller'
+
+
+def test_is_slide_loaded(settings: Settings):
+    """
+    Test the slide is loaded method
+    """
+    # GIVEN: A new SlideController and ServiceItem instance with a transition of 0.5 seconds.
+    slide_controller = SlideController(None)
+    service_item = ServiceItem(None)
+    service_item.add_capability(ItemCapabilities.ProvidesOwnDisplay)
+    service_item.theme = 'song_theme'
+    mocked_theme_manager = MagicMock()
+    mocked_theme_manager.global_theme = 'global_theme'
+    Registry().register('theme_manager', mocked_theme_manager)
+    settings.setValue('servicemanager/service theme', 'service_theme')
+    settings.setValue('themes/theme level', ThemeLevel.Global)
+    slide_controller.song_edit = False
+    slide_controller.service_item = service_item
+    slide_controller._current_hide_mode = None
+    slide_controller.slide_changed_time = datetime.datetime.now()
+
+    start = perf_counter()
+
+    # WHEN: The is_slide_loaded method is repeatedly run
+    wait_for(slide_controller.is_slide_loaded)
+
+    stop = perf_counter()
+
+    # THEN: The elapsed time should be one or less seconds
+    assert round(stop - start, 2) <= 1.00
+
+    # GIVEN: The presentation screen is hidden
+    slide_controller._current_hide_mode = HideMode.Blank
+    slide_controller.slide_changed_time = datetime.datetime.now()
+    start = perf_counter()
+
+    # WHEN: The is_slide_loaded method is repeatedly run
+    wait_for(slide_controller.is_slide_loaded)
+
+    stop = perf_counter()
+
+    # THEN: The elapsed time should be one or more seconds
+    assert round(stop - start, 2) >= 1.00
 
 
 def test_slide_selected(settings: Settings):

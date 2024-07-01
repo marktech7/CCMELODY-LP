@@ -1144,8 +1144,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 Registry().execute('live_display_hide', hide_mode)
             else:
                 Registry().execute('live_display_show')
-        # Update preview and loop state
-        self.update_preview()
+        # Update loop state
         self.on_toggle_loop()
 
     def on_slide_selected(self):
@@ -1328,9 +1327,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         Returns a boolean as to whether the slide should be fully visible.
         Takes transition time into consideration.
         """
-        slide_delay_time = 1
+        slide_delay_time = 0
         if self.service_item:
-            slide_delay_time = self.service_item.get_transition_delay()
+            slide_delay_time = self.service_item.get_transition_delay() if self.get_hide_mode is None else 1
         slide_ready_time = self.slide_changed_time + datetime.timedelta(seconds=slide_delay_time)
         return datetime.datetime.now() > slide_ready_time
 
@@ -1618,10 +1617,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         Determine what the hide mode should be according to the blank button
         """
-        if not self.is_live:
-            return None
-        else:
-            return self._current_hide_mode
+        return self.current_hide_mode if self.is_live else None
 
 
 class PreviewController(RegistryBase, SlideController):
