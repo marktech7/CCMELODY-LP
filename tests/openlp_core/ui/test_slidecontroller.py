@@ -59,7 +59,7 @@ def test_is_slide_loaded(settings: Settings):
     """
     Test the slide is loaded method
     """
-    # GIVEN: A new SlideController and ServiceItem instance with a transition of 0.5 seconds.
+    # GIVEN: A new SlideController and ServiceItem instance with a transition of half a second.
     slide_controller = SlideController(None)
     service_item = ServiceItem(None)
     service_item.add_capability(ItemCapabilities.ProvidesOwnDisplay)
@@ -81,10 +81,11 @@ def test_is_slide_loaded(settings: Settings):
 
     stop = perf_counter()
 
-    # THEN: The elapsed time should be one or less seconds
-    assert round(stop - start, 2) <= 1.00
+    # THEN: The elapsed time should be half a second
+    assert round(stop - start, 2) == 0.5
 
     # GIVEN: The presentation screen is hidden
+    slide_controller.is_live = True
     slide_controller._current_hide_mode = HideMode.Blank
     slide_controller.slide_changed_time = datetime.datetime.now()
     start = perf_counter()
@@ -94,8 +95,8 @@ def test_is_slide_loaded(settings: Settings):
 
     stop = perf_counter()
 
-    # THEN: The elapsed time should be one or more seconds
-    assert round(stop - start, 2) >= 1.00
+    # THEN: The elapsed time should be one second
+    assert round(stop - start, 2) == 1
 
 
 def test_slide_selected(settings: Settings):
