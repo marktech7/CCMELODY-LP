@@ -74,7 +74,7 @@ def test_is_slide_loaded(settings: Settings):
     slide_controller._current_hide_mode = None
     slide_controller.slide_changed_time = datetime.datetime.now()
 
-    start = perf_counter() 
+    start = perf_counter()
 
     # WHEN: The is_slide_loaded method is repeatedly run
     wait_for(slide_controller.is_slide_loaded)
@@ -82,12 +82,12 @@ def test_is_slide_loaded(settings: Settings):
     stop = perf_counter()
 
     # THEN: The elapsed time should be one or less seconds
-    assert round(stop-start, 2) <= 1.00
+    assert round(stop - start, 2) <= 1.00
 
     # GIVEN: The presentation screen is hidden
     slide_controller._current_hide_mode = HideMode.Blank
     slide_controller.slide_changed_time = datetime.datetime.now()
-    start = perf_counter() 
+    start = perf_counter()
 
     # WHEN: The is_slide_loaded method is repeatedly run
     wait_for(slide_controller.is_slide_loaded)
@@ -95,7 +95,7 @@ def test_is_slide_loaded(settings: Settings):
     stop = perf_counter()
 
     # THEN: The elapsed time should be one or more seconds
-    assert round(stop-start, 2) >= 1.00
+    assert round(stop - start, 2) >= 1.00
 
 
 def test_slide_selected(settings: Settings):
