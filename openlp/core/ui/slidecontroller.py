@@ -1323,9 +1323,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         Returns a boolean as to whether the slide should be fully visible.
         Takes transition time into consideration.
         """
-        slide_delay_time = 1
+        slide_delay_time = 0
         if self.service_item:
-            slide_delay_time = self.service_item.get_transition_delay()
+            slide_delay_time = self.service_item.get_transition_delay() if self.get_hide_mode is None else 1
         slide_ready_time = self.slide_changed_time + datetime.timedelta(seconds=slide_delay_time)
         return datetime.datetime.now() > slide_ready_time
 
