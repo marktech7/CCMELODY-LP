@@ -400,6 +400,7 @@ class UiStrings(metaclass=Singleton):
         self.Intro = translate('SongsPlugin.VerseType', 'Intro')
         self.LayoutStyle = translate('OpenLP.Ui', 'Layout style:')
         self.Live = translate('OpenLP.Ui', 'Live')
+        self.LivePreviewShowsBlankScreen = translate('OpenLP.ServiceTab', 'Live preview shows blank screen')
         self.LiveStream = translate('OpenLP.Ui', 'Live Stream')
         self.LiveBGError = translate('OpenLP.Ui', 'Live Background Error')
         self.LiveToolbar = translate('OpenLP.Ui', 'Live Toolbar')

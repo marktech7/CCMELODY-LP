@@ -270,6 +270,7 @@ class Settings(QtCore.QSettings):
         'core/has run wizard': False,
         'core/language': '[en]',
         'core/last version test': '',
+        'core/live preview shows blank screen': False,
         'core/loop delay': 5,
         'core/recent files': [],
         'core/screens': '{}',

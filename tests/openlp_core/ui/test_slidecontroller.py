@@ -1314,7 +1314,7 @@ def test_on_preview_double_click_add_to_service(mock_settings: MagicMock):
 
 
 @patch(u'PyQt5.QtCore.QTimer.singleShot')
-def test_update_preview_live(mocked_singleShot: MagicMock, registry: Registry, settings: Settings):
+def test_update_preview_live(registry: Registry, settings: Settings):
     """
     Test that the preview screen is updated with a screen grab for live service items
     """
@@ -1342,6 +1342,7 @@ def test_update_preview_live(mocked_singleShot: MagicMock, registry: Registry, s
     slide_controller.slide_preview = MagicMock()
     slide_controller.slide_count = 0
     slide_controller.slide_changed_time = datetime.datetime.now()
+    slide_controller.is_slide_loaded = MagicMock()
 
     # WHEN: update_preview is called
     slide_controller.update_preview()
@@ -1349,11 +1350,11 @@ def test_update_preview_live(mocked_singleShot: MagicMock, registry: Registry, s
     # THEN: A screen_grab should have been called
     assert 0 == slide_controller.slide_preview.setPixmap.call_count, 'setPixmap should not be called'
     assert 0 == slide_controller.display.preview.call_count, 'display.preview() should not be called'
-    assert 2 == mocked_singleShot.call_count, 'Timer to display_maindisplay should have been called 2 times'
+    assert 1 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should have been called one time'
 
 
 @patch(u'PyQt5.QtCore.QTimer.singleShot')
-def test_update_preview_live_hidden_blank(mocked_singleShot: MagicMock, registry: Registry, settings: Settings):
+def test_update_preview_live_hidden_blank(registry: Registry, settings: Settings):
     """
     Test that the preview screen is updated with a screen grab for live service items when blank hidden mode.
     """
@@ -1383,13 +1384,25 @@ def test_update_preview_live_hidden_blank(mocked_singleShot: MagicMock, registry
     slide_controller.slide_count = 0
     slide_controller.slide_changed_time = datetime.datetime.now()
 
+    settings.setValue('core/live preview shows blank screen', False)
+
     # WHEN: update_preview is called
     slide_controller.update_preview()
 
     # THEN: A screen_grab should have been called
     assert 0 == slide_controller.slide_preview.setPixmap.call_count, 'setPixmap should not be called'
     assert 0 == slide_controller.display.preview.call_count, 'display.preview() should not be called'
-    assert 0 == mocked_singleShot.call_count, 'Timer to display_maindisplay should have been called 0 times'
+    assert 0 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should have been called zero times'
+
+    settings.setValue('core/live preview shows blank screen', True)
+    
+    # WHEN: update_preview is called
+    slide_controller.update_preview()
+
+    # THEN: A screen_grab should have been called
+    assert 0 == slide_controller.slide_preview.setPixmap.call_count, 'setPixmap should not be called'
+    assert 0 == slide_controller.display.preview.call_count, 'display.preview() should not be called'
+    assert 1 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should have been called one time'
 
 
 @patch(u'PyQt5.QtCore.QTimer.singleShot')
