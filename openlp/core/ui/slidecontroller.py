@@ -1213,18 +1213,24 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.screen_capture = None
             self.slide_changed_time = max(self.slide_changed_time, datetime.datetime.now())
         if self.service_item and self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
-            if self.is_live and (self.get_hide_mode() is None or self.settings.value('core/live preview shows blank screen')):
-                # If live and not hidden or setting 'live preview shows blank screen' is active, grab screen-cap of main display now.
+            if self.is_live and (
+                self.get_hide_mode() is None or
+                self.settings.value('core/live preview shows blank screen')
+            ):
+                # If live and not hidden or setting 'live preview shows blank screen' is active,
+                # grab screen-cap of main display now.
                 wait_for(self.is_slide_loaded)
                 self.display_maindisplay()
             else:
-                # If not live, hidden or setting 'live preview shows blank screen' is not active, use the slide's thumbnail/icon instead.
+                # If not live, hidden or setting 'live preview shows blank screen' is not active,
+                # use the slide's thumbnail/icon instead.
                 image_path = Path(self.service_item.get_rendered_frame(self.selected_row))
                 self.screen_capture = image_path
                 self.preview_display.set_single_image('#000', image_path)
         else:
             if self.capture_main_display_for_live_preview:
-                # If both settings 'click live slide to unblank' and 'live preview shows blank screen' are active, grab screen-cap of main display now.
+                # If both settings 'click live slide to unblank' and 'live preview shows blank screen' are active,
+                # grab screen-cap of main display now.
                 wait_for(self.is_slide_loaded)
                 self.display_maindisplay()
             else:

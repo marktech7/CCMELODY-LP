@@ -1348,9 +1348,9 @@ def test_update_preview_live(registry: Registry, settings: Settings):
     slide_controller.update_preview()
 
     # THEN: A screen_grab should have been called
-    assert 0 == slide_controller.slide_preview.setPixmap.call_count, 'setPixmap should not be called'
-    assert 0 == slide_controller.display.preview.call_count, 'display.preview() should not be called'
-    assert 1 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should have been called one time'
+    assert 0 == slide_controller.slide_preview.setPixmap.call_count, 'setPixmap should NOT have been called'
+    assert 0 == slide_controller.display.preview.call_count, 'display.preview() should NOT have been called'
+    assert 1 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should have been called'
 
 
 @patch(u'PyQt5.QtCore.QTimer.singleShot')
@@ -1390,19 +1390,19 @@ def test_update_preview_live_hidden_blank(registry: Registry, settings: Settings
     slide_controller.update_preview()
 
     # THEN: A screen_grab should have been called
-    assert 0 == slide_controller.slide_preview.setPixmap.call_count, 'setPixmap should not be called'
-    assert 0 == slide_controller.display.preview.call_count, 'display.preview() should not be called'
-    assert 0 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should have been called zero times'
+    assert 0 == slide_controller.slide_preview.setPixmap.call_count, 'setPixmap should NOT have been called'
+    assert 0 == slide_controller.display.preview.call_count, 'display.preview() should NOT have been called'
+    assert 0 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should NOT have been called'
 
     settings.setValue('core/live preview shows blank screen', True)
-    
+
     # WHEN: update_preview is called
     slide_controller.update_preview()
 
     # THEN: A screen_grab should have been called
-    assert 0 == slide_controller.slide_preview.setPixmap.call_count, 'setPixmap should not be called'
-    assert 0 == slide_controller.display.preview.call_count, 'display.preview() should not be called'
-    assert 1 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should have been called one time'
+    assert 0 == slide_controller.slide_preview.setPixmap.call_count, 'setPixmap should NOT have been called'
+    assert 0 == slide_controller.display.preview.call_count, 'display.preview() should NOT have been called'
+    assert 1 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should NOT have been called'
 
 
 @patch(u'PyQt5.QtCore.QTimer.singleShot')

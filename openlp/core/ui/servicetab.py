@@ -224,7 +224,9 @@ class ServiceTab(SettingsTab):
         self.auto_unblank_check_box.setChecked(self.settings.value('core/auto unblank'))
         self.click_live_slide_to_unblank_check_box.setChecked(self.settings.value('core/click live slide to unblank'))
         self.auto_preview_check_box.setChecked(self.settings.value('core/auto preview'))
-        self.live_preview_shows_blank_screen_check_box.setChecked(self.settings.value('core/live preview shows blank screen'))
+        self.live_preview_shows_blank_screen_check_box.setChecked(
+            self.settings.value('core/live preview shows blank screen')
+        )
         self.timeout_spin_box.setValue(self.settings.value('core/loop delay'))
         # Service Item Wrapping
         self.slide_limits = self.settings.value('advanced/slide limits')
@@ -258,7 +260,8 @@ class ServiceTab(SettingsTab):
         self.settings.setValue('core/click live slide to unblank',
                                self.click_live_slide_to_unblank_check_box.isChecked())
         self.settings.setValue('core/auto preview', self.auto_preview_check_box.isChecked())
-        self.settings.setValue('core/live preview shows blank screen', self.live_preview_shows_blank_screen_check_box.isChecked())
+        self.settings.setValue('core/live preview shows blank screen',
+                               self.live_preview_shows_blank_screen_check_box.isChecked())
         self.settings.setValue('core/loop delay', self.timeout_spin_box.value())
         # Service Item Wrapping
         self.settings.setValue('advanced/slide limits', self.slide_limits)
