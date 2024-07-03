@@ -1384,9 +1384,8 @@ def test_update_preview_live_hidden_blank(registry: Registry, settings: Settings
     slide_controller.slide_count = 0
     slide_controller.slide_changed_time = datetime.datetime.now()
 
+    # WHEN: Setting 'core/live preview shows blank screen' is inactive and update_preview is called
     settings.setValue('core/live preview shows blank screen', False)
-
-    # WHEN: update_preview is called
     slide_controller.update_preview()
 
     # THEN: A screen_grab should have been called
@@ -1394,9 +1393,8 @@ def test_update_preview_live_hidden_blank(registry: Registry, settings: Settings
     assert 0 == slide_controller.display.preview.call_count, 'display.preview() should NOT have been called'
     assert 0 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should NOT have been called'
 
+    # WHEN: Setting 'core/live preview shows blank screen' is active and update_preview is called
     settings.setValue('core/live preview shows blank screen', True)
-
-    # WHEN: update_preview is called
     slide_controller.update_preview()
 
     # THEN: A screen_grab should have been called
@@ -1738,6 +1736,7 @@ def test_grab_maindisplay(mocked_image_to_byte: MagicMock, registry: Registry):
     slide_controller.preview_display = MagicMock()
     slide_controller.fetching_screenshot = False
     slide_controller.screen_capture = None
+    slide_controller._current_hide_mode = None
     slide_controller.service_item = MagicMock(get_transition_delay=MagicMock(return_value=1))
     slide_controller.slide_changed_time = datetime.datetime.now() - datetime.timedelta(seconds=10)
     mocked_image_to_byte.side_effect = lambda x: '{} bytified'.format(x)
