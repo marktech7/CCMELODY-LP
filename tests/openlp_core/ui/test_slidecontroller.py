@@ -1736,7 +1736,6 @@ def test_grab_maindisplay(mocked_image_to_byte: MagicMock, registry: Registry):
     slide_controller.preview_display = MagicMock()
     slide_controller.fetching_screenshot = False
     slide_controller.screen_capture = None
-    slide_controller._current_hide_mode = None
     slide_controller.service_item = MagicMock(get_transition_delay=MagicMock(return_value=1))
     slide_controller.slide_changed_time = datetime.datetime.now() - datetime.timedelta(seconds=10)
     mocked_image_to_byte.side_effect = lambda x: '{} bytified'.format(x)
