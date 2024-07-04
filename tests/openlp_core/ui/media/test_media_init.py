@@ -35,9 +35,6 @@ def test_media_suffix():
     # GIVEN: A default set of suffixes
     # WHEN:I request them
     aud, vid = get_supported_media_suffix()
-    print(aud)
-    print(vid)
-    print(type(vid[0]))
     # THEN: the following Codecs will be returned
     assert "mp3" not in aud
     assert "mp4" not in vid

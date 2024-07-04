@@ -42,6 +42,7 @@ def edit_song_form():
 @pytest.fixture()
 def edit_song_form_with_ui(settings: Settings) -> EditSongForm:
     main_window = QtWidgets.QMainWindow()
+    Registry().register('service_list', MagicMock())
     Registry().register('main_window', main_window)
     Registry().register('theme_manager', MagicMock())
     form = EditSongForm(None, main_window, MagicMock())

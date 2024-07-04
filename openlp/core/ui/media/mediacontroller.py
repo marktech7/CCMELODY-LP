@@ -33,10 +33,10 @@ from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.display.window import DisplayWindow
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box, warning_message_box
-from openlp.core.state import State, MessageType
+from openlp.core.state import State
 from openlp.core.ui import DisplayControllerType, HideMode
 from openlp.core.ui.slidecontroller import SlideController
-from openlp.core.ui.media import MediaState, MediaPlayItem, MediaType, format_play_seconds, media_empty_song, \
+from openlp.core.ui.media import MediaState, MediaPlayItem, MediaType, format_play_seconds, \
     format_play_time, parse_stream_path, get_volume, toggle_looping_playback, saved_looping_playback, save_volume
 from openlp.core.ui.media.remote import register_views
 from openlp.core.ui.media.mediainfo import media_info
@@ -233,7 +233,8 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             if controller.media_play_item.is_theme_background:
                 print("B1")
                 controller.media_play_item.media_type = MediaType.Dual
-                controller.media_play_item.media_file = service_item.video_file_name           # is_background indicates we shouldn't override the normal display
+                controller.media_play_item.media_file = service_item.video_file_name
+                # is_background indicates we shouldn't override the normal display
                 controller.media_play_item.is_background = True
         elif service_item.is_capable(ItemCapabilities.HasBackgroundStream):
             print("C")

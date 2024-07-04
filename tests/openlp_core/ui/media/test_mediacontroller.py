@@ -29,7 +29,6 @@ import pytest
 from PySide6 import QtCore
 
 from openlp.core.state import State
-from openlp.core.common.platform import is_macosx
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.ui import DisplayControllerType, HideMode
