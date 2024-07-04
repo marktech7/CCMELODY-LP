@@ -21,12 +21,26 @@
 """
 Package to test the openlp.core.ui.media package.
 """
+
 import pytest
 
 from unittest.mock import MagicMock, ANY
 
 from openlp.core.ui.media import get_volume, save_volume, toggle_looping_playback, saved_looping_playback
-from openlp.core.ui.media import format_milliseconds
+from openlp.core.ui.media import format_milliseconds, get_supported_media_suffix
+
+
+def test_media_suffix():
+    """ Test the generation of media suffixex"""
+    # GIVEN: A default set of suffixes
+    # WHEN:I request them
+    aud, vid = get_supported_media_suffix()
+    print(aud)
+    print(vid)
+    print(type(vid[0]))
+    # THEN: the following Codecs will be returned
+    assert "mp3" not in aud
+    assert "mp4" not in vid
 
 
 def test_format_milliseconds():

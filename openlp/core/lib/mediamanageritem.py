@@ -27,13 +27,11 @@ from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
-from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.core.lib import ServiceItemContext
 from openlp.core.lib.plugin import StringContent
 from openlp.core.lib.serviceitem import ServiceItem
 from openlp.core.lib.ui import create_widget_action, critical_error_message_box
-from openlp.core.ui.media import AVI, MP4, get_supported_mime_types, get_supported_media_suffix
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.dialogs import FileDialog
 from openlp.core.widgets.edits import SearchEdit
@@ -122,7 +120,6 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties, LogMixin):
         self.has_new_icon = True
         self.has_edit_icon = True
         self.has_file_icon = False
-        self.has_file_media_icon = False
         self.has_delete_icon = True
         self.add_to_service_item = False
         self.can_preview = True
@@ -183,9 +180,6 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties, LogMixin):
         # Load Button
         if self.has_file_icon:
             toolbar_actions.append(['Load', StringContent.Load, UiIcons().open, self.on_file_click])
-        # Load Media
-        if self.has_file_media_icon:
-            toolbar_actions.append(['Load', StringContent.Load, UiIcons().open, self.on_file_media_click])
         # New Button
         if self.has_new_icon:
             toolbar_actions.append(['New', StringContent.New, UiIcons().new, self.on_new_click])
@@ -360,29 +354,6 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties, LogMixin):
         if file_paths:
             self.application.set_busy_cursor()
             self.validate_and_load(file_paths)
-        self.application.set_normal_cursor()
-
-    def on_file_media_click(self):
-        """
-        Add a file to the list widget to make it available for showing with mime type filters
-        """
-        file_dialog = FileDialog(self)
-        file_dialog.setDirectory(str(self.settings.value(self.settings_section + '/last directory')))
-        file_dialog.setWindowTitle(self.on_new_prompt)
-        #mime_types = get_supported_mime_types()
-        #print(mime_types)
-        #file_dialog.setMimeTypeFilters(mime_types)
-        #default_mimetype = MP4
-        #if default_mimetype in mime_types:
-        #    file_dialog.selectMimeTypeFilter(default_mimetype)
-        suffixes = get_supported_media_suffix()
-        file_dialog.setNameFilters(suffixes)
-        if file_dialog.exec() == QtWidgets.QDialog.Accepted:
-            file_paths = file_dialog.selectedFiles()
-            self.log_info(f'New file(s) {file_paths}')
-            if file_paths:
-                self.application.set_busy_cursor()
-                self.validate_and_load(file_paths)
         self.application.set_normal_cursor()
 
     def handle_mime_data(self, data):

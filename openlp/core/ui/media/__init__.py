@@ -25,7 +25,6 @@ import logging
 
 from PySide6.QtMultimedia import QMediaFormat
 
-from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 
 log = logging.getLogger(__name__ + '.__init__')
@@ -43,46 +42,25 @@ VIDEO_EXT = ['*.3g2', '*.3gp', '*.3gp2', '*.3gpp', '*.amv', '*.asf', '*.avi', '*
              '*.rec', '*.rm', '*.rmvb', '*.rpl', '*.thp', '*.tod', '*.ts', '*.tts', '*.txd', '*.vob', '*.vro', '*.webm',
              '*.wm', '*.wmv', '*.wtv', '*.xesc', '*.nut', '*.rv', '*.xvid']
 
-AVI = "video/x-msvideo"  # AVI
-
-MP4 = 'video/mp4'
-
 
 def get_supported_media_suffix():
     """
     Provide a list of suffixes the Media input dialog to use for selection
     """
-    suffixes = []
+    # Hardcode mp3 until QT bUG 126143 lands
+    a_suffixes = ['*.mp3']
+    v_suffixes = ['']
     for f in QMediaFormat().supportedFileFormats(QMediaFormat.Decode):
         mime_type = QMediaFormat(f).mimeType()
-        suffixes += ['*.'+ s for s in mime_type.suffixes()]
-    suffix_filter = []
-    suffix_filter.append('Media files ({suffixes})'.format(suffixes=' '.join(suffixes)))
-    suffix_filter.append('Any files (*)')
-    return suffix_filter
-
-
-def get_supported_mime_types():
-    """
-    Provide a list of Mime types for  the Media imput dialog to use for selection
-    """
-    mime_types = []
-    for f in QMediaFormat().supportedFileFormats(QMediaFormat.Decode):
-        mime_type = QMediaFormat(f).mimeType()
-        mime_types.append(mime_type.name())
-        print(mime_type.suffixes())
-    #if (is_win() and AVI not in mime_types):
-    #    mime_types.append(AVI)
-    #if MP4 not in mime_types:
-    #    mime_types.append(MP4)
-    # Add mimetype for all files (*.*)
-    mime_types.append('; '.join(mime_types))
-    mime_types.append('application/octet-stream')
-    return mime_types
+        if 'video' in mime_type.name():
+            v_suffixes += [f'*.{s}' for s in mime_type.suffixes()]
+        else:
+            a_suffixes += [f'*.{s}' for s in mime_type.suffixes()]
+    return a_suffixes, v_suffixes
 
 
 def validate_supported_mime_type(mime: str) -> bool:
-    result = []
+    result = ['mp3']
     for f in QMediaFormat().supportedFileFormats(QMediaFormat.Decode):
         mime_type = QMediaFormat(f).mimeType()
         result.append(mime_type.name())
@@ -91,7 +69,6 @@ def validate_supported_mime_type(mime: str) -> bool:
             if mime in m:
                 return True
     return False
-
 
 
 class MediaState(object):

@@ -37,7 +37,7 @@ from openlp.core.lib.ui import create_widget_action, critical_error_message_box
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.library import FolderLibraryItem
-from openlp.core.ui.media import parse_stream_path, AUDIO_EXT, VIDEO_EXT, MediaType
+from openlp.core.ui.media import get_supported_media_suffix, parse_stream_path, AUDIO_EXT, VIDEO_EXT, MediaType
 
 from openlp.plugins.media.lib.db import Folder, Item
 
@@ -96,7 +96,7 @@ class MediaMediaItem(FolderLibraryItem):
         Set which icons the media manager tab should show
         """
         super().required_icons()
-        self.has_file_media_icon = True
+        self.has_file_icon = True
         self.has_new_icon = False
         self.has_edit_icon = False
         if not State().check_preconditions('media'):
@@ -209,10 +209,11 @@ class MediaMediaItem(FolderLibraryItem):
         Rebuild the tab in the media manager when changes are made in the settings.
         """
         # self.populate_display_types()
+        audio, video = get_supported_media_suffix()
         self.on_new_file_masks = translate('MediaPlugin.MediaItem',
                                            'Videos ({video});;Audio ({audio});;{files} '
-                                           '(*)').format(video=' '.join(VIDEO_EXT),
-                                                         audio=' '.join(AUDIO_EXT),
+                                           '(*)').format(video=' '.join(video),
+                                                         audio=' '.join(audio),
                                                          files=UiStrings().AllFiles)
 
     def file_to_item(self, filename):
