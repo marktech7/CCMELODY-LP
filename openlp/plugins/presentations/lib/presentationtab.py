@@ -189,7 +189,6 @@ class PresentationTab(SettingsTab):
             self.settings.setValue(setting_key, self.odp_display_check_box.checkState())
             changed = True
         if changed:
-            self.settings_form.register_post_process('mediaitem_suffix_reset')
             self.settings_form.register_post_process('mediaitem_presentation_rebuild')
             self.settings_form.register_post_process('mediaitem_suffixes')
 

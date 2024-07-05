@@ -47,7 +47,6 @@ from openlp.core.lib.serviceitem import ServiceItem
 from openlp.core.lib.ui import create_widget_action, critical_error_message_box, find_and_set_in_combo_box
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
-from openlp.core.ui.media import AUDIO_EXT, VIDEO_EXT
 from openlp.core.ui.serviceitemeditform import ServiceItemEditForm
 from openlp.core.ui.servicenoteform import ServiceNoteForm
 from openlp.core.ui.starttimeform import StartTimeForm
@@ -322,8 +321,6 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         super().__init__(parent)
         self._save_lite = False
         self.service_items = []
-        self.suffixes = set()
-        self.add_media_suffixes()
         self.drop_position = -1
         self.service_id = 0
         # is a new service and has not been saved
@@ -359,7 +356,6 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         Registry().register_function('config_screen_changed', self.regenerate_service_items)
         Registry().register_function('theme_change_global', self.regenerate_service_items)
         Registry().register_function('theme_change_service', self.regenerate_changed_service_items)
-        Registry().register_function('mediaitem_suffix_reset', self.reset_supported_suffixes)
 
     def bootstrap_post_set_up(self):
         """
@@ -381,13 +377,6 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         del_button.setText(translate('OpenLP.ServiceManager', '&Delete item'))
         msg_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Close)
         return msg_box.exec()
-
-    def add_media_suffixes(self):
-        """
-        Add the suffixes supported by :mod:`openlp.core.ui.media.vlcplayer`
-        """
-        self.suffixes.update(AUDIO_EXT)
-        self.suffixes.update(VIDEO_EXT)
 
     def set_modified(self, modified=True):
         """
@@ -440,23 +429,6 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         if self._service_path:
             return self._service_path.name
-
-    def reset_supported_suffixes(self):
-        """
-        Resets the Suffixes list.
-        """
-        self.suffixes.clear()
-
-    def supported_suffixes(self, suffix_list):
-        """
-        Adds Suffixes supported to the master list. Called from Plugins.
-
-        :param list[str] | str suffix_list: New suffix(s) to be supported
-        """
-        if isinstance(suffix_list, str):
-            self.suffixes.add(suffix_list)
-        else:
-            self.suffixes.update(suffix_list)
 
     def set_theme_visibility(self):
         """Set the visibility of the theme items"""
@@ -907,7 +879,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                     service_item.set_from_service(item, version=self.servicefile_version)
                 else:
                     service_item.set_from_service(item, self.service_path, self.servicefile_version)
-                service_item.validate_item(self.suffixes)
+                service_item.validate_item()
                 if service_item.is_capable(ItemCapabilities.OnLoadUpdate):
                     new_item = Registry().get(service_item.name).service_load(service_item)
                     if new_item:

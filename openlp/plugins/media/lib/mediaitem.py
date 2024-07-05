@@ -37,7 +37,7 @@ from openlp.core.lib.ui import create_widget_action, critical_error_message_box
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.library import FolderLibraryItem
-from openlp.core.ui.media import get_supported_media_suffix, parse_stream_path, AUDIO_EXT, VIDEO_EXT, MediaType
+from openlp.core.ui.media import get_supported_media_suffix, parse_stream_path, MediaType
 
 from openlp.plugins.media.lib.db import Folder, Item
 
@@ -260,7 +260,8 @@ class MediaMediaItem(FolderLibraryItem):
             tree_item = QtWidgets.QTreeWidgetItem([file_name])
             tree_item.setText(0, file_name)
             search = "*." + file_name.split('.')[-1].lower()
-            if search in AUDIO_EXT:
+            _, v_suffixes = get_supported_media_suffix()
+            if search in v_suffixes:
                 tree_item.setIcon(0, UiIcons().audio)
             else:
                 tree_item.setIcon(0, UiIcons().video)
@@ -289,24 +290,6 @@ class MediaMediaItem(FolderLibraryItem):
             return [item.file_path, name]
         else:
             return super().format_search_result(item)
-
-    def get_list(self, media_type=MediaType.Audio):
-        """
-        Get the list of media, optional select media type.
-
-        :param media_type: Type to get, defaults to audio.
-        :return: The media list
-        """
-        if media_type == MediaType.Audio:
-            extensions = AUDIO_EXT
-        else:
-            extensions = VIDEO_EXT
-        clauses = []
-        for extension in extensions:
-            # Drop the initial * and add to the list of clauses
-            clauses.append(Item.file_path.endswith(extension[1:]))
-        items = self.manager.get_all_objects(Item, or_(*clauses))
-        return [Path(item.file_path) for item in items]
 
     def on_open_device_stream(self):
         """

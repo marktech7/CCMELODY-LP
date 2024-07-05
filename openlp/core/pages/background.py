@@ -28,7 +28,7 @@ from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.theme import BackgroundGradientType, BackgroundType
 from openlp.core.pages import GridLayoutPage
 from openlp.core.ui.icons import UiIcons
-from openlp.core.ui.media import VIDEO_EXT
+from openlp.core.ui.media import get_supported_media_suffix
 from openlp.core.widgets.buttons import ColorButton
 from openlp.core.widgets.edits import PathEdit
 from openlp.core.widgets.labels import FormLabel
@@ -190,10 +190,9 @@ class BackgroundPage(GridLayoutPage):
         self.stream_label.setText('{text}:'.format(text=UiStrings().LiveStream))
         self.image_path_edit.filters = \
             '{name};;{text} (*)'.format(name=get_images_filter(), text=UiStrings().AllFiles)
-        visible_formats = '({name})'.format(name='; '.join(VIDEO_EXT))
-        actual_formats = '({name})'.format(name=' '.join(VIDEO_EXT))
-        video_filter = '{trans} {visible} {actual}'.format(trans=translate('OpenLP', 'Video Files'),
-                                                           visible=visible_formats, actual=actual_formats)
+        _, video = get_supported_media_suffix()
+        video_filter = '{trans} ({visible})'.format(trans=translate('OpenLP', 'Video Files'),
+                                                           visible=' '.join(video))
         self.video_path_edit.filters = '{video};;{ui} (*)'.format(video=video_filter, ui=UiStrings().AllFiles)
 
     def _on_background_type_index_changed(self, index):

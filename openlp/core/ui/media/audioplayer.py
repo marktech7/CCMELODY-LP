@@ -79,7 +79,6 @@ class AudioPlayer(MediaBase, LogMixin):
         else:
             Registry().get("media_controller").vlc_preview_media_tick.emit()
 
-
     def load(self) -> bool:
         """
         Load a audio file into the player
@@ -90,7 +89,7 @@ class AudioPlayer(MediaBase, LogMixin):
         """
         self.log_debug("load audio in Audio Player")
         # The media player moved here to clear the playlist between uses.
-        if self.controller.media_play_item.audio_file : # and self.controller.media_play_item.is_background:
+        if self.controller.media_play_item.audio_file:  # and self.controller.media_play_item.is_background:
             self.media_player.setSource(QUrl.fromLocalFile(str(self.controller.media_play_item.audio_file)))
             return True
         return False
