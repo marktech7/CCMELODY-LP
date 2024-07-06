@@ -699,10 +699,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties, LogMixin):
             else:
                 item_id = remote_item
         else:
-            if self.remote_triggered is None:
-                item_id = item.data(QtCore.Qt.UserRole)
-            else:
-                item_id = remote_item
+            item_id = item.data(QtCore.Qt.UserRole)
         return item_id
 
     def save_auto_select_id(self):
