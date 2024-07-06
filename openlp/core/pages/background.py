@@ -191,8 +191,7 @@ class BackgroundPage(GridLayoutPage):
         self.image_path_edit.filters = \
             '{name};;{text} (*)'.format(name=get_images_filter(), text=UiStrings().AllFiles)
         _, video = get_supported_media_suffix()
-        video_filter = '{trans} ({visible})'.format(trans=translate('OpenLP', 'Video Files'),
-                                                           visible=' '.join(video))
+        video_filter = '{trans} ({visible})'.format(trans=translate('OpenLP', 'Video Files'), visible=' '.join(video))
         self.video_path_edit.filters = '{video};;{ui} (*)'.format(video=video_filter, ui=UiStrings().AllFiles)
 
     def _on_background_type_index_changed(self, index):

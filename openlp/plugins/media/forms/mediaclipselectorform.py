@@ -152,7 +152,8 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         :param path: Path to the device to be tested.
         :return: True if it was an audio CD else False.
         """
-        vlc = get_vlc()
+        # vlc = get_vlc()
+        vlc = None
         # Detect by trying to play it as a CD
         self.vlc_media = self.vlc_instance.media_new_location('cdda://' + path)
         self.vlc_media_player.set_media(self.vlc_media)
@@ -186,7 +187,8 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         :param clicked: Given from signal, not used.
         """
         log.debug('on_load_disc_button_clicked')
-        vlc = get_vlc()
+        # vlc = get_vlc()
+        vlc = None
         self.disable_all()
         self.application.set_busy_cursor()
         path = self.media_path_combobox.currentText()
@@ -255,7 +257,8 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
             self.blockSignals(True)
             # Get titles, insert in combobox
             titles = self.vlc_media_player.video_get_title_description()
-            titles = get_vlc().track_description_list(titles)
+            # titles = get_vlc().track_description_list(titles)
+            title = ""
             self.titles_combo_box.clear()
             for title in titles:
                 self.titles_combo_box.addItem(title[1].decode(), title[0])
@@ -277,7 +280,8 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
 
         :param clicked: Given from signal, not used.
         """
-        vlc = get_vlc()
+        # vlc = get_vlc()
+        vlc = None
         if self.vlc_media_player.get_state() == vlc.State.Playing:
             self.vlc_media_player.pause()
             self.play_button.setIcon(self.play_icon)
@@ -378,7 +382,8 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         :param index: The index of the newly chosen title track.
         """
         log.debug('in on_titles_combo_box_changed, index: {index:d}'.format(index=index))
-        vlc = get_vlc()
+        # vlc = get_vlc()
+        vlc = None
         if not self.vlc_media_player:
             log.error('vlc_media_player was None')
             return
@@ -625,7 +630,8 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         :param media_state: VLC media state to wait for.
         :return: True if state was reached within 15 seconds, False if not or error occurred.
         """
-        vlc = get_vlc()
+        # vlc = get_vlc()
+        vlc = None
         start = datetime.now()
         while media_state != self.vlc_media_player.get_state():
             sleep(0.1)

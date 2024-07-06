@@ -24,7 +24,6 @@ import os
 from pathlib import Path
 
 from PySide6 import QtCore, QtWidgets
-from sqlalchemy.sql.expression import or_
 
 from openlp.core.common import delete_file
 from openlp.core.common.applocation import AppLocation
