@@ -68,6 +68,12 @@ def add(plugin_name, id):
         getattr(plugin.media_item, '{action}_add_to_service'.format(action=plugin_name)).emit([item_id, True])
 
 
+def delete(plugin_name):
+    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin_name)
+    if plugin.status == PluginStatus.Active and plugin.media_item:
+        getattr(plugin.media_item, '{action}_delete_from_service'.format(action=plugin_name)).emit([])
+
+
 def get_options(plugin_name):
     plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin_name)
     if plugin.status == PluginStatus.Active and plugin.media_item:
@@ -102,6 +108,14 @@ def add_view(plugin):
         abort(400)
     id = data.get('id', -1)
     add(plugin, id)
+    return '', 204
+
+
+@plugins.route('/<plugin>/delete', methods=['POST'])
+@login_required
+def delete_view(plugin):
+    log.debug(f'{plugin}/delete called')
+    delete(plugin)
     return '', 204
 
 

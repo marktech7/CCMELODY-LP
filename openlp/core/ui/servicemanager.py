@@ -1325,13 +1325,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         Remove the current ServiceItem from the list.
         """
-        item = self.find_service_item()[0]
-        if item != -1 and (not self.settings.value('advanced/delete service item confirmation') or
-                           self._delete_confirmation_dialog() == QtWidgets.QMessageBox.Close):
-            self.service_items.remove(self.service_items[item])
-            self.repaint_service_list(item - 1, -1)
-            self.set_modified()
-            self.servicemanager_changed.emit()
+        self.delete_service_item()
 
     def repaint_service_list(self, service_item: int, service_item_child: int):
         """
@@ -1612,6 +1606,18 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 self.live_controller.replace_service_manager_item(item)
         self.drop_position = -1
         self.set_modified()
+
+    def delete_service_item(self):
+        """
+        Remove the current ServiceItem from the list.
+        """
+        item = self.find_service_item()[0]
+        if item != -1 and (not self.settings.value('advanced/delete service item confirmation') or
+                           self._delete_confirmation_dialog() == QtWidgets.QMessageBox.Close):
+            self.service_items.remove(self.service_items[item])
+            self.repaint_service_list(item - 1, -1)
+            self.set_modified()
+            self.servicemanager_changed.emit()
 
     def make_preview(self):
         """

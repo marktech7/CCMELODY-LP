@@ -47,6 +47,7 @@ class CustomMediaItem(MediaManagerItem):
     """
     custom_go_live = QtCore.pyqtSignal(list)
     custom_add_to_service = QtCore.pyqtSignal(list)
+    custom_delete_from_service = QtCore.pyqtSignal(list)
     log.info('Custom Media Item loaded')
 
     def __init__(self, parent, plugin):
@@ -59,6 +60,7 @@ class CustomMediaItem(MediaManagerItem):
         """
         self.custom_go_live.connect(self.go_live_remote)
         self.custom_add_to_service.connect(self.add_to_service_remote)
+        self.custom_delete_from_service.connect(self.delete_from_service_remote)
         self.edit_custom_form = EditCustomForm(self, self.main_window, self.plugin.db_manager)
         self.single_service_item = False
         self.quick_preview_allowed = True
