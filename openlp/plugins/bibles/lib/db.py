@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import Any, List, Optional, Tuple
 
 import chardet
-from PyQt5 import QtCore
+from PySide6 import QtCore
 from sqlalchemy import Column, ForeignKey, func, or_
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session, declarative_base, relationship

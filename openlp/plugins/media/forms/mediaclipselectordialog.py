@@ -20,7 +20,7 @@
 ##########################################################################
 
 
-from PyQt5 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.ui.icons import UiIcons
@@ -99,7 +99,7 @@ class Ui_MediaClipSelector(object):
         self.preview_frame.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
                                                                QtWidgets.QSizePolicy.Policy.MinimumExpanding))
         self.preview_frame.setStyleSheet('background-color:black;')
-        self.preview_frame.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.preview_frame.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.preview_frame.setObjectName('preview_frame')
         self.main_layout.addWidget(self.preview_frame)
         # player controls
@@ -111,7 +111,7 @@ class Ui_MediaClipSelector(object):
         self.controls_layout.addWidget(self.play_button)
         self.position_slider = QtWidgets.QSlider(media_clip_selector)
         self.position_slider.setTracking(False)
-        self.position_slider.setOrientation(QtCore.Qt.Horizontal)
+        self.position_slider.setOrientation(QtCore.Qt.Orientation.Horizontal)
         self.position_slider.setObjectName('position_slider')
         self.controls_layout.addWidget(self.position_slider)
         self.position_timeedit = QtWidgets.QTimeEdit(media_clip_selector)

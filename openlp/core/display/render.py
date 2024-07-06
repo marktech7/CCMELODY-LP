@@ -28,7 +28,7 @@ import math
 import os
 import re
 
-from PyQt5 import QtWidgets, QtGui
+from PySide6 import QtWidgets, QtGui
 
 from openlp.core.common import ThemeLevel
 from openlp.core.common.enum import ServiceItemType

@@ -19,7 +19,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets, QtGui
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
@@ -36,8 +36,10 @@ class AlertForm(QtWidgets.QDialog, AlertDialog):
         """
         Initialise the alert form
         """
-        super(AlertForm, self).__init__(Registry().get('main_window'), QtCore.Qt.WindowSystemMenuHint |
-                                        QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
+        super(AlertForm, self).__init__(Registry().get('main_window'),
+                                        QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                        QtCore.Qt.WindowType.WindowTitleHint |
+                                        QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.manager = plugin.manager
         self.plugin = plugin
         self.item_id = None
@@ -68,7 +70,7 @@ class AlertForm(QtWidgets.QDialog, AlertDialog):
         alerts = self.manager.get_all_objects(AlertItem, order_by_ref=AlertItem.text)
         for alert in alerts:
             item_name = QtWidgets.QListWidgetItem(alert.text)
-            item_name.setData(QtCore.Qt.UserRole, alert.id)
+            item_name.setData(QtCore.Qt.ItemDataRole.UserRole, alert.id)
             self.alert_list_widget.addItem(item_name)
             if alert.text == self.alert_text_edit.text():
                 self.item_id = alert.id
@@ -93,7 +95,7 @@ class AlertForm(QtWidgets.QDialog, AlertDialog):
         """
         item = self.alert_list_widget.currentItem()
         if item:
-            item_id = item.data(QtCore.Qt.UserRole)
+            item_id = item.data(QtCore.Qt.ItemDataRole.UserRole)
             self.manager.delete_object(AlertItem, item_id)
             row = self.alert_list_widget.row(item)
             self.alert_list_widget.takeItem(row)
@@ -149,7 +151,7 @@ class AlertForm(QtWidgets.QDialog, AlertDialog):
         list_item = self.alert_list_widget.item(item.row())
         self.trigger_alert(list_item.text())
         self.alert_text_edit.setText(list_item.text())
-        self.item_id = list_item.data(QtCore.Qt.UserRole)
+        self.item_id = list_item.data(QtCore.Qt.ItemDataRole.UserRole)
         self.save_button.setEnabled(False)
 
     def on_single_click(self):
@@ -159,7 +161,7 @@ class AlertForm(QtWidgets.QDialog, AlertDialog):
         item = self.alert_list_widget.selectedIndexes()[0]
         list_item = self.alert_list_widget.item(item.row())
         self.alert_text_edit.setText(list_item.text())
-        self.item_id = list_item.data(QtCore.Qt.UserRole)
+        self.item_id = list_item.data(QtCore.Qt.ItemDataRole.UserRole)
         # If the alert does not contain '<>' we clear the ParameterEdit field.
         if self.alert_text_edit.text().find('<>') == -1:
             self.parameter_edit.setText('')
@@ -180,7 +182,7 @@ class AlertForm(QtWidgets.QDialog, AlertDialog):
                                            translate('AlertsPlugin.AlertForm',
                                                      'You have not entered a parameter to be replaced.\n'
                                                      'Do you want to continue anyway?')
-                                           ) == QtWidgets.QMessageBox.No:
+                                           ) == QtWidgets.QMessageBox.StandardButton.No:
             self.parameter_edit.setFocus()
             return False
         # The ParameterEdit field is not empty, but we have not found '<>'
@@ -191,7 +193,7 @@ class AlertForm(QtWidgets.QDialog, AlertDialog):
                                            translate('AlertsPlugin.AlertForm',
                                                      'The alert text does not contain \'<>\'.\n'
                                                      'Do you want to continue anyway?')
-                                           ) == QtWidgets.QMessageBox.No:
+                                           ) == QtWidgets.QMessageBox.StandardButton.No:
             self.parameter_edit.setFocus()
             return False
         text = text.replace('<>', self.parameter_edit.text())

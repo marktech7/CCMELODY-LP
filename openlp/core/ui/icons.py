@@ -24,7 +24,7 @@ The :mod:`languages` module provides a list of icons.
 import logging
 
 import qtawesome as qta
-from PyQt5 import QtGui, QtWidgets
+from PySide6 import QtGui, QtWidgets
 
 from openlp.core.common import Singleton
 from openlp.core.common.applocation import AppLocation
@@ -116,7 +116,6 @@ class UiIcons(metaclass=Singleton):
             'new_group': {'icon': 'mdi.folder'},
             'notes': {'icon': 'mdi.note'},
             'open': {'icon': 'mdi.folder-open'},
-            'optical': {'icon': 'mdi.disc'},
             'pause': {'icon': 'mdi.pause'},
             'planning_center': {'icon': 'mdi.cloud-download'},
             'play': {'icon': 'mdi.play'},

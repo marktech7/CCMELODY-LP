@@ -28,7 +28,7 @@ from openlp.core.widgets.buttons import ColorButton
 
 
 @pytest.fixture()
-def buttons_env():
+def buttons_env(mock_settings: MagicMock):
     change_color_patcher = patch('openlp.core.widgets.buttons.ColorButton.change_color')
     clicked_patcher = patch('openlp.core.widgets.buttons.ColorButton.clicked')
     color_changed_patcher = patch('openlp.core.widgets.buttons.ColorButton.colorChanged')

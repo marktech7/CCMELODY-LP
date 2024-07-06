@@ -30,7 +30,7 @@ from copy import deepcopy
 from pathlib import Path
 from shutil import copytree, copy, move
 
-from PyQt5 import QtGui
+from PySide6 import QtGui
 
 from openlp.core.common import ThemeLevel, sha256_file_hash
 from openlp.core.common.applocation import AppLocation
@@ -44,7 +44,7 @@ from openlp.core.lib import create_thumb, image_to_data_uri, ItemCapabilities
 from openlp.core.lib.theme import BackgroundType, TransitionSpeed
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
-from openlp.core.ui.media import parse_stream_path
+from openlp.core.ui.media import parse_stream_path, validate_supported_mime_type
 
 
 log = logging.getLogger(__name__)
@@ -889,11 +889,10 @@ class ServiceItem(RegistryProperties):
         """
         return not bool(self.slides)
 
-    def validate_item(self, suffixes=None):
+    def validate_item(self):
         """
         Validates a service item to make sure it is valid
 
-        :param set[str] suffixes: A set of valid suffixes
         """
         self.is_valid = True
         for slide in self.slides:
@@ -908,12 +907,13 @@ class ServiceItem(RegistryProperties):
                 elif self.is_capable(ItemCapabilities.HasBackgroundAudio) and not State().check_preconditions('media'):
                     self.is_valid = False
                     break
-                elif self.is_capable(ItemCapabilities.IsOptical) and State().check_preconditions('media'):
-                    if not os.path.exists(slide['title']):
-                        self.is_valid = False
-                        break
+                # is not sup[ported but can arrive in old service file
+                # TODO remove in 4.1
+                elif self.is_capable(ItemCapabilities.IsOptical):
+                    self.is_valid = False
+                    break
                 elif self.is_capable(ItemCapabilities.CanStream):
-                    (name, mrl, options) = parse_stream_path(slide['path'])
+                    (_, name, mrl, options) = parse_stream_path(slide['path'])
                     if not name or not mrl or not options:
                         self.is_valid = False
                         break
@@ -925,9 +925,9 @@ class ServiceItem(RegistryProperties):
                     if not file_name.exists():
                         self.is_valid = False
                         break
-                    if suffixes and not self.is_text():
-                        file_suffix = "*.{suffx}".format(suffx=slide['title'].split('.')[-1])
-                        if file_suffix.lower() not in suffixes:
+                    if not self.is_text():
+                        file_suffix = "{suffx}".format(suffx=slide['title'].split('.')[-1])
+                        if not validate_supported_mime_type(file_suffix.lower()):
                             self.is_valid = False
                             break
 

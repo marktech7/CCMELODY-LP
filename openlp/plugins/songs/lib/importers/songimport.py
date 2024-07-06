@@ -23,7 +23,7 @@ import logging
 import re
 from shutil import copyfile
 
-from PyQt5 import QtCore
+from PySide6 import QtCore
 
 from openlp.core.common import normalize_str
 from openlp.core.common.applocation import AppLocation

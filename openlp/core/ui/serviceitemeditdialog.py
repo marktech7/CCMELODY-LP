@@ -21,7 +21,7 @@
 """
 The UI widgets for the service item edit dialog
 """
-from PyQt5 import QtWidgets
+from PySide6 import QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import create_button, create_button_box

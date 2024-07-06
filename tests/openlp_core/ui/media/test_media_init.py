@@ -19,71 +19,25 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-Package to test the openlp.core.ui package.
+Package to test the openlp.core.ui.media package.
 """
+
 import pytest
 
 from unittest.mock import MagicMock, ANY
 
-from openlp.core.ui.media import parse_optical_path, get_volume, save_volume, toggle_looping_playback, \
-    is_looping_playback
-from openlp.core.ui.media import format_milliseconds
+from openlp.core.ui.media import get_volume, save_volume, toggle_looping_playback, saved_looping_playback
+from openlp.core.ui.media import format_milliseconds, get_supported_media_suffix
 
 
-def test_parse_optical_path_linux():
-    """
-    Test that test_parse_optical_path() parses a optical path with linux device path correctly
-    """
-    # GIVEN: An optical formatted path
-    org_title_track = 1
-    org_audio_track = 2
-    org_subtitle_track = -1
-    org_start = 1234
-    org_end = 4321
-    org_name = 'test name'
-    org_device_path = '/dev/dvd'
-    path = 'optical:%d:%d:%d:%d:%d:%s:%s' % (org_title_track, org_audio_track, org_subtitle_track,
-                                             org_start, org_end, org_name, org_device_path)
-
-    # WHEN: parsing the path
-    (device_path, title_track, audio_track, subtitle_track, start, end, name) = parse_optical_path(path)
-
-    # THEN: The return values should match the original values
-    assert org_title_track == int(title_track), 'Returned title_track should match the original'
-    assert org_audio_track == audio_track, 'Returned audio_track should match the original'
-    assert org_subtitle_track == int(subtitle_track), 'Returned subtitle_track should match the original'
-    assert org_start == start, 'Returned start should match the original'
-    assert org_end == end, 'Returned end should match the original'
-    assert org_name == name, 'Returned end should match the original'
-    assert org_device_path == device_path, 'Returned device_path should match the original'
-
-
-def test_parse_optical_path_win():
-    """
-    Test that test_parse_optical_path() parses a optical path with windows device path correctly
-    """
-    # GIVEN: An optical formatted path
-    org_title_track = 1
-    org_audio_track = 2
-    org_subtitle_track = -1
-    org_start = 1234
-    org_end = 4321
-    org_name = 'test name'
-    org_device_path = 'D:'
-    path = 'optical:%d:%d:%d:%d:%d:%s:%s' % (org_title_track, org_audio_track, org_subtitle_track,
-                                             org_start, org_end, org_name, org_device_path)
-
-    # WHEN: parsing the path
-    (device_path, title_track, audio_track, subtitle_track, start, end, name) = parse_optical_path(path)
-
-    # THEN: The return values should match the original values
-    assert org_title_track == int(title_track), 'Returned title_track should match the original'
-    assert org_audio_track == audio_track, 'Returned audio_track should match the original'
-    assert org_subtitle_track == int(subtitle_track), 'Returned subtitle_track should match the original'
-    assert org_start == start, 'Returned start should match the original'
-    assert org_end == end, 'Returned end should match the original'
-    assert org_name == name, 'Returned end should match the original'
-    assert org_device_path == device_path, 'Returned device_path should match the original'
+def test_media_suffix():
+    """ Test the generation of media suffixex"""
+    # GIVEN: A default set of suffixes
+    # WHEN:I request them
+    aud, vid = get_supported_media_suffix()
+    # THEN: the following Codecs will be returned
+    assert "mp3" not in aud
+    assert "mp4" not in vid
 
 
 def test_format_milliseconds():
@@ -130,5 +84,5 @@ def test_toggle_looping_playback(mock_settings, live, result):
 def test_is_looping_playback(mock_settings, live, result):
     controller = MagicMock()
     controller.is_live = live
-    is_looping_playback(controller)
+    saved_looping_playback(controller)
     mock_settings.value.assert_called_with(result)

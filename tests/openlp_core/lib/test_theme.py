@@ -22,7 +22,7 @@
 Package to test the openlp.core.lib.theme package.
 """
 import pytest
-from PyQt5 import QtCore
+from PySide6 import QtCore
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 

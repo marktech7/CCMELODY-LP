@@ -22,7 +22,7 @@
 The :mod:`resources` module provides application images and icons in a central
 store for use by OpenLP.
 """
-from PyQt5 import QtCore
+from PySide6 import QtCore
 
 qt_resource_data = b"\
 \x00\x00\x03\x2f\

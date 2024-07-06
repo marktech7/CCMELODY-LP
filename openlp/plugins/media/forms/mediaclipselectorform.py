@@ -25,14 +25,13 @@ from datetime import datetime
 from pathlib import Path
 from time import sleep
 
-from PyQt5 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.platform import is_linux, is_macosx, is_win
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui.icons import UiIcons
-from openlp.core.ui.media.vlcplayer import get_vlc
 from openlp.plugins.media.forms.mediaclipselectordialog import Ui_MediaClipSelector
 
 
@@ -55,8 +54,10 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         """
         Constructor
         """
-        super(MediaClipSelectorForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint |
-                                                    QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
+        super(MediaClipSelectorForm, self).__init__(parent,
+                                                    QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                                    QtCore.Qt.WindowType.WindowTitleHint |
+                                                    QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.vlc_instance = None
         self.vlc_media_player = None
         self.vlc_media = None
@@ -116,10 +117,10 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         """
         Setup VLC instance and mediaplayer
         """
-        vlc = get_vlc()
-        self.vlc_instance = vlc.Instance()
+        # vlc = get_vlc()
+        # self.vlc_instance = vlc.Instance()
         # creating an empty vlc media player
-        self.vlc_media_player = self.vlc_instance.media_player_new()
+        # self.vlc_media_player = self.vlc_instance.media_player_new()
         # The media player has to be 'connected' to the QFrame.
         # (otherwise a video would be displayed in it's own window)
         # This is platform specific!
@@ -129,7 +130,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         if is_win():
             self.vlc_media_player.set_hwnd(win_id)
         elif is_macosx():
-            # We have to use 'set_nsobject' since Qt5 on OSX uses Cocoa
+            # We have to use 'set_nsobject' since Qt6 on OSX uses Cocoa
             # framework and not the old Carbon.
             self.vlc_media_player.set_nsobject(win_id)
         else:
@@ -151,7 +152,8 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         :param path: Path to the device to be tested.
         :return: True if it was an audio CD else False.
         """
-        vlc = get_vlc()
+        # vlc = get_vlc()
+        vlc = None
         # Detect by trying to play it as a CD
         self.vlc_media = self.vlc_instance.media_new_location('cdda://' + path)
         self.vlc_media_player.set_media(self.vlc_media)
@@ -177,7 +179,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
 
         return True
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     def on_load_disc_button_clicked(self, clicked):
         """
         Load the media when the load-button has been clicked
@@ -185,7 +187,8 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         :param clicked: Given from signal, not used.
         """
         log.debug('on_load_disc_button_clicked')
-        vlc = get_vlc()
+        # vlc = get_vlc()
+        vlc = None
         self.disable_all()
         self.application.set_busy_cursor()
         path = self.media_path_combobox.currentText()
@@ -254,7 +257,8 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
             self.blockSignals(True)
             # Get titles, insert in combobox
             titles = self.vlc_media_player.video_get_title_description()
-            titles = get_vlc().track_description_list(titles)
+            # titles = get_vlc().track_description_list(titles)
+            title = ""
             self.titles_combo_box.clear()
             for title in titles:
                 self.titles_combo_box.addItem(title[1].decode(), title[0])
@@ -269,14 +273,15 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         log.debug('load_disc_button end - '
                   'vlc_media_player state: {state}'.format(state=self.vlc_media_player.get_state()))
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     def on_play_button_clicked(self, clicked):
         """
         Toggle the playback
 
         :param clicked: Given from signal, not used.
         """
-        vlc = get_vlc()
+        # vlc = get_vlc()
+        vlc = None
         if self.vlc_media_player.get_state() == vlc.State.Playing:
             self.vlc_media_player.pause()
             self.play_button.setIcon(self.play_icon)
@@ -285,7 +290,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
             self.media_state_wait(vlc.State.Playing)
             self.play_button.setIcon(self.pause_icon)
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     def on_set_start_button_clicked(self, clicked):
         """
         Copy the current player position to start_position_edit
@@ -301,7 +306,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         if end_time < new_pos_time:
             self.end_timeedit.setTime(new_pos_time)
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     def on_set_end_button_clicked(self, clicked):
         """
         Copy the current player position to end_timeedit
@@ -317,7 +322,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         if start_time > new_pos_time:
             self.start_position_edit.setTime(new_pos_time)
 
-    @QtCore.pyqtSlot(QtCore.QTime)
+    @QtCore.Slot(QtCore.QTime)
     def on_start_timeedit_timeChanged(self, new_time):
         """
         Called when start_position_edit is changed manually
@@ -329,7 +334,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         if end_time < new_time:
             self.end_timeedit.setTime(new_time)
 
-    @QtCore.pyqtSlot(QtCore.QTime)
+    @QtCore.Slot(QtCore.QTime)
     def on_end_timeedit_timeChanged(self, new_time):
         """
         Called when end_timeedit is changed manually
@@ -341,7 +346,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         if start_time > new_time:
             self.start_position_edit.setTime(new_time)
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     def on_jump_end_button_clicked(self, clicked):
         """
         Set the player position to the position stored in end_timeedit
@@ -355,7 +360,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
             end_time.msec()
         self.vlc_media_player.set_time(end_time_ms)
 
-    @QtCore.pyqtSlot(bool)
+    @QtCore.Slot(bool)
     def on_jump_start_button_clicked(self, clicked):
         """
         Set the player position to the position stored in start_position_edit
@@ -369,7 +374,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
             start_time.msec()
         self.vlc_media_player.set_time(start_time_ms)
 
-    @QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_titles_combo_box_currentIndexChanged(self, index):
         """
         When a new title is chosen, it is loaded by VLC and info about audio and subtitle tracks is reloaded
@@ -377,7 +382,8 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         :param index: The index of the newly chosen title track.
         """
         log.debug('in on_titles_combo_box_changed, index: {index:d}'.format(index=index))
-        vlc = get_vlc()
+        # vlc = get_vlc()
+        vlc = None
         if not self.vlc_media_player:
             log.error('vlc_media_player was None')
             return
@@ -461,7 +467,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
                   'vlc_media_player state: {state}'.format(state=self.vlc_media_player.get_state()))
         self.application.set_normal_cursor()
 
-    @QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_audio_tracks_combobox_currentIndexChanged(self, index):
         """
         When a new audio track is chosen update audio track bing played by VLC
@@ -476,7 +482,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         if audio_track and int(audio_track) > 0:
             self.vlc_media_player.audio_set_track(int(audio_track))
 
-    @QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def on_subtitle_tracks_combobox_currentIndexChanged(self, index):
         """
         When a new subtitle track is chosen update subtitle track bing played by VLC
@@ -624,7 +630,8 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         :param media_state: VLC media state to wait for.
         :return: True if state was reached within 15 seconds, False if not or error occurred.
         """
-        vlc = get_vlc()
+        # vlc = get_vlc()
+        vlc = None
         start = datetime.now()
         while media_state != self.vlc_media_player.get_state():
             sleep(0.1)

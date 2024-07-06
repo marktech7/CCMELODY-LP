@@ -26,7 +26,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, patch, call
 from typing import Any
 
-from PyQt5 import QtCore, QtGui, QtTest, QtWidgets
+from PySide6 import QtCore, QtGui, QtTest, QtWidgets
 
 from openlp.core.common.path import path_to_str
 from openlp.core.common.platform import is_win
@@ -50,7 +50,8 @@ SEARCH_TYPES = [(SearchTypes.First, QtGui.QIcon(), "First", "First Placeholder T
 
 
 @pytest.fixture()
-def search_edit(mock_settings: MagicMock) -> SearchEdit:
+@patch('openlp.core.ui.icons.is_ui_theme_dark')
+def search_edit(mock_is_dark: MagicMock, mock_settings: MagicMock) -> SearchEdit:
     main_window = QtWidgets.QMainWindow()
     Registry().register('main_window', main_window)
     Registry().remove('settings')
@@ -71,7 +72,7 @@ def history_combo(mock_settings: MagicMock) -> HistoryComboBox:
 
 
 @pytest.fixture()
-def path_edit() -> PathEdit:
+def path_edit(mock_settings: MagicMock) -> PathEdit:
     with patch('openlp.core.widgets.edits.PathEdit._setup'):
         return PathEdit()
 
@@ -196,7 +197,7 @@ def test_on_browse_button_clicked_directory(mocked_get_open_file_name: MagicMock
     # THEN: The FileDialog.getExistingDirectory should have been called with the default caption
     mocked_get_existing_directory.assert_called_once_with(path_edit, 'Select Directory',
                                                           Path('test', 'path'),
-                                                          FileDialog.ShowDirsOnly)
+                                                          FileDialog.Option.ShowDirsOnly)
     assert mocked_get_open_file_name.called is False
 
 
@@ -220,7 +221,7 @@ def test_on_browse_button_clicked_directory_custom_caption(path_edit: PathEdit):
         # THEN: The FileDialog.getExistingDirectory should have been called with the custom caption
         mocked_get_existing_directory.assert_called_once_with(path_edit, 'Directory Caption',
                                                               Path('test', 'path'),
-                                                              FileDialog.ShowDirsOnly)
+                                                              FileDialog.Option.ShowDirsOnly)
         assert mocked_get_open_file_name.called is False
 
 
@@ -407,8 +408,8 @@ def test_clear_button_visibility(search_edit: SearchEdit):
     assert search_edit.clear_button.isHidden(), "Pre condition not met. Button should be hidden."
 
     # WHEN: Type something in the search edit.
-    QtTest.QTest.keyPress(search_edit, QtCore.Qt.Key_A)
-    QtTest.QTest.keyRelease(search_edit, QtCore.Qt.Key_A)
+    QtTest.QTest.keyPress(search_edit, QtCore.Qt.Key.Key_A)
+    QtTest.QTest.keyRelease(search_edit, QtCore.Qt.Key.Key_A)
 
     # THEN: The clear button should not be hidden any more.
     assert not search_edit.clear_button.isHidden(), "The clear button should be visible."
@@ -419,11 +420,11 @@ def test_press_clear_button(search_edit: SearchEdit):
     Check if the search edit behaves correctly when pressing the clear button.
     """
     # GIVEN: A search edit with text.
-    QtTest.QTest.keyPress(search_edit, QtCore.Qt.Key_A)
-    QtTest.QTest.keyRelease(search_edit, QtCore.Qt.Key_A)
+    QtTest.QTest.keyPress(search_edit, QtCore.Qt.Key.Key_A)
+    QtTest.QTest.keyRelease(search_edit, QtCore.Qt.Key.Key_A)
 
     # WHEN: Press the clear button.
-    QtTest.QTest.mouseClick(search_edit.clear_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(search_edit.clear_button, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN: The search edit text should be cleared and the button be hidden.
     assert not search_edit.text(), "The search edit should not have any text."

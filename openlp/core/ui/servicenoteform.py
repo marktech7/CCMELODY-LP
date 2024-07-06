@@ -21,7 +21,7 @@
 """
 The :mod:`~openlp.core.ui.servicenoteform` module contains the `ServiceNoteForm` class.
 """
-from PyQt5 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
@@ -38,8 +38,10 @@ class ServiceNoteForm(QtWidgets.QDialog, RegistryProperties):
         """
         Constructor
         """
-        super(ServiceNoteForm, self).__init__(Registry().get('main_window'), QtCore.Qt.WindowSystemMenuHint |
-                                              QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
+        super(ServiceNoteForm, self).__init__(Registry().get('main_window'),
+                                              QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                              QtCore.Qt.WindowType.WindowTitleHint |
+                                              QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui()
         self.retranslate_ui()
 

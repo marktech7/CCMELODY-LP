@@ -47,7 +47,8 @@ test-fedora:
   image: $IMAGE_BASE/fedora
   script:
     - sh scripts/generate_resources.sh
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings
+    #    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings
+    - xwfb-run -c kwin -z\\renderer -z gl -- pytest
 
 test-arch:
   stage: test

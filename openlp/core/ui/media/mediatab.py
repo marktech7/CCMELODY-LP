@@ -23,7 +23,7 @@ The :mod:`~openlp.core.ui.media.mediatab` module holds the configuration tab for
 """
 import logging
 
-from PyQt5 import QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.lib.settingstab import SettingsTab
@@ -89,7 +89,8 @@ class MediaTab(SettingsTab):
         """
         Load the settings
         """
-        self.auto_start_check_box.setChecked(self.settings.value('media/media auto start'))
+        self.auto_start_check_box.setChecked(self.settings.value('media/media auto start') ==
+                                             QtCore.Qt.CheckState.Checked)
         self.vlc_arguments_edit.setText(self.settings.value('media/vlc arguments'))
 
     def save(self):

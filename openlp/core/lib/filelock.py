@@ -33,7 +33,7 @@ import time
 from datetime import datetime
 from threading import Timer
 
-from PyQt5 import QtWidgets  # noqa
+from PySide6 import QtWidgets  # noqa
 
 from openlp.core.common.i18n import translate
 
@@ -110,7 +110,8 @@ class FileLock():
                                         'immediately to avoid data corruption! You can try to reclaim the Data '
                                         'Directory Lock by restarting OpenLP')
                     .format(user=data['username'], host=data['hostname']),
-                    QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok), QtWidgets.QMessageBox.Ok)
+                    QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok),
+                    QtWidgets.QMessageBox.StandardButton.Ok)
             return
         self.has_lock = True
         with self.lock_filepath.open('w') as lock_file:
@@ -149,7 +150,8 @@ class FileLock():
                                     'To avoid data corruption only one user can access the data at a time! Please '
                                     'wait a few minutes and try again.')
                 .format(user=data['username'], host=data['hostname']),
-                QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok), QtWidgets.QMessageBox.Ok)
+                QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok),
+                QtWidgets.QMessageBox.StandardButton.Ok)
             return False
         else:
             self.update_lock_file()

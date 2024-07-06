@@ -28,7 +28,7 @@ from openlp.core.ui.aboutform import AboutForm
 
 
 @patch('openlp.core.ui.aboutform.webbrowser')
-def test_on_contribute_button_clicked(mocked_webbrowser):
+def test_on_contribute_button_clicked(mocked_webbrowser, mock_settings):
     """
     Test that clicking on the "Volunteer" button opens a web page.
     """
@@ -43,7 +43,7 @@ def test_on_contribute_button_clicked(mocked_webbrowser):
 
 
 @patch('openlp.core.ui.aboutform.get_version')
-def test_about_form_build_number(mocked_get_version):
+def test_about_form_build_number(mocked_get_version, mock_settings):
     """
     Test that the build number is added to the about form
     """
@@ -58,7 +58,7 @@ def test_about_form_build_number(mocked_get_version):
         "The build number should be set correctly"
 
 
-def test_about_form_date():
+def test_about_form_date(mock_settings):
     """
     Test that the copyright date is included correctly
     """

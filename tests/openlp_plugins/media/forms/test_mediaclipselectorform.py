@@ -22,25 +22,16 @@
 Module to test the MediaClipSelectorForm.
 """
 import pytest
-import os
-from unittest import SkipTest
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtCore, QtTest, QtWidgets
+from PySide6 import QtCore, QtTest, QtWidgets
 
-from openlp.core.ui.media.vlcplayer import get_vlc
 from openlp.plugins.media.forms.mediaclipselectorform import MediaClipSelectorForm
-
-
-if os.name == 'nt' and not get_vlc():
-    raise SkipTest('Windows without VLC, skipping this test since it cannot run without vlc')
 
 
 @pytest.fixture()
 def form(settings):
     main_window = QtWidgets.QMainWindow()
-    vlc_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.get_vlc')
-    vlc_patcher.start()
     timer_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.QtCore.QTimer')
     timer_patcher.start()
     # Mock the media item
@@ -55,7 +46,6 @@ def form(settings):
     frm.find_optical_devices = MagicMock()
     yield frm
     del frm
-    vlc_patcher.stop()
     timer_patcher.stop()
     del main_window
 
@@ -65,7 +55,7 @@ def test_basic(form):
     Test if the dialog is correctly set up.
     """
     # GIVEN: A mocked QDialog.exec() method
-    with patch('PyQt5.QtWidgets.QDialog.exec'):
+    with patch('PySide6.QtWidgets.QDialog.exec'):
         # WHEN: Show the dialog.
         form.exec()
 
@@ -81,11 +71,11 @@ def test_click_load_button(form):
     with patch('openlp.plugins.media.forms.mediaclipselectorform.critical_error_message_box') as \
             mocked_critical_error_message_box, \
             patch('openlp.plugins.media.forms.mediaclipselectorform.os.path.exists') as mocked_os_path_exists, \
-            patch('PyQt5.QtWidgets.QDialog.exec'):
+            patch('PySide6.QtWidgets.QDialog.exec'):
         form.exec()
 
         # WHEN: The load button is clicked with no path set
-        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.LeftButton)
+        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.MouseButton.LeftButton)
 
         # THEN: we should get an error
         mocked_critical_error_message_box.assert_called_with(message='No path was given')
@@ -94,7 +84,7 @@ def test_click_load_button(form):
         mocked_os_path_exists.return_value = False
         form.media_path_combobox.insertItem(0, '/non-existing/test-path.test')
         form.media_path_combobox.setCurrentIndex(0)
-        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.LeftButton)
+        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.MouseButton.LeftButton)
 
         # THEN: we should get an error
         assert form.media_path_combobox.currentText() == '/non-existing/test-path.test', \
@@ -107,7 +97,7 @@ def test_click_load_button(form):
         form.vlc_media_player.play.return_value = -1
         form.media_path_combobox.insertItem(0, '/existing/test-path.test')
         form.media_path_combobox.setCurrentIndex(0)
-        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.LeftButton)
+        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.MouseButton.LeftButton)
 
         # THEN: we should get an error
         assert form.media_path_combobox.currentText() == '/existing/test-path.test', \
@@ -120,7 +110,7 @@ def test_title_combobox(form):
     Test the behavior when the title combobox is updated
     """
     # GIVEN: Mocked methods and some entries in the title combobox.
-    with patch('PyQt5.QtWidgets.QDialog.exec'):
+    with patch('PySide6.QtWidgets.QDialog.exec'):
         form.exec()
         form.vlc_media_player.get_length.return_value = 1000
         form.audio_tracks_combobox.itemData = MagicMock()
@@ -150,7 +140,7 @@ def test_click_save_button(form):
     # GIVEN: Mocked methods.
     with patch('openlp.plugins.media.forms.mediaclipselectorform.critical_error_message_box') as \
             mocked_critical_error_message_box, \
-            patch('PyQt5.QtWidgets.QDialog.exec'):
+            patch('PySide6.QtWidgets.QDialog.exec'):
         form.exec()
 
         # WHEN: The save button is clicked with a NoneType in start_time_ms or end_time_ms
