@@ -310,7 +310,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
     servicemanager_set_item_by_uuid = QtCore.pyqtSignal(str)
     servicemanager_next_item = QtCore.pyqtSignal()
     servicemanager_previous_item = QtCore.pyqtSignal()
-    servicemanager_delete_item = QtCore.pyqtSignal(bool)
+    servicemanager_delete_item = QtCore.pyqtSignal()
     servicemanager_new_file = QtCore.pyqtSignal()
     servicemanager_changed = QtCore.pyqtSignal()
     theme_update_service = QtCore.pyqtSignal()
@@ -1328,7 +1328,11 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         Remove the current ServiceItem from the list.
         """
         need_confirmation: bool = self.settings.value('advanced/delete service item confirmation')
-        self.delete_item(need_confirmation)
+        if (
+            not need_confirmation or
+            self._delete_confirmation_dialog() == QtWidgets.QMessageBox.Close
+        ):
+            self.delete_item()
 
     def repaint_service_list(self, service_item: int, service_item_child: int):
         """
@@ -1610,13 +1614,12 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.drop_position = -1
         self.set_modified()
 
-    def delete_item(self, need_confirmation: bool):
+    def delete_item(self):
         """
         Remove the current item from the service.
         """
         item = self.find_service_item()[0]
-        if item != -1 and (not need_confirmation or
-                           self._delete_confirmation_dialog() == QtWidgets.QMessageBox.Close):
+        if item != -1:
             self.service_items.remove(self.service_items[item])
             self.repaint_service_list(item - 1, -1)
             self.set_modified()

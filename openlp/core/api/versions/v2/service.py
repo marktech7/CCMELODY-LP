@@ -109,5 +109,5 @@ def new_service():
 @login_required
 def delete_item():
     log.debug('service/v2/delete_item')
-    getattr(Registry().get('service_manager'), 'servicemanager_delete_item').emit(False)
+    getattr(Registry().get('service_manager'), 'servicemanager_delete_item').emit()
     return '', 204
