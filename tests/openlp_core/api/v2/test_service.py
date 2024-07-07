@@ -78,3 +78,11 @@ def test_service_direction_calls_service_manager(flask_client, settings):
     res = flask_client.post('/api/v2/service/progress', json=dict(action='next'))
     assert res.status_code == 204
     fake_service_manager.servicemanager_next_item.emit.assert_called_once()
+
+
+def test_delete_service_items(flask_client, settings):
+    fake_service_manager = MagicMock()
+    Registry().register('service_manager', fake_service_manager)
+    res = flask_client.post('/api/v2/service/delete_item', json='')
+    assert res.status_code == 204
+    fake_service_manager.servicemanager_delete_item.emit.assert_called_once()
