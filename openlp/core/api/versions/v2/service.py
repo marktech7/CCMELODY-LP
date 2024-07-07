@@ -103,3 +103,11 @@ def new_service():
     log.debug('service/v2/new')
     getattr(Registry().get('service_manager'), 'servicemanager_new_file').emit()
     return '', 204
+
+
+@service_views.route('/delete_item', methods=['POST'])
+@login_required
+def delete_item():
+    log.debug('service/v2/delete_item')
+    getattr(Registry().get('service_manager'), 'servicemanager_delete_item').emit()
+    return '', 204
