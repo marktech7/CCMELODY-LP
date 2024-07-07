@@ -60,7 +60,6 @@ class SongMediaItem(MediaManagerItem):
     """
     songs_go_live = QtCore.pyqtSignal(list)
     songs_add_to_service = QtCore.pyqtSignal(list)
-    songs_delete_from_service = QtCore.pyqtSignal(list)
     log.info('Song Media Item loaded')
 
     def __init__(self, parent, plugin):
@@ -73,7 +72,6 @@ class SongMediaItem(MediaManagerItem):
         """
         self.songs_go_live.connect(self.go_live_remote)
         self.songs_add_to_service.connect(self.add_to_service_remote)
-        self.songs_delete_from_service.connect(self.delete_from_service_remote)
         self.single_service_item = False
         # Holds information about whether the edit is remotely triggered and which Song is required.
         self.remote_song = -1

@@ -57,7 +57,6 @@ class MediaMediaItem(FolderLibraryItem):
     """
     media_go_live = QtCore.pyqtSignal(list)
     media_add_to_service = QtCore.pyqtSignal(list)
-    media_delete_from_service = QtCore.pyqtSignal(list)
     log.info('{name} MediaMediaItem loaded'.format(name=__name__))
 
     def __init__(self, parent, plugin):
@@ -78,7 +77,6 @@ class MediaMediaItem(FolderLibraryItem):
         """
         self.media_go_live.connect(self.go_live_remote)
         self.media_add_to_service.connect(self.add_to_service_remote)
-        self.media_delete_from_service.connect(self.delete_from_service_remote)
         self.single_service_item = False
         self.has_search = True
         self.media_object = None

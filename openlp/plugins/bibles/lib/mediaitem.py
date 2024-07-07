@@ -88,7 +88,6 @@ class BibleMediaItem(MediaManagerItem):
     """
     bibles_go_live = QtCore.pyqtSignal(list)
     bibles_add_to_service = QtCore.pyqtSignal(list)
-    bibles_delete_from_service = QtCore.pyqtSignal(list)
     log.info('Bible Media Item loaded')
 
     def __init__(self, *args, **kwargs):
@@ -122,7 +121,6 @@ class BibleMediaItem(MediaManagerItem):
         """
         self.bibles_go_live.connect(self.go_live_remote)
         self.bibles_add_to_service.connect(self.add_to_service_remote)
-        self.bibles_delete_from_service.connect(self.delete_from_service_remote)
         # Place to store the search results for both bibles.
         self.settings_tab = self.plugin.settings_tab
         self.quick_preview_allowed = True

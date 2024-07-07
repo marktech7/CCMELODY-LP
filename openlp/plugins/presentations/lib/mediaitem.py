@@ -49,7 +49,6 @@ class PresentationMediaItem(FolderLibraryItem):
     """
     presentations_go_live = QtCore.pyqtSignal(list)
     presentations_add_to_service = QtCore.pyqtSignal(list)
-    presentations_delete_from_service = QtCore.pyqtSignal(list)
     log.info('Presentations Media Item loaded')
 
     def __init__(self, parent, plugin, controllers):
@@ -75,7 +74,6 @@ class PresentationMediaItem(FolderLibraryItem):
         """
         self.presentations_go_live.connect(self.go_live_remote)
         self.presentations_add_to_service.connect(self.add_to_service_remote)
-        self.presentations_delete_from_service.connect(self.delete_from_service_remote)
         self.message_listener = MessageListener(self)
         self.has_search = True
         self.single_service_item = False

@@ -49,7 +49,6 @@ class ImageMediaItem(FolderLibraryItem):
     """
     images_go_live = QtCore.pyqtSignal(list)
     images_add_to_service = QtCore.pyqtSignal(list)
-    images_delete_from_service = QtCore.pyqtSignal(list)
     log.info('Image Media Item loaded')
 
     def __init__(self, parent, plugin):
@@ -63,7 +62,6 @@ class ImageMediaItem(FolderLibraryItem):
         """
         self.images_go_live.connect(self.go_live_remote)
         self.images_add_to_service.connect(self.add_to_service_remote)
-        self.images_delete_from_service.connect(self.delete_from_service_remote)
         self.quick_preview_allowed = True
         self.has_search = True
         self.list_view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)

@@ -623,18 +623,6 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties, LogMixin):
             service_item.from_plugin = False
             self.service_manager.add_service_item(service_item, replace=replace, position=position)
 
-    def delete_from_service_remote(self):
-        """
-        Remote Call wrapper
-        """
-        self.delete_from_service()
-
-    def delete_from_service(self):
-        """
-        Delete this item from the current service.
-        """
-        self.service_manager.delete_service_item()
-
     def on_add_edit_click(self):
         """
         Add a selected item to an existing item in the current service.
