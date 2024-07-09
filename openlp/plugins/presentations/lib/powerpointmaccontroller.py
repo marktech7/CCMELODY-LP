@@ -32,7 +32,11 @@ try:
     import fitz
     PYMUPDF_AVAILABLE = True
 except ImportError:
-    PYMUPDF_AVAILABLE = False
+    try:
+        import fitz_old as fitz
+        PYMUPDF_AVAILABLE = True
+    except ImportError:
+        PYMUPDF_AVAILABLE = False
 
 from openlp.plugins.presentations.lib.applescriptbasecontroller import AppleScriptBaseController, \
     AppleScriptBaseDocument

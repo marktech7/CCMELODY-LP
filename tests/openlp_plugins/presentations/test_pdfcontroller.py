@@ -117,7 +117,10 @@ def test_loading_pdf_using_pymupdf(pdf_env):
     try:
         import fitz  # noqa: F401
     except ImportError:
-        pytest.skip('PyMuPDF is not installed')
+        try:
+            import fitz_old as fitz
+        except ImportError:
+            pytest.skip('PyMuPDF is not installed')
 
     load_pdf(pdf_env)
     load_pdf_pictures(pdf_env)
