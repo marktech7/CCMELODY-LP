@@ -1313,8 +1313,7 @@ def test_on_preview_double_click_add_to_service(mock_settings: MagicMock):
     assert 1 == slide_controller.on_preview_add_to_service.call_count, 'Should have been called once.'
 
 
-@patch(u'PyQt5.QtCore.QTimer.singleShot')
-def test_update_preview_live(registry: Registry, settings: Settings):
+def test_update_preview_live(settings: Settings):
     """
     Test that the preview screen is updated with a screen grab for live service items
     """
