@@ -1352,8 +1352,7 @@ def test_update_preview_live(settings: Settings):
     assert 1 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should have been called'
 
 
-@patch(u'PyQt5.QtCore.QTimer.singleShot')
-def test_update_preview_live_hidden_blank(registry: Registry, settings: Settings):
+def test_update_preview_live_hidden_blank(settings: Settings):
     """
     Test that the preview screen is updated with a screen grab for live service items when blank hidden mode.
     """

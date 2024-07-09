@@ -1170,11 +1170,10 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         # Note: If this if statement is placed at the bottom of this function instead of top slide transitions are lost.
         if (not start and
            self.is_live and
-           self.settings.value('core/click live slide to unblank') and
-           self._current_hide_mode):
+           self._current_hide_mode and
+           self.settings.value('core/click live slide to unblank')):
             Registry().execute('slidecontroller_live_unblank')
         row = self.preview_widget.current_slide_number()
-        # old_selected_row = self.selected_row
         self.selected_row = 0
         if -1 < row < self.preview_widget.slide_count():
             if self.service_item.is_command():
@@ -1222,9 +1221,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             wait_for(self.is_slide_loaded)
             self.display_maindisplay()
         else:
+            # If not live or not hidden or setting 'live preview shows blank screen' is not active,
+            # use the slide's thumbnail/icon instead.
             if self.service_item and self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
-                # If not live, hidden or setting 'live preview shows blank screen' is not active,
-                # use the slide's thumbnail/icon instead.
                 image_path = Path(self.service_item.get_rendered_frame(self.selected_row))
                 self.screen_capture = image_path
                 self.preview_display.set_single_image('#000', image_path)
