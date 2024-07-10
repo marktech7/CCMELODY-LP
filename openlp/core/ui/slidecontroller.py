@@ -1320,9 +1320,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                     win_image = QtGui.QPixmap(size)
                     win_image.fill(QtGui.QColorConstants.Black)
                 else:
-                    win_image = display.grab_screenshot_safe(QtCore.Qt.ConnectionType.AutoConnection) \
-                        if self.settings.value('core/live preview shows blank screen') \
-                        else display.grab_screenshot_safe()
+                    win_image = display.grab_screenshot_safe()
                     if win_image:
                         win_image.setDevicePixelRatio(self.preview_display.devicePixelRatio())
                 break
