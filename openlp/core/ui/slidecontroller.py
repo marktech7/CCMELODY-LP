@@ -1212,10 +1212,10 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.screen_capture = None
             self.slide_changed_time = max(self.slide_changed_time, datetime.datetime.now())
 
-        if self.is_live and (
-            self._current_hide_mode is None or
-            self.settings.value('core/live preview shows blank screen')
-        ):
+        if (self.service_item and
+            self.is_live and (
+                self._current_hide_mode is None or
+                self.settings.value('core/live preview shows blank screen'))):
             # If live and not hidden or setting 'live preview shows blank screen' is active,
             # grab screen-cap of main display.
             wait_for(self.is_slide_loaded)
