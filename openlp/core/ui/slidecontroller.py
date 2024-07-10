@@ -1272,8 +1272,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             fallback_to_windowed = display_above_horizontal or display_above_vertical \
                 or display_beyond_horizontal or display_beyond_vertical
         if fallback_to_windowed:
-            if self.service_item and (self.settings.value('core/live preview shows blank screen') or
-                                      self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or
+            if self.service_item and (self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or
                                       self.service_item.is_media() or self.service_item.is_command()):
                 if self.service_item.is_command():
                     # Attempting to get screenshot from command handler
@@ -1321,7 +1320,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                     win_image = QtGui.QPixmap(size)
                     win_image.fill(QtGui.QColorConstants.Black)
                 else:
-                    win_image = display.grab_screenshot_safe()
+                    win_image = display.grab_screenshot_safe(QtCore.Qt.ConnectionType.AutoConnection) \
+                        if self.settings.value('core/live preview shows blank screen') \
+                        else display.grab_screenshot_safe()
                     if win_image:
                         win_image.setDevicePixelRatio(self.preview_display.devicePixelRatio())
                 break
