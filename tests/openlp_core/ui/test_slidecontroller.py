@@ -1404,7 +1404,7 @@ def test_update_preview_live_hidden_blank(settings: Settings):
     assert 1 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should have been called'
 
 
-def test_update_preview_pres(registry: Registry):
+def test_update_preview_pres(settings: Settings):
     """
     Test that the preview screen is updated with the correct preview for presentation service items
     """
@@ -1434,6 +1434,7 @@ def test_update_preview_pres(registry: Registry):
     slide_controller.preview_display = MagicMock()
 
     # WHEN: update_preview is called
+    settings.setValue('core/live preview shows blank screen', False)
     slide_controller.update_preview()
 
     # THEN: setPixmap should have been called
@@ -1441,7 +1442,7 @@ def test_update_preview_pres(registry: Registry):
     assert 0 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should NOT have been called'
 
 
-def test_update_preview_media(registry: Registry):
+def test_update_preview_media(settings: Settings):
     """
     Test that the preview screen is updated with the correct preview for media service items
     """
@@ -1472,6 +1473,7 @@ def test_update_preview_media(registry: Registry):
     slide_controller.preview_display = MagicMock()
 
     # WHEN: update_preview is called
+    settings.setValue('core/live preview shows blank screen', False)
     slide_controller.update_preview()
 
     # THEN: setPixmap should have been called
@@ -1479,7 +1481,7 @@ def test_update_preview_media(registry: Registry):
     assert 0 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should NOT have been called'
 
 
-def test_update_preview_image(registry: Registry):
+def test_update_preview_image(settings: Settings):
     """
     Test that the preview screen is updated with the correct preview for image service items
     """
@@ -1509,6 +1511,7 @@ def test_update_preview_image(registry: Registry):
     slide_controller.preview_display = MagicMock()
 
     # WHEN: update_preview is called
+    settings.setValue('core/live preview shows blank screen', False)
     slide_controller.update_preview()
 
     # THEN: setPixmap and display.preview should have been called
