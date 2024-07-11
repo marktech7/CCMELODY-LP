@@ -112,6 +112,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         super().__init__(*args, **kwargs)
         self.is_live = False
+        self._capture_main_display_for_live_preview = False
+        self._reload_live_preview_service_item = False
         self.controller_type = None
         self.displays = []
         self.screens = ScreenList()
@@ -1112,6 +1114,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         self.log_debug('set_hide_mode {text}'.format(text=hide_mode))
         self._current_hide_mode = hide_mode
+        self._capture_main_display_for_live_preview = hide_mode is not None
         # Update ui buttons
         if hide_mode is None:
             self.hide_menu.setDefaultAction(self.blank_screen)
@@ -1173,6 +1176,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
            self._current_hide_mode and
            self.settings.value('core/click live slide to unblank')):
             Registry().execute('slidecontroller_live_unblank')
+        self._capture_main_display_for_live_preview = start
         row = self.preview_widget.current_slide_number()
         self.selected_row = 0
         if -1 < row < self.preview_widget.slide_count():
@@ -1211,24 +1215,29 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         if self.is_live:
             self.screen_capture = None
             self.slide_changed_time = max(self.slide_changed_time, datetime.datetime.now())
-
-        if (self.service_item and
-            self.is_live and (
-                self._current_hide_mode is None or
-                self.settings.value('core/live preview shows blank screen'))):
-            # If live and not hidden or setting 'live preview shows blank screen' is active,
-            # grab screen-cap of main display.
-            wait_for(self.is_slide_loaded)
-            self.display_maindisplay()
-        else:
-            # If not live or not hidden or setting 'live preview shows blank screen' is not active,
-            # use the slide's thumbnail/icon instead.
-            if self.service_item and self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
-                image_path = Path(self.service_item.get_rendered_frame(self.selected_row))
-                self.screen_capture = image_path
-                self.preview_display.set_single_image('#000', image_path)
-            else:
-                self.preview_display.go_to_slide(self.selected_row)
+        if self.service_item:
+            if self.is_live and \
+               self.current_hide_mode and \
+               self._capture_main_display_for_live_preview and \
+               self.settings.value('core/live preview shows blank screen'):
+                # If live, hidden and setting 'live preview shows blank screen' is active,
+                # grab screen-cap of main display.
+                wait_for(self.is_slide_loaded)
+                self.display_maindisplay()
+                self._capture_main_display_for_live_preview = False
+                self._reload_live_preview_service_item = True
+            elif not self.current_hide_mode or not self.settings.value('core/live preview shows blank screen'):
+                # If not hidden or setting 'live preview shows blank screen' is not active
+                # use the slide's thumbnail/icon instead.
+                if self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
+                    image_path = Path(self.service_item.get_rendered_frame(self.selected_row))
+                    self.screen_capture = image_path
+                    self.preview_display.set_single_image('#000', image_path)
+                else:
+                    if self._reload_live_preview_service_item:
+                        self.refresh_service_item(self.service_item)
+                        self._reload_live_preview_service_item = False
+                    self.preview_display.go_to_slide(self.selected_row)
         # Used for updating the main view in Web Remote.
         self.output_has_changed()
 
