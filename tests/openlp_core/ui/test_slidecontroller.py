@@ -1398,10 +1398,10 @@ def test_update_preview_live_hidden_blank(settings: Settings):
     settings.setValue('core/live preview shows blank screen', True)
     slide_controller.update_preview()
 
-    # THEN: A screen_grab should have been called
+    # THEN: A screen_grab should NOT have been called
     assert 0 == slide_controller.slide_preview.setPixmap.call_count, 'setPixmap should NOT have been called'
     assert 0 == slide_controller.display.preview.call_count, 'display.preview() should NOT have been called'
-    assert 1 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should have been called'
+    assert 0 == slide_controller.display_maindisplay.call_count, 'display_maindisplay() should NOT have been called'
 
 
 def test_update_preview_pres(settings: Settings):

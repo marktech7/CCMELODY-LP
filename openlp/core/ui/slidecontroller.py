@@ -1212,21 +1212,15 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.screen_capture = None
             self.slide_changed_time = max(self.slide_changed_time, datetime.datetime.now())
         if self.service_item:
-            if self.is_live and \
-               self.current_hide_mode and \
-               self.settings.value('core/live preview shows blank screen'):
-                if self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
-                    # If live, hidden and setting 'live preview shows blank screen' is active,
-                    # grab screen-cap of main display.
-                    wait_for(self.is_slide_loaded)
-                    self.display_maindisplay()
-                else:
-                    self.preview_display.hide_display(self.current_hide_mode)
+            if (self.is_live and self.current_hide_mode and
+               self.settings.value('core/live preview shows blank screen')):
+                # If live, hidden and setting 'live preview shows blank screen' is active
+                # blank the live preview panel.
+                self.preview_display.hide_display(self.current_hide_mode)
             elif not self.current_hide_mode:
                 if self.settings.value('core/live preview shows blank screen'):
                     self.preview_display.show_display()
-                # If not hidden or setting 'live preview shows blank screen' is not active
-                # use the slide's thumbnail/icon instead.
+                # If not live or hidden use the slide's thumbnail/icon instead.
                 if self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
                     image_path = Path(self.service_item.get_rendered_frame(self.selected_row))
                     self.screen_capture = image_path
