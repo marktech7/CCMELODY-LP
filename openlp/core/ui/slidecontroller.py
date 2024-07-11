@@ -1140,6 +1140,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 Registry().execute('live_display_hide', hide_mode)
             else:
                 Registry().execute('live_display_show')
+        self.update_preview()
         # Update loop state
         self.on_toggle_loop()
 
@@ -1167,11 +1168,12 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             return
         # If "click live slide to unblank" is enabled, unblank the display. And start = Item is sent to Live.
         # Note: If this if statement is placed at the bottom of this function instead of top slide transitions are lost.
-        if self.is_live and self.settings.value('core/click live slide to unblank'):
-            if not start:
-                Registry().execute('slidecontroller_live_unblank')
+        if (not start and
+           self.is_live and
+           self._current_hide_mode and
+           self.settings.value('core/click live slide to unblank')):
+            Registry().execute('slidecontroller_live_unblank')
         row = self.preview_widget.current_slide_number()
-        # old_selected_row = self.selected_row
         self.selected_row = 0
         if -1 < row < self.preview_widget.slide_count():
             if self.service_item.is_command():
@@ -1209,19 +1211,23 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         if self.is_live:
             self.screen_capture = None
             self.slide_changed_time = max(self.slide_changed_time, datetime.datetime.now())
-        if self.service_item and self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
-            if self.is_live and self.get_hide_mode() is None:
-                # If live and not hidden, grab screen-cap of main display now
-                QtCore.QTimer.singleShot(500, self.display_maindisplay)
-                # but take another in a couple of seconds in case slide change is slow
-                QtCore.QTimer.singleShot(2500, self.display_maindisplay)
-            else:
-                # If not live or hidden, use the slide's thumbnail/icon instead
-                image_path = Path(self.service_item.get_rendered_frame(self.selected_row))
-                self.screen_capture = image_path
-                self.preview_display.set_single_image('#000', image_path)
-        else:
-            self.preview_display.go_to_slide(self.selected_row)
+        if self.service_item:
+            if (self.is_live and self.current_hide_mode and
+               self.settings.value('core/live preview shows blank screen')):
+                # If live, hidden and setting 'live preview shows blank screen' is active
+                # blank the live preview panel.
+                self.preview_display.hide_display(self.current_hide_mode)
+            elif not self.current_hide_mode:
+                if self.settings.value('core/live preview shows blank screen'):
+                    self.preview_display.show_display()
+                # If not live or hidden use the slide's thumbnail/icon instead.
+                if self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
+                    image_path = Path(self.service_item.get_rendered_frame(self.selected_row))
+                    self.screen_capture = image_path
+                    self.preview_display.set_single_image('#000', image_path)
+                else:
+                    self.preview_display.go_to_slide(self.selected_row)
+        # Used for updating the main view in Web Remote.
         self.output_has_changed()
 
     def output_has_changed(self):

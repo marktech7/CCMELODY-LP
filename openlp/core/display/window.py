@@ -555,8 +555,6 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
 
     def grab_screenshot_safe(self):
         # Using internal Qt's messaging/event system to invoke the function.
-        # Usually we would need to use PyQt's signals, but they aren't blocking. So we had to resort to this solution,
-        # which use a less-documented Qt mechanism to invoke the signal in a blocking way.
         return QtCore.QMetaObject.invokeMethod(self, '_grab_screenshot_safe_signal',
-                                               QtCore.Qt.ConnectionType.BlockingQueuedConnection,
+                                               QtCore.Qt.ConnectionType.AutoConnection,
                                                QtCore.Q_RETURN_ARG('QPixmap'))
